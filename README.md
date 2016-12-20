@@ -1,2 +1,2 @@
 # cpp_ito
-sfml + cpp
+sfml 2.4 + cpp

@@ -1,35 +1,40 @@
 #pragma once
+extern long long colisiones;
 #include<SFML/Graphics.hpp>
-
-const float PLAYER_SPEED = 200.0f;
-const unsigned FPS = 60;
-const sf::Time dt = sf::seconds(1.0f / FPS);
+#include "PlayerInput.h"
+#include "World.h"
+#include "FontHolder.h"
+#include "defines.h"
 
 class Game {
 	private:
-		enum input { UP, DOWN, LEFT, RIGHT, size };
 
+		sf::RenderWindow			mWindow;
 		
 		
-		sf::CircleShape		mCirculo;
-		sf::RenderWindow	mWindow;
-		sf::Vector2f		direction;
+		sf::Clock					clock;
+		PlayerInput					controller;
 		
-		bool				pressed_keys[input::size];		
-		bool				just_updated_keys[input::size];
+		std::vector<ptr<System>>	vec_System;
+		World						mWorld;
 
-		sf::Keyboard::Key	keys[input::size];
-		
-		sf::Clock			clock;
-		
+
+
+		FontHolder					fonts;
+		sf::Text					fps_text;
 
 	private:
 		void				process_events();
 		void				update(const sf::Time& tiempo);
+		void				init();
 		void				render();
-		void				update_key(sf::Keyboard::Key key, bool pressed);
+		void				update_fps(sf::Uint16 fps_count);
 
+
+
+		void				stress_init();
+		void				collision_init();
 	public:
-		void				run();
+		int					run();
 							Game();
 };

@@ -2,6 +2,5 @@
 #include "Game.h"
 int main(){
 	Game mJuego;
-	mJuego.run();
-	return 0;
+	return mJuego.run();
 }

@@ -11,8 +11,19 @@ inline float vec_magn(const sf::Vector2f& v) {
 }
 
 //Normalizes the vector, which means its module becomes 1 (or 0 if each of its members is 0)
-inline sf::Vector2f& normalize(sf::Vector2f&& v) {
+inline sf::Vector2f normalize(sf::Vector2f&& v) {
 	if (v.x!=0||v.y!=0)
 		v = v / vec_magn(v);
+	return std::move(v);
+}
+
+inline sf::Vector2f& normalize(sf::Vector2f& v) {
+	if (v.x != 0 || v.y != 0)
+		v = v / vec_magn(v);
+	return v;
+}
+inline sf::Vector2f normalized(const sf::Vector2f& v) {
+	if (v.x != 0 || v.y != 0)
+		return v / vec_magn(v);
 	return v;
 }

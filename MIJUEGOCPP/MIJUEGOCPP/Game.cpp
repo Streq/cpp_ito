@@ -3,6 +3,7 @@
 #include <math.h>
 #include <iostream>
 #include "System_includes.h"
+#include "components_header.h"
 extern long long colisiones = 0;
 Game::Game()
 : mWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y), "mi juegazo", sf::Style::Default)
@@ -12,10 +13,12 @@ Game::Game()
 	
 	fonts.load(Font::arial, "Resources/arial.ttf");
 
+	vec_System.push_back(ptr<System>(new TimeSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new ControllerSystem(this->mWorld, this->controller)));
+	vec_System.push_back(ptr<System>(new StateSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new MovementSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new CollisionSystem(this->mWorld)));
-	vec_System.push_back(ptr<System>(new PhysicsSystem(this->mWorld)));
+	vec_System.push_back(ptr<System>(new HealthSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new RenderingSystem(this->mWorld, this->mWindow)));
 	
 	mWindow.setKeyRepeatEnabled(false);
@@ -43,6 +46,7 @@ int Game::run() {
 			accum_time -= dt;
 			elapsed_time += dt;
 			fps_timer += dt;
+			controller.clear_updated();
 		}
 		if (fps_timer >= fps_update_time) {
 			update_fps(frame_count);
@@ -64,6 +68,7 @@ inline void Game::update_fps(sf::Uint16 fps_count) {
 }
 
 void Game::process_events() {
+
 	sf::Event event;
 	while (mWindow.pollEvent(event)) {
 		switch (event.type) {
@@ -71,7 +76,6 @@ void Game::process_events() {
 		case sf::Event::Closed:
 			mWindow.close();
 			break;
-
 		case sf::Event::KeyReleased:
 			controller.update_key(event.key.code, false);
 			break;
@@ -85,6 +89,7 @@ void Game::process_events() {
 }
 
 void Game::update(const sf::Time& dt) {
+	
 	for (ptr<System>& sys : vec_System) {
 		sys->update(dt);
 	}
@@ -95,12 +100,15 @@ void Game::render() {
 }
 
 void Game::init() {
-	#define X(action,input) controller.set_key(PlayerInput::Key::##input,Input::##action);
-	X(up, Up)
-	X(down, Down)
-	X(left, Left)
-	X(right, Right)
-	#undef X
+	#define W(action,input) controller.set_key(PlayerInput::Key::##input,Input::##action);
+	W(up, Up)
+	W(down, Down)
+	W(left, Left)
+	W(right, Right)
+	W(shoot, Z)
+	W(duck, X)
+	W(teleport, C)
+	#undef W
 	CollisionTag::init_matrix();
 	fps_text=sf::Text(sf::String("fps"), fonts.get(Font::arial), 15u);
 
@@ -117,7 +125,7 @@ void Game::stress_init() {
 		if (r = mWorld.add_component<Rendering>(h)) {
 			//sf::RectangleShape *c = new sf::RectangleShape(sf::Vector2f(10.f,100.f));
 			sf::Text *c = new sf::Text("________HABIA UNA VEZ UN BARCO CHIQUITO QUE VIVIA EN PEHUAJO PERO UN DIA SE MARCHO NADIE SUPO BIEN POR QUE_______", fonts.get(Font::arial), 15u);
-			c->setFillColor(sf::Color(rand(), rand(), rand()));
+			c->setFillColor(sf::Color::Blue);//(rand(), rand(), rand()));
 			//auto& rect=c->getSize();
 			auto& rect = c->getGlobalBounds();
 			c->setOrigin(sf::Vector2f(rect.width + rect.left, rect.height + rect.top) / 2.f);
@@ -143,36 +151,28 @@ void Game::stress_init() {
 
 
 void Game::collision_init() {
+	srand(time(NULL));
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2));
+	
+	mWorld.make_wall
+		( sf::Vector2f(0, 0)
+		, sf::Vector2f(WINDOW_SIZE_X, 25));
+	mWorld.make_wall
+		( sf::Vector2f(0, WINDOW_SIZE_Y-25)
+		, sf::Vector2f(WINDOW_SIZE_X, 25));
+	mWorld.make_wall
+		( sf::Vector2f(0, 0)
+		, sf::Vector2f(25, WINDOW_SIZE_Y));
+	mWorld.make_wall
+		( sf::Vector2f(WINDOW_SIZE_X-25, 0)
+		, sf::Vector2f(25, WINDOW_SIZE_Y));
+	for (int i = 0; i < 50; i++) {
+		mWorld.make_wall
+			( sf::Vector2f(rand() % WINDOW_SIZE_X, rand() % WINDOW_SIZE_Y)
+			, sf::Vector2f(25.f, 25.f));
 
-	for (size_t i = 0; i < max_entities; i++)
-	{
-		Handle h = mWorld.new_entity();
-		Rendering *r;
-		if (r = mWorld.add_component<Rendering>(h)) {
-			sf::RectangleShape *c = new sf::RectangleShape(sf::Vector2f(25.f,25.f));
-			c->setFillColor(rand() % 2 ? sf::Color::Green : sf::Color::Red);//sf::Color(rand(), rand(), rand()));
-			auto& rect=c->getSize();
-			CollisionBox* box = mWorld.add_component<CollisionBox>(h);
-			box->offset= -(sf::Vector2f(rect.x, rect.y) / 2.f);
-			box->size = c->getSize();
-			c->setOrigin(sf::Vector2f(rect.x, rect.y) / 2.f);
-			r->drawable.reset(c);
-		}
-		Position *p;
-		if (p = mWorld.add_component<Position>(h)) {
-			p->setPosition(sf::Vector2f(static_cast<float>(rand() % int(mWindow.getSize().x * 1)), static_cast<float>(rand() % int(mWindow.getSize().y * 1))));
-			//p->position = sf::Vector2f(100.f + 100.f*i,300.f);
-		}
-		Movement *m;
-		if (m = mWorld.add_component<Movement>(h)) {
-			m->velocity = normalize(sf::Vector2f(float(rand() - rand()), float(rand() - rand())));
-			//m->velocity = normalize(sf::Vector2f(1.f-i*2,0.f));
-			m->velocity *= 20.f;
-		}
-		CollisionTag *tf;
-		if (tf = mWorld.add_component<CollisionTag>(h)) {
-			tf->tag = Tag::Building;
-		}
 	}
-	mWorld.remove_component<Movement>(0);
+	for (int i = 0; i < 10; i++) {
+		mWorld.make_enemy(sf::Vector2f(50.f + (rand() % (WINDOW_SIZE_X - 100)) , 50.f + (rand() % (WINDOW_SIZE_Y - 100))));
+	}
 }

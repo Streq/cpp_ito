@@ -8,15 +8,20 @@ X(Rendering)\
 X(Position)
 
 #define COMPONENTS_CONTROLLER \
-X(Controller)
+X(Controller)\
+X(State)
 
 #define COMPONENTS_COLLISION \
-X(CollisionBox)\
+X(CollisionBody)\
 X(CollisionTag)\
 X(Position)
 
-#define COMPONENTS_PHYSICS \
-X(CollisionTag)\
-X(CollisionBox)\
-X(Movement)\
-X(Position)
+#define COMPONENTS_STATE \
+X(State)
+
+
+#define COMPONENTS_TIME \
+X(TimeSpan)
+
+#define COMPONENTS_HEALTH \
+X(Health)

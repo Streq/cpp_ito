@@ -11,18 +11,14 @@ typedef std::array<bool, max_entities> ENTITIES;
 #define ITERATE_START for (size_t i = 0; i < max_entities; i++) { if (entities[i]) {
 #define ITERATE_END }}
 
-/*
-typedef std::vector<Handle> ENTITIES;
-#define ITERATE_START for(Handle i : entities){
-#define ITERATE_END }
-*/
+
 class World;
 class System
 {
 	
 	public:
 		virtual void							update(sf::Time)=0;
-		void									check_entity(const Flagset&, Handle);
+		void									update_entity(const Flagset&, Handle);
 		System(World&, const Requeriments&);
 
 	protected:

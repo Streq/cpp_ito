@@ -1,5 +1,4 @@
 #pragma once
-extern long long colisiones;
 #include<SFML/Graphics.hpp>
 #include "PlayerInput.h"
 #include "World.h"
@@ -31,9 +30,10 @@ class Game {
 		void				update_fps(sf::Uint16 fps_count);
 
 
-
+	private:
 		void				stress_init();
 		void				collision_init();
+		void				player_init();
 	public:
 		int					run();
 							Game();

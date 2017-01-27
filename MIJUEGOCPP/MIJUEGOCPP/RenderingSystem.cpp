@@ -1,5 +1,6 @@
 #include "RenderingSystem.h"
 #include "system_defines.h"
+
 RenderingSystem::RenderingSystem(World& world, sf::RenderTarget& window)
 	:System(
 		world,

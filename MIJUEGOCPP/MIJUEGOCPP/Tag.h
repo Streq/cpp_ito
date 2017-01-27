@@ -4,7 +4,7 @@ X(Building)\
 X(Bullet)\
 X(Enemy)\
 X(Player)\
-X(Drop)
+X(Scope)
 
 
 namespace Tag {

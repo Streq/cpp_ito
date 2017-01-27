@@ -5,11 +5,9 @@ namespace Input {
 		down,
 		left,
 		right,
+		shoot,
+		duck,
+		teleport,
 		size
 	};
 }
-
-//MAN HAY QUE IMPLEMENTAR LAS ACCIONES
-class Action {
-	virtual void execute();
-};

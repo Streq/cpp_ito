@@ -17,5 +17,8 @@ void PlayerInput::set_key(const Key& key, Input::ID action) {
 
 bool PlayerInput::check_pressed(Input::ID i) const{ return pressed_keys[i]; }
 bool PlayerInput::check_updated(Input::ID i) const{ return just_updated_keys[i]; }
+void PlayerInput::clear_updated(){
+	memset(just_updated_keys,0,Input::size);
+}
 const bool(&PlayerInput::get_pressed() const)[Input::size]{return pressed_keys;};
 const bool(&PlayerInput::get_updated() const)[Input::size]{return just_updated_keys;};

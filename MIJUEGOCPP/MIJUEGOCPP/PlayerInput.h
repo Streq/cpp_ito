@@ -18,6 +18,7 @@ public:
 	void					set_key(const Key& key, Input::ID action);
 	bool					check_pressed(Input::ID action)const;//check if currently pressed
 	bool					check_updated(Input::ID action)const;//check if just updated
+	void					clear_updated();
 	const bool				(&get_pressed() const)[Input::size];
 	const bool 				(&get_updated() const)[Input::size];
 };

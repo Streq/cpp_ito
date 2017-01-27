@@ -25,7 +25,7 @@ class CollisionSystem : public System {
 		#ifdef LISTS
 		std::vector<std::vector<Handle>>					section_entities;
 		#endif //LISTS
-		std::vector<CollisionBox>							section_boxes;
+		std::vector<CollisionBody>							section_boxes;
 		
 		#ifdef MASKS
 		//MASK MODE WACHIN (ta pa pensarlo)
@@ -35,13 +35,17 @@ class CollisionSystem : public System {
 		
 		
 		
-		std::vector<CollisionBox>							entity_boxes;
-		
+		std::vector<CollisionBody>							entity_boxes;
+		std::vector<sf::Vector2f>							frame_start_offset;
+		void												check_collisions(float time);
+		void												handle_collisions(float time);
+
 		inline unsigned										first_child(unsigned nodo) { return nodo*grid_direct_children + 1; };
 		inline unsigned										children_end(unsigned nodo) { return nodo*grid_direct_children + grid_direct_children + 1; };
 		inline unsigned										parent(unsigned nodo) { return (nodo - 1)/grid_direct_children; };
-		bool												check_collision(Handle h1, Handle h2)const;
-		static bool											check_collision(const CollisionBox& b1, const CollisionBox& b2);
+		static bool											check_collision_box(const CollisionBody& b1, const CollisionBody& b2);
+		static bool											check_collision_circle_box(const CollisionBody& circ, const CollisionBody& box);
+		static bool											check_collision_circle(const CollisionBody& c1, const CollisionBody& c2);
 		void												translate_boxes_to_global();
 		inline void											collide(Handle h1, Handle h2);
 };

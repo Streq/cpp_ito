@@ -4,7 +4,9 @@
 #include "vec_magn.h"
 #include <iostream>
 #include "Game.h"
-#include "Component.h"
+#include "components_header.h"
+#include "clamp.h"
+#include <cmath>
 CollisionSystem::CollisionSystem(World& world)
 	:System(
 		world,
@@ -21,16 +23,16 @@ CollisionSystem::CollisionSystem(World& world)
 	,section_entities(grid_nodes)
 	#endif
 {
-	section_boxes[0] = CollisionBox(sf::Vector2f(0, 0), mWorld.getSize());
+	section_boxes[0] = CollisionBody(sf::Vector2f(0, 0), mWorld.getSize());
 	for (unsigned cur = 0; cur < grid_parent_nodes; cur++) {
-		CollisionBox& cur_box = section_boxes[cur];
+		CollisionBody& cur_box = section_boxes[cur];
 		sf::Vector2f size = cur_box.size;
 		size.x /= grid_x;
 		size.y /= grid_y;
 
 		unsigned end = children_end(cur);
 		for (unsigned count = 0, child = first_child(cur); child < end; child++,count++) {
-			CollisionBox& child_box = section_boxes[child];
+			CollisionBody& child_box = section_boxes[child];
 			child_box.size = size;
 			child_box.offset = cur_box.offset + sf::Vector2f(size.x * (count % grid_x), size.y * (count / grid_x));		
 		}
@@ -65,6 +67,14 @@ CollisionSystem::CollisionSystem(World& world)
 
 
 void CollisionSystem::update(sf::Time t) {
+	float time = t.asSeconds();
+	check_collisions(time);
+	handle_collisions(time);
+}
+
+
+
+void CollisionSystem::check_collisions(float time){
 	memset(collision_matrix,0,sizeof(CollisionMatrix));
 	
 	translate_boxes_to_global();
@@ -75,7 +85,7 @@ void CollisionSystem::update(sf::Time t) {
 		section_entities[i].clear();
 	}
 	//Fill main box with colliding entities
-	const CollisionBox& main_box = section_boxes[0];
+	const CollisionBody& main_box = section_boxes[0];
 	auto& sec_entities = section_entities[0];
 	#endif
 	ITERATE_START
@@ -85,7 +95,7 @@ void CollisionSystem::update(sf::Time t) {
 #endif
 
 	
-	if (check_collision(section_boxes[0],entity_boxes[i])) {
+	if (check_collision_box(section_boxes[0],entity_boxes[i])) {
 		#ifdef LISTS
 		sec_entities.push_back(i);
 		#endif
@@ -105,7 +115,7 @@ void CollisionSystem::update(sf::Time t) {
 		unsigned end = children_end(parent);
 		for (unsigned child = first_child(parent); child < end; child++) {
 			for (Handle h : parent_entities) {
-				if (check_collision(section_boxes[child], entity_boxes[h])) {
+				if (check_collision_box(section_boxes[child], entity_boxes[h])) {
 					section_entities[child].push_back(h);
 				}
 			}
@@ -137,9 +147,9 @@ void CollisionSystem::update(sf::Time t) {
 		for (unsigned i = 0; i < size; i++) {
 			for (unsigned j = i+1; j < size; j++) {
 				Handle h1 = leaf_entities[i], h2 = leaf_entities[j];
-				if(CollisionTag::check_pair(mWorld.vec_CollisionTag[h1].tag, mWorld.vec_CollisionTag[h1].tag)){
+				if(CollisionTag::check_pair(mWorld.vec_CollisionTag[h1].tag, mWorld.vec_CollisionTag[h2].tag)){
 					const auto& box1 = entity_boxes[h1], box2 = entity_boxes[h2];
-					bool col = check_collision(box1,box2);
+					bool col = check_collision_box(box1,box2);
 					if (col) {
 						collide(h1, h2);
 					}
@@ -172,32 +182,109 @@ void CollisionSystem::update(sf::Time t) {
 #endif
 }
 
+void CollisionSystem::handle_collisions(float time){
+	auto& cqueue = mWorld.collision_queue;
+	while (!cqueue.empty()) {
+		const auto& col = cqueue.front();
+		Handle h1 = col.entities.first;
+		Handle h2 = col.entities.second;
+		if (mWorld.vec_CollisionTag[h1].tag > mWorld.vec_CollisionTag[h2].tag)std::swap(h1, h2);
+		//DO STUFF
+		CollisionTag& t1 = mWorld.vec_CollisionTag[h1];
+		CollisionTag& t2 = mWorld.vec_CollisionTag[h2];
 
+		Movement& mov1 = mWorld.vec_Movement[h1];
+		Movement& mov2 = mWorld.vec_Movement[h2];
+		
+		Position& pos1 = mWorld.vec_Position[h1];
+		Position& pos2 = mWorld.vec_Position[h2];
 
+		CollisionBody& col1 = entity_boxes[h1];
+		CollisionBody& col2 = entity_boxes[h2];
+		switch (t1.tag) {
+			case Tag::Building:{
+				if (t2.tag == Tag::Player || t2.tag == Tag::Enemy || t2.tag == Tag::Bullet) {
+					auto aux_col2=col2;
+					//if no longer colliding (from previous collision resolution) no handling is needed
+					if (!check_collision_box(col2, col1)) { cqueue.pop(); continue; }
+					//get the collision box tf outta the collision zone
+					//aux_col2.offset -= mov2.velocity*time;
+					aux_col2.offset = pos2.frame_start_position + mWorld.vec_CollisionBody[h2].offset;
+					int mov_x = SIGN(mov2.frame_start_velocity.x);
+					int mov_y = SIGN(mov2.frame_start_velocity.y);
+					//approach horizontally
+					if (mov_x) {
+						while (aux_col2.offset.x != col2.offset.x) {
+							auto prev_frame_x = aux_col2.offset.x;
+							aux_col2.offset.x = approach(aux_col2.offset.x, col2.offset.x, 1);
+							if (check_collision_box(aux_col2, col1)) {
+								mov2.velocity.x = -mov2.velocity.x * (t2.tag==Tag::Bullet);
+								aux_col2.offset.x = prev_frame_x;
+								break;
+							}
+						}
+							
+					}
+					//approach vertically
+					if (mov_y) {
+						while (aux_col2.offset.y != col2.offset.y) {
+							auto prev_frame_y = aux_col2.offset.y;
+							aux_col2.offset.y = approach(aux_col2.offset.y, col2.offset.y, 1);
+							if (check_collision_box(aux_col2, col1)) {
+								mov2.velocity.y = -mov2.velocity.y * (t2.tag == Tag::Bullet);
+								aux_col2.offset.y = prev_frame_y;
+								break;
+							}
+						}
+					}
 
-bool inline CollisionSystem::check_collision(Handle h1, Handle h2) const{
-	
-	const CollisionBox& box1 = mWorld.vec_CollisionBox[h1];
-	const CollisionBox& box2 = mWorld.vec_CollisionBox[h2];
-	sf::Vector2f&& pos1 = mWorld.vec_Position[h1].getPosition() + box1.offset;
-	sf::Vector2f&& pos2 = mWorld.vec_Position[h2].getPosition() + box2.offset;
+					//if we still fucked up
+					//auto dir = normalized(box.offset - col1.offset);
+					//while (check_collision_box(box, col1)) {
+					//	box.offset += dir;
+					//}
+					col2.offset = aux_col2.offset;
+					pos2.setPosition(aux_col2.offset - mWorld.vec_CollisionBody[h2].offset);
+					
+					
+				}
+			}
+			break;
+			case Tag::Bullet:{
+				switch (t2.tag) {
+					case Tag::Enemy:{
+						mov2.velocity = mov1.velocity * 10.f;
+						mWorld.vec_State[h2].update(States::Enemy_Hurt);
+						mWorld.vec_Health[h2].incoming_damage += mWorld.vec_Damage[h1].amount;
+						mWorld.remove_entity(h1);
+					}break;
+				}
+			}break;
+			case Tag::Enemy:{
+				switch (t2.tag) {
+					case Tag::Player:{
+						mov2.velocity = mov1.velocity * 5.f;
+						mWorld.vec_State[h2].update(States::Hurt);
+						mWorld.vec_Health[h2].incoming_damage += mWorld.vec_Damage[h1].amount;
+					}break;
+					case Tag::Enemy: {
+						auto dir = normalized(pos2.getPosition() - pos1.getPosition());
+						auto vec = dir*time*100.f;
+						mov1.velocity -= vec;
+						mov2.velocity += vec;
+					}break;
+				}
+			}break;
+		}
 
-	return
-		!(pos1.x > pos2.x + box2.size.x //leftmost side to the right of rightmost side
-			||
-			pos1.x + box1.size.x < pos2.x //rightmost side to the left of leftmost side
-			||
-			pos1.y > pos2.y + box2.size.y //upper side below lower side
-			||
-			pos1.y + box1.size.y < pos2.y); //lower side above upper side
+		cqueue.pop();
+	}
+
 }
+	
 
 
-bool inline CollisionSystem::check_collision(const CollisionBox& b1,const CollisionBox& b2){
-	#define vec(vec) "("<<vec.x<<","<<vec.y<<")"
-	//std::cout << "checking " << vec(b1.offset) << " of size " << vec(b1.size) << " against " << vec(b2.offset) << " of size " << vec(b2.size) << std::endl;
-	#undef vec
-
+bool inline CollisionSystem::check_collision_box(const CollisionBody& b1,const CollisionBody& b2){
 	return
 		!(b1.offset.x > b2.offset.x + b2.size.x //leftmost side to the right of rightmost side
 			||
@@ -211,10 +298,11 @@ bool inline CollisionSystem::check_collision(const CollisionBox& b1,const Collis
 
 void CollisionSystem::translate_boxes_to_global(){
 	ITERATE_START
-	const CollisionBox& box= mWorld.vec_CollisionBox[i];
-	sf::Vector2f&& p1 = mWorld.vec_Position[i].getPosition() + box.offset;
-	sf::Vector2f&& p2 = sf::Vector2f(box.size);
-	entity_boxes[i] = CollisionBox(std::move(p1), std::move(p2));
+	const CollisionBody& box= mWorld.vec_CollisionBody[i];
+	sf::Vector2f p1 (mWorld.vec_Position[i].getPosition() + box.offset);
+	sf::Vector2f p2 (box.size);
+
+	entity_boxes[i] = CollisionBody(std::move(p1), std::move(p2));
 	ITERATE_END
 }
 
@@ -224,4 +312,26 @@ inline void CollisionSystem::collide(Handle h1, Handle h2){
 	if (!collision_matrix[col.entities.first][col.entities.second]++) {
 		mWorld.collision_queue.push(std::move(col));
 	}
+}
+
+inline bool CollisionSystem::check_collision_circle(const CollisionBody& c1, const CollisionBody& c2) {
+	auto dist = c1.offset - c2.offset;
+	return vec_magn(dist) * 2.f > COLLISION_BODY_DIAMETER(c1) + COLLISION_BODY_DIAMETER(c2);
+}
+
+inline bool CollisionSystem::check_collision_circle_box(const CollisionBody& cir, const CollisionBody& box) {
+	// clamp(value, min, max) - limits value to the range min..max
+	auto cirpos = cir.offset;
+	cirpos.x += cir.size.x / 2.f;
+	cirpos.y += cir.size.x / 2.f;
+
+	auto recmin = box.offset;
+	auto recmax = recmin + box.size;
+	
+	sf::Vector2f closest_point(
+		clamp(cirpos.x, recmin.x, recmax.x),
+		clamp(cirpos.y, recmin.y, recmax.y)
+	);
+
+	return vec_magn(closest_point - cirpos) * 2.f < cirpos.x;
 }

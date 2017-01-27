@@ -1,10 +1,9 @@
 #pragma once
 #include "System.h"
 #include "system_defines.h"
-class PhysicsSystem : public System {
+class StateSystem : public System {
 public:
 	virtual void							update(sf::Time);
-	PhysicsSystem(World&);
-
-
+	StateSystem(World&);
+	
 };

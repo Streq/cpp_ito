@@ -39,3 +39,11 @@ namespace Teleport_Scope {
 		const float acceleration = 3600.f;
 	}
 }
+
+namespace Hit_Box {
+	namespace stats {
+		const float size = Player::stats::size*3;
+		const float offset = Player::stats::size;
+		const int damage = 2;
+	}
+}

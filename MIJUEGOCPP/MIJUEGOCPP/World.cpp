@@ -112,6 +112,12 @@ void World::notify_systems(const Flagset& fl, Handle h) {
 
 const sf::Vector2f&	World::getSize() const { return size; }
 
+void World::clear(){
+	for (Handle i = 0; i < max_entities; i++) {
+		remove_entity(i);
+	}
+}
+
 void World::make_player(const sf::Vector2f & pos){
 	Handle h = new_entity();
 	Rendering *r;
@@ -202,6 +208,42 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 
 }
 
+void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner){
+	Handle h = new_entity();
+	Rendering *r;
+	if (r = add_component<Rendering>(h)) {
+		sf::RectangleShape *c = new sf::RectangleShape(size);
+		c->setFillColor(Color::Red);
+		c->setOrigin(size / 2.f - offset);
+		r->drawable.reset(c);
+	}
+	CollisionBody* box = add_component<CollisionBody>(h);
+	if (box) {
+		box->size = size;
+		box->offset = -(size / 2.f - offset);
+	}
+	Position *p;
+	if (p = add_component<Position>(h)) {
+		p->setPosition(vec_Position[owner].getPosition());
+	}
+	CollisionTag *tf;
+	if (tf = add_component<CollisionTag>(h)) {
+		tf->tag = Tag::Hit_Box;
+	}
+	Team* tm;
+	if (tm = add_component<Team>(h)) {
+		tm->owner = owner;
+	}
+	State *st;
+	if (st = add_component<State>(h)) {
+		st->update(States::Hit_Box);
+	}
+	Damage *dmg;
+	if (dmg = add_component<Damage>(h)) {
+		dmg->amount = Hit_Box::stats::damage;
+	}
+}
+
 void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
 	Handle h = new_entity();
 	Rendering *r;
@@ -254,7 +296,41 @@ void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2
 	if (st = add_component<State>(h)) {
 		st->update(States::Teleport_Scope);
 	}
+	Team *tm;
+	if (tm = add_component<Team>(h)) {
+		tm->owner = owner;
+	}
 }
+
+void World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amount){
+	Handle h = new_entity();
+	Rendering *r;
+	if (r = add_component<Rendering>(h)) {
+		sf::Vector2f msize (Enemy::stats::size, Enemy::stats::size);
+		sf::RectangleShape *c = new sf::RectangleShape(msize);
+		c->setFillColor(Color::Transparent);
+		c->setOutlineThickness(-1.f);
+		c->setOutlineColor(Color::Blue);
+		c->setOrigin(msize.x / 2, msize.y / 2);
+		r->drawable.reset(c);
+	}
+	Position *p;
+	if (p = add_component<Position>(h)) {
+		p->setPosition(pos);
+	}
+	State *st;
+	if (st = add_component<State>(h)) {
+		st->update(States::Spawner);
+		st->duration = spawn_time;
+	}
+	if (amount >= 0) {
+		TimeSpan *ts;
+		if (ts = add_component<TimeSpan>(h)) {
+			ts->time = spawn_time*sf::Int64(amount);
+		}
+	}
+}
+
 
 
 void World::make_enemy(const sf::Vector2f & pos) {

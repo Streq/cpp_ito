@@ -56,6 +56,12 @@ void ControllerSystem::update(sf::Time t) {
 						state.update(States::Teleporting);
 						mWorld.make_teleport_scope(pos.getPosition(), sf::Vector2f(1.f,1.f)*Player::stats::size, i);
 					}
+					if (pressed[Input::melee] && updated[Input::melee]) {
+						sf::Vector2f off(SIGN(c.facing_dir.x),SIGN(c.facing_dir.y));
+						off *= Hit_Box::stats::offset;
+						sf::Vector2f siz(Hit_Box::stats::size, Hit_Box::stats::size);
+						mWorld.make_hit_box(off, siz, i);
+					}
 				}break;
 				case States::Teleport_Scope:{
 					sf::Vector2f dir = normalize(sf::Vector2f(

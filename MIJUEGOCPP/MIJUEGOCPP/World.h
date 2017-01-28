@@ -36,12 +36,15 @@ class World {
 		template<typename C> std::vector<C>&	get_component_vec();
 		World(std::vector<ptr<System>>&,const sf::Vector2f& size);
 		const sf::Vector2f&						getSize() const;
-
+		void									clear();
 		
 	public:
 		void									make_player(const sf::Vector2f& pos);
 		void									make_enemy(const sf::Vector2f& pos);
 		void									make_bullet(const sf::Vector2f& position, const sf::Vector2f& direction, const sf::Vector2f& inertial_speed, float speed, Handle owner);
+		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);
 		void									make_wall(const sf::Vector2f& position, const sf::Vector2f& size);
 		void									make_teleport_scope(const sf::Vector2f& position, const sf::Vector2f & size, Handle owner);
+		void									make_spawner(const sf::Vector2f& pos, sf::Time spawn_time, int amount=-1);
+
 };

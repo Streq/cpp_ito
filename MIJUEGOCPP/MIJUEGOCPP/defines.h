@@ -3,7 +3,7 @@
 #include <SFML\System\Time.hpp>
 #include <SFML\Graphics\Color.hpp>
 enum {	
-	max_entities = 1000,
+	max_entities = 3000,
 	WINDOW_SIZE_X = 1200,
 	WINDOW_SIZE_Y = 600,
 	FPS = 60,

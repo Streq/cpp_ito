@@ -10,27 +10,33 @@ namespace States {
 		Enemy_Normal,
 		Enemy_Hurt,
 		Teleport_Scope,
+		Spawner,
+		Hit_Box,
 		size
 	};
 
 	const sf::Time Duration[size] = {
-		sf::Time::Zero,//Normal
+		sf::Time::Zero,   //Normal
 		sf::seconds(0.5f),//Ducking
-		sf::Time::Zero,//Teleporting
+		sf::Time::Zero,	  //Teleporting
 		sf::seconds(0.3f),//Hurt
-		sf::Time::Zero,//Enemy_Normal
+		sf::Time::Zero,	  //Enemy_Normal
 		sf::seconds(0.5f),//Enemy_Hurt
-		sf::Time::Zero,//Teleport_Scope
+		sf::Time::Zero,	  //Teleport_Scope
+		sf::seconds(5.f), //Spawner
+		dt,//Hit_Box
 	};
 
 	const sf::Color Color[size] = {
-		Color::Green,//Normal
-		Color::Dark_Green,//Ducking
-		Color::Green,//Teleporting
-		Color::Red,//Hurt
-		Color::Dark_Blue,//Enemy_Normal
-		Color::Red,//Enemy_Hurt
-		Color::Transparent,//Teleport_Scope
+		Color::Green,		//Normal
+		Color::Dark_Green,	//Ducking
+		Color::Green,		//Teleporting
+		Color::Red,			//Hurt
+		Color::Dark_Blue,	//Enemy_Normal
+		Color::Red,			//Enemy_Hurt
+		Color::Transparent,	//Teleport_Scope
+		Color::Transparent,	//Spawner
+		Color::Red,			//Hit_Box
 	};
 };
 

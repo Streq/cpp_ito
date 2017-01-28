@@ -10,7 +10,7 @@ Game::Game()
 , vec_System()
 , mWorld(this->vec_System,sf::Vector2f(WINDOW_SIZE_X,WINDOW_SIZE_Y))	
 {	
-	
+	srand(time(NULL));
 	fonts.load(Font::arial, "Resources/arial.ttf");
 
 	vec_System.push_back(ptr<System>(new TimeSystem(this->mWorld)));
@@ -76,7 +76,14 @@ void Game::process_events() {
 		case sf::Event::Closed:
 			mWindow.close();
 			break;
+
 		case sf::Event::KeyReleased:
+			if (event.key.code == sf::Keyboard::R) {
+				mWorld.clear();
+				zombie_wave_init(10,5,50);
+				//this->zombie_rush_init(2000, 50);
+				break;
+			}
 			controller.update_key(event.key.code, false);
 			break;
 
@@ -106,14 +113,16 @@ void Game::init() {
 	W(left, Left)
 	W(right, Right)
 	W(shoot, Z)
-	W(duck, X)
-	W(teleport, C)
+	W(melee, X)
+	W(duck, C)
+	W(teleport, V)
 	#undef W
 	CollisionTag::init_matrix();
 	fps_text=sf::Text(sf::String("fps"), fonts.get(Font::arial), 15u);
 
 	//Entity initialization
-	collision_init();
+	zombie_wave_init(10,5,50);
+	//zombie_rush_init(100, 50);
 }
 
 void Game::stress_init() {
@@ -150,10 +159,16 @@ void Game::stress_init() {
 
 
 
-void Game::collision_init() {
-	srand(time(NULL));
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2));
+void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls) {
 	
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2));
+	for (int j = 0; j < spawners; j++)
+		mWorld.make_spawner(
+			sf::Vector2f(
+				50.f + (rand() % (WINDOW_SIZE_X - 100)),
+				50.f + (rand() % (WINDOW_SIZE_Y - 100))),
+			sf::seconds(5.f))
+		; 
 	mWorld.make_wall
 		( sf::Vector2f(0, 0)
 		, sf::Vector2f(WINDOW_SIZE_X, 25));
@@ -166,13 +181,48 @@ void Game::collision_init() {
 	mWorld.make_wall
 		( sf::Vector2f(WINDOW_SIZE_X-25, 0)
 		, sf::Vector2f(25, WINDOW_SIZE_Y));
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < walls; i++) {
 		mWorld.make_wall
 			( sf::Vector2f(rand() % WINDOW_SIZE_X, rand() % WINDOW_SIZE_Y)
 			, sf::Vector2f(25.f, 25.f));
 
 	}
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < zombies; i++) {
 		mWorld.make_enemy(sf::Vector2f(50.f + (rand() % (WINDOW_SIZE_X - 100)) , 50.f + (rand() % (WINDOW_SIZE_Y - 100))));
 	}
 }
+
+
+void Game::zombie_rush_init(unsigned zombies, unsigned walls) {
+
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2));
+	
+	
+	mWorld.make_wall
+		(sf::Vector2f(0, 0)
+			, sf::Vector2f(WINDOW_SIZE_X, 25));
+	mWorld.make_wall
+		(sf::Vector2f(0, WINDOW_SIZE_Y - 25)
+			, sf::Vector2f(WINDOW_SIZE_X, 25));
+	mWorld.make_wall
+		(sf::Vector2f(0, 0)
+			, sf::Vector2f(25, WINDOW_SIZE_Y));
+	mWorld.make_wall
+		(sf::Vector2f(WINDOW_SIZE_X - 25, 0)
+			, sf::Vector2f(25, WINDOW_SIZE_Y));
+	for (int i = 0; i < walls; i++) {
+		mWorld.make_wall
+			(sf::Vector2f(rand() % WINDOW_SIZE_X, rand() % WINDOW_SIZE_Y)
+				, sf::Vector2f(25.f, 25.f));
+
+	}
+	mWorld.make_spawner(
+		sf::Vector2f(
+			50.f + (rand() % (WINDOW_SIZE_X - 100)),
+			50.f + (rand() % (WINDOW_SIZE_Y - 100))),
+		dt,
+		zombies)
+		;
+}
+
+

@@ -6,6 +6,7 @@ namespace Input {
 		left,
 		right,
 		shoot,
+		melee,
 		duck,
 		teleport,
 		size

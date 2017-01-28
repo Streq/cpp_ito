@@ -16,9 +16,7 @@ class Game {
 		
 		std::vector<ptr<System>>	vec_System;
 		World						mWorld;
-
-
-
+		
 		FontHolder					fonts;
 		sf::Text					fps_text;
 
@@ -32,7 +30,8 @@ class Game {
 
 	private:
 		void				stress_init();
-		void				collision_init();
+		void				zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls);
+		void				zombie_rush_init(unsigned zombies, unsigned walls);
 		void				player_init();
 	public:
 		int					run();

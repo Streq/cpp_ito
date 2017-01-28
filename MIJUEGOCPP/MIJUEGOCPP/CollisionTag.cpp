@@ -16,4 +16,7 @@ void CollisionTag::init_matrix()
 	pair_tags(Tag::Player, Tag::Enemy);
 	pair_tags(Tag::Bullet, Tag::Enemy);
 	pair_tags(Tag::Enemy, Tag::Enemy);
+	pair_tags(Tag::Hit_Box,Tag::Enemy);
+	pair_tags(Tag::Hit_Box, Tag::Bullet);
+	pair_tags(Tag::Player, Tag::Bullet);
 }

@@ -237,6 +237,9 @@ void CollisionSystem::handle_collisions(float time){
 							}
 						}
 					}
+					if (t2.tag == Tag::Bullet) {
+						mWorld.vec_Team[h2].owner = -1;
+					}
 
 					//if we still fucked up
 					//auto dir = normalized(box.offset - col1.offset);
@@ -258,6 +261,18 @@ void CollisionSystem::handle_collisions(float time){
 						mWorld.vec_Health[h2].incoming_damage += mWorld.vec_Damage[h1].amount;
 						mWorld.remove_entity(h1);
 					}break;
+					case Tag::Hit_Box:{
+						mov1.velocity = -mov1.velocity;
+						mWorld.vec_Team[h1].owner = mWorld.vec_Team[h2].owner;
+					}break;
+					case Tag::Player:{
+						if (mWorld.vec_Team[h1].owner != h2) {
+							mov2.velocity = mov1.velocity * 10.f;
+							mWorld.vec_State[h2].update(States::Hurt);
+							mWorld.vec_Health[h2].incoming_damage += mWorld.vec_Damage[h1].amount;
+							mWorld.remove_entity(h1);
+						}
+					}break;
 				}
 			}break;
 			case Tag::Enemy:{
@@ -272,6 +287,12 @@ void CollisionSystem::handle_collisions(float time){
 						auto vec = dir*time*100.f;
 						mov1.velocity -= vec;
 						mov2.velocity += vec;
+					}break;
+					case Tag::Hit_Box: {
+						auto owner_pos = mWorld.vec_Position[mWorld.vec_Team[h2].owner];
+						mov1.velocity =  normalize(pos1.getPosition()-owner_pos.getPosition()) * 1000.f;
+						mWorld.vec_State[h1].update(States::Enemy_Hurt);
+						mWorld.vec_Health[h1].incoming_damage += mWorld.vec_Damage[h2].amount;
 					}break;
 				}
 			}break;

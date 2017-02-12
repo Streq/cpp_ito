@@ -37,9 +37,10 @@ class World {
 		World(std::vector<ptr<System>>&,const sf::Vector2f& size);
 		const sf::Vector2f&						getSize() const;
 		void									clear();
-		
+		Handle									vec_players[players];
+
 	public:
-		void									make_player(const sf::Vector2f& pos);
+		void									make_player(const sf::Vector2f& pos, short unsigned player);
 		void									make_enemy(const sf::Vector2f& pos);
 		void									make_bullet(const sf::Vector2f& position, const sf::Vector2f& direction, const sf::Vector2f& inertial_speed, float speed, Handle owner);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);

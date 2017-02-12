@@ -118,12 +118,12 @@ void World::clear(){
 	}
 }
 
-void World::make_player(const sf::Vector2f & pos){
+void World::make_player(const sf::Vector2f & pos, short unsigned player){
 	Handle h = new_entity();
+	vec_players[player] = h;
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
 		sf::RectangleShape *c = new sf::RectangleShape(sf::Vector2f(Player::stats::size, Player::stats::size));
-		c->setFillColor(sf::Color::Green);
 		c->setOutlineThickness(-1);
 		auto& rect = c->getSize();
 		CollisionBody* box = add_component<CollisionBody>(h);
@@ -149,10 +149,11 @@ void World::make_player(const sf::Vector2f & pos){
 	if (cont = add_component<Controller>(h)) {
 		cont->controller = controller::Player;
 		cont->facing_dir.y = -1.f;
+		cont->player = player;
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
-		st->update(States::Normal);
+		st->update(States::Player_Normal);
 	}
 
 	Health* hl;
@@ -242,6 +243,9 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	if (dmg = add_component<Damage>(h)) {
 		dmg->amount = Hit_Box::stats::damage;
 	}
+	Movement *mov;
+	if (mov = add_component<Movement>(h)) {
+	}
 }
 
 void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
@@ -291,6 +295,7 @@ void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2
 	Controller *cont;
 	if (cont = add_component<Controller>(h)) {
 		cont->controller = vec_Controller[owner].controller;
+		cont->player = vec_Controller[owner].player;
 	}
 	State *st;
 	if (st = add_component<State>(h)) {

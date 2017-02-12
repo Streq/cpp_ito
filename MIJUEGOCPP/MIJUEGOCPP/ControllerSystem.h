@@ -4,10 +4,11 @@
 #include "PlayerInput.h"
 class ControllerSystem : public System {
 public:
+
+	typedef PlayerInput controllers[players];
 	virtual void							update(sf::Time);
-	ControllerSystem(World&, PlayerInput&);
+	ControllerSystem(World&, controllers&);
 
-
-	PlayerInput&							player_controller;
+	controllers&							player_controller;
 
 };

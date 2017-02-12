@@ -46,7 +46,8 @@ int Game::run() {
 			accum_time -= dt;
 			elapsed_time += dt;
 			fps_timer += dt;
-			controller.clear_updated();
+			for (int i = 0; i < players; i++)
+				controller[i].clear_updated();
 		}
 		if (fps_timer >= fps_update_time) {
 			update_fps(frame_count);
@@ -73,23 +74,70 @@ void Game::process_events() {
 	while (mWindow.pollEvent(event)) {
 		switch (event.type) {
 
-		case sf::Event::Closed:
-			mWindow.close();
-			break;
-
-		case sf::Event::KeyReleased:
-			if (event.key.code == sf::Keyboard::R) {
-				mWorld.clear();
-				zombie_wave_init(10,5,50);
-				//this->zombie_rush_init(2000, 50);
+			case sf::Event::Closed:
+				mWindow.close();
 				break;
-			}
-			controller.update_key(event.key.code, false);
-			break;
 
-		case sf::Event::KeyPressed:
-			controller.update_key(event.key.code, true);
-			break;	
+			case sf::Event::KeyReleased:{
+				input_data inp(event.key.code, input_data::keyboard);
+				for (int i = 0; i < players; i++)
+					controller[i].update_key(inp, false);
+				if (event.key.code == sf::Keyboard::Num1) {
+					mWorld.clear();
+					zombie_wave_init(10, 5, 50);
+					//this->zombie_rush_init(2000, 50);
+					break;
+				}
+				if (event.key.code == sf::Keyboard::Num2) {
+					mWorld.clear();
+					zombie_wave_init_2_players(10, 5, 50);
+					break;
+				}
+				if (event.key.code == sf::Keyboard::Num3) {
+					mWorld.clear();
+					zombie_wave_init_2_players(0, 0, 50);
+					//this->zombie_rush_init(2000, 50);
+					break;
+				}
+				if (event.key.code == sf::Keyboard::Num4) {
+					mWorld.clear();
+					zombie_rush_init(1000, 50);
+					//this->zombie_rush_init(2000, 50);
+					break;
+				}
+			}break;
+			
+			case sf::Event::KeyPressed:{
+				input_data inp(event.key.code, input_data::keyboard);
+				for (int i = 0; i < players; i++)
+					controller[i].update_key(inp, true);
+			
+			}break;
+
+			case sf::Event::JoystickMoved:{
+				bool pushed = abs(event.joystickMove.position) > joy_deadzone;
+				int axis_pos = SIGN(event.joystickMove.position);
+				input_data inppos(event.joystickMove.axis, input_data::Type::joy_axis, event.joystickMove.joystickId, axis_pos);
+				input_data inpneg(event.joystickMove.axis, input_data::Type::joy_axis, event.joystickMove.joystickId, -axis_pos);
+				for (int i = 0; i < players; i++){
+					controller[i].update_key(inppos, pushed);
+					controller[i].update_key(inpneg, false);
+				}
+				//std::cout << inp.code << " " << inp.type << " " << inp.joy_ID << " " << inp.pos_axis << " "<< event.joystickMove.position << std::endl;
+			}break;
+
+			case sf::Event::JoystickButtonPressed: {
+				input_data inp(event.joystickButton.button, input_data::joy_button,event.joystickButton.joystickId);
+				for (int i = 0; i < players; i++)
+					controller[i].update_key(inp, true);
+			}break;
+
+			case sf::Event::JoystickButtonReleased: {
+				input_data inp(event.joystickButton.button, input_data::joy_button, event.joystickButton.joystickId);
+				for (int i = 0; i < players; i++)
+					controller[i].update_key(inp, false);
+				std::cout << "se apreto la tecla " << event.joystickButton.button << std::endl;
+			}break;
 		}
 	}
 
@@ -107,7 +155,7 @@ void Game::render() {
 }
 
 void Game::init() {
-	#define W(action,input) controller.set_key(PlayerInput::Key::##input,Input::##action);
+	#define W(action,input) controller[0].set_key(input_data(PlayerInput::Key::##input,input_data::keyboard),Input::##action);
 	W(up, Up)
 	W(down, Down)
 	W(left, Left)
@@ -117,11 +165,24 @@ void Game::init() {
 	W(duck, C)
 	W(teleport, V)
 	#undef W
+
+	#define W(action,axis,sign) controller[1].set_key(input_data(axis,input_data::joy_axis,0,sign),Input::##action);
+	W(up, sf::Joystick::Axis::Y,-1)
+	W(down, sf::Joystick::Axis::Y, 1)
+	W(left, sf::Joystick::Axis::X, -1)
+	W(right, sf::Joystick::Axis::X, 1)
+	#undef W
+#define W(action,key) controller[1].set_key(input_data(JoyButtons::##key,input_data::joy_button,0),Input::##action);
+	W(shoot, LB)
+	W(melee, RB)
+	W(duck, A)
+	W(teleport, X)
+	#undef W
 	CollisionTag::init_matrix();
 	fps_text=sf::Text(sf::String("fps"), fonts.get(Font::arial), 15u);
 
 	//Entity initialization
-	zombie_wave_init(10,5,50);
+	zombie_wave_init_2_players(10,5,50);
 	//zombie_rush_init(100, 50);
 }
 
@@ -161,7 +222,7 @@ void Game::stress_init() {
 
 void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls) {
 	
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2));
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0);
 	for (int j = 0; j < spawners; j++)
 		mWorld.make_spawner(
 			sf::Vector2f(
@@ -192,10 +253,17 @@ void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls)
 	}
 }
 
+void Game::zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsigned walls) {
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2 + 100.f, WINDOW_SIZE_Y / 2), 1);
+	zombie_wave_init(std::move(zombies), std::move(spawners), std::move(walls));
+	
+}
+
+
 
 void Game::zombie_rush_init(unsigned zombies, unsigned walls) {
 
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2));
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0);
 	
 	
 	mWorld.make_wall

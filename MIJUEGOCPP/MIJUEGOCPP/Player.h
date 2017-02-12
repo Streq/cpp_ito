@@ -7,7 +7,14 @@ namespace Player {
 		const float	max_speed = 150.f;
 		const float friction = 600.f;
 		const float acceleration = 1200.f;
-		const float size = 10.f;
+		const float melee_impulse = 400.f;
+		const float hurt_friction = 1000.f;
+		const float hurt_max_speed = 400.f;
+		const float ducking_max_speed = 600.f;
+		const float ducking_friction = 1000.f;
+		const float melee_max_speed = 600.f;
+		const float melee_friction = 0.f;//600.f;
+ 		const float size = 10.f;
 		const int health = 10;
 	}
 }
@@ -15,7 +22,7 @@ namespace Player {
 namespace Bullet{
 	namespace stats {
 		const float radius = 2.5f;
-		const float speed = 300.f;
+		const float speed = 400.f;
 		const sf::Time time = sf::seconds(2.5f);
 		const int damage = 1;
 	}
@@ -29,6 +36,7 @@ namespace Enemy {
 		const float size = 10.f;
 		const int health = 3;
 		const int damage = 1;
+		const sf::Time inv_time=dt*sf::Int64(3);
 	}
 }
 

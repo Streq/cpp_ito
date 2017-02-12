@@ -12,7 +12,7 @@ class Game {
 		
 		
 		sf::Clock					clock;
-		PlayerInput					controller;
+		PlayerInput					controller[2];
 		
 		std::vector<ptr<System>>	vec_System;
 		World						mWorld;
@@ -31,6 +31,7 @@ class Game {
 	private:
 		void				stress_init();
 		void				zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls);
+		void				zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsigned walls);
 		void				zombie_rush_init(unsigned zombies, unsigned walls);
 		void				player_init();
 	public:

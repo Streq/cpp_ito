@@ -1,17 +1,14 @@
 #include "PlayerInput.h"
-void PlayerInput::update_key(sf::Keyboard::Key key, bool pressed) {
+void PlayerInput::update_key(const input_data& data, bool pressed) {
 	for (size_t i = 0; i < Input::size; i++) {
-		if (key == keys[i]) {
+		if (data == keys[i]) {
 			just_updated_keys[i] = pressed_keys[i] != pressed;
 			pressed_keys[i] = pressed;
 		}
 	}
 }
-void PlayerInput::set_keys(const Key (&ks)[Input::size]) {
-	memcpy(keys,ks,Input::size);
-};
 
-void PlayerInput::set_key(const Key& key, Input::ID action) {
+void PlayerInput::set_key(const input_data& key, Input::ID action) {
 	keys[action] = key;
 }
 

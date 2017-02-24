@@ -41,6 +41,12 @@ void RenderingSystem::update(sf::Time t) {
 void RenderingSystem::update(sf::Time t) {
 	mWindow.clear(sf::Color::Black);
 	ITERATE_START
-		mWindow.draw(*mWorld.vec_Rendering[i].drawable, mWorld.vec_Position[i].getTransform());
+		const auto& pos= mWorld.vec_Position[i];
+		if(pos.relative_to==max_entities)
+			mWindow.draw(*mWorld.vec_Rendering[i].drawable, pos.getTransform());
+		else {
+			const auto& pos_relative_to = mWorld.vec_Position[pos.relative_to];
+			mWindow.draw(*mWorld.vec_Rendering[i].drawable, sf::Transform(pos.getTransform()).translate(pos_relative_to.getPosition()));
+		}
 	ITERATE_END
 }

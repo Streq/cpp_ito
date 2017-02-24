@@ -8,10 +8,12 @@ enum {
 	WINDOW_SIZE_Y = 600,
 	FPS = 60,
 	players = 2,
+	skill_num = 4,
 };
 const sf::Time dt = sf::seconds(1.0f / FPS);
 const sf::Time fps_update_time = sf::seconds(1.f);
 const float joy_deadzone = 40.f;
+typedef bool matriz_booleana[max_entities][max_entities];
 
 #define SIGN(num) ((num>0)-(num<0))
 
@@ -28,9 +30,9 @@ X(Movement)\
 X(Rendering)\
 X(Controller)\
 X(CollisionBody)\
-X(CollisionTag)\
+X(CollisionInfo)\
 X(State)\
-X(Team)\
+X(Owner)\
 X(TimeSpan)\
 X(Health)\
 X(Damage)

@@ -1,8 +1,8 @@
 #include "StateSystem.h"
 #include "system_defines.h"
 #include "components_header.h"
-
-
+#include "EntityClass.h"
+#include "vec_magn.h"
 
 StateSystem::StateSystem(World& world)
 	:System(
@@ -20,124 +20,88 @@ StateSystem::StateSystem(World& world)
 {
 }
 
-void StateSystem::update(sf::Time dt){
+void StateSystem::update(sf::Time dtime){
 	ITERATE_START	
 	auto& st = mWorld.vec_State[i];
-	st.time_since_start += dt;
+	st.time_since_start += dtime;
 	if (st.just_started) {
 		st.just_started = false;
+		auto& mov = mWorld.vec_Movement[i];
+
 		switch (st.previous) {//clean up from previous state
-			case States::Player_Melee: 
-			case States::Player_Ducking:
-			case States::Player_Hurt:{
-				mWorld.activate_component<Controller>(i);
-				auto& mov = mWorld.vec_Movement[i];
-				mov.maxspeed = Player::stats::max_speed;
-				mov.friction = Player::stats::friction;
-				auto& health = mWorld.vec_Health[i];
-				health.invulnerable = false;
-			}break;
-			case States::Enemy_Hurt:{
-				auto& mov = mWorld.vec_Movement[i];
-				mov.maxspeed = Enemy::stats::max_speed;
-				mov.friction = Enemy::stats::friction;
-				mWorld.activate_component<Controller>(i);
-			}break;
+			
 		}
 
 		auto& rend = mWorld.vec_Rendering[i];
-		static_cast<sf::RectangleShape*>(rend.drawable.get())->setFillColor(States::Color[st.current]);
-		switch (st.current) {//set up current state
-			case States::Player_Melee: {
+		//set up current state
+		static_cast<sf::RectangleShape*>(rend.drawable.get())->
+			setFillColor(
+				Character::Stats::color[st.Class][st.current]);
+		
+		mWorld.vec_CollisionInfo[i].type = Character::Stats::hitbox_type[st.Class][st.current];
+		switch (st.current) {
+			case States::Hurt:{
 				mWorld.remove_component<Controller>(i);
-				auto& mov = mWorld.vec_Movement[i];
-				mov.maxspeed = Player::stats::melee_max_speed;
-				mov.friction = Player::stats::melee_friction;
-				if (mWorld.vec_Controller[i].player == 1) {
-					static_cast<sf::RectangleShape*>(rend.drawable.get())->setFillColor(Color::Cyan);
-				}
 			}break;
-			case States::Player_Normal:
-			case States::Player_Teleporting:{
-				if(mWorld.vec_Controller[i].player == 1){
-					static_cast<sf::RectangleShape*>(rend.drawable.get())->setFillColor(Color::Cyan);
-				}
-			}break;
-			case States::Player_Ducking:{
-				mWorld.remove_component<Controller>(i);
-				auto& mov = mWorld.vec_Movement[i];
-				mov.maxspeed = Player::stats::ducking_max_speed;
-				mov.friction = Player::stats::ducking_friction;
-			}break;
-			case States::Player_Hurt:{
-				mWorld.remove_component<Controller>(i);
-				auto& mov = mWorld.vec_Movement[i];
-				mov.maxspeed = Player::stats::hurt_max_speed;
-				mov.friction = Player::stats::hurt_friction;
-				auto& health = mWorld.vec_Health[i];
-				health.invulnerable = true;
-			}break;
-			case States::Enemy_Normal:{
-				
+			case States::Normal:{
+				mWorld.activate_component<Controller>(i);
+				mov.maxspeed = Character::Stats::mov_speed[st.Class];
 
 			}break;
-			case States::Enemy_Hurt: {
-				auto& mov = mWorld.vec_Movement[i];
-				mov.maxspeed = 600.f;
-				mov.friction = 1000.f;
+			case States::Casting: {
 				mWorld.remove_component<Controller>(i);
-				mWorld.vec_Health[i].invulnerable = true;
-			}break;
 
+			}break;
 		}
 	}
+	//do regular frame stuff
 	switch (st.current) {
-		case States::Player_Normal: {
+		case States::Normal: {
 		}break;
-			
-		case States::Player_Ducking:{
+		case States::Hurt: {
 			if (st.time_since_start > st.duration) {
-				st.update(States::Player_Normal);
-			}
+				st.update(States::Normal);
+			}; 
 		}break;
-		case States::Enemy_Hurt: {
-			if(st.time_since_start > Enemy::stats::inv_time){
-				mWorld.vec_Health[i].invulnerable = false;
-				if (st.time_since_start > st.duration) {
-					st.update(States::Enemy_Normal);
-				}
+		case States::Casting: {
+			switch (st.current_skill) {
+				case Skill::Simple_Melee: {
+					switch (st.skill_counter) {
+						case 0:{
+							if(st.time_since_start>=Skill::buildup[st.current_skill]){
+								CollisionInfo inf;
+								inf = Skill::col_info[st.current_skill];
+								inf.damage = Skill::damage[st.current_skill] * Character::Stats::p_attack[st.Class];
+								float siz = Character::Stats::size[st.Class];
+								
+								mWorld.make_hit_box(sf::Vector2f(SIGN(st.facing_dir.x),SIGN(st.facing_dir.y)) * siz, siz*sf::Vector2f(3,3) ,i ,std::move(inf),sf::seconds(0.08));
+								st.skill_counter++;
+							}
+						}break;
+					}
+				}break;
 			}
-		}break;
-		case States::Player_Hurt: {
-			if (st.time_since_start > st.duration) {
-				st.update(States::Player_Normal);
-			}
+			if (st.time_since_start > Skill::duration[st.current_skill]) {
+				st.update(States::Normal);
+			};
 		}break;
 		case States::Spawner: {
 			if (st.time_since_start > st.duration) {
 				auto& pos = mWorld.vec_Position[i];
-				mWorld.make_enemy(pos.getPosition());
+				mWorld.make_zombie(pos.getPosition());
 				auto aux = st.duration;
 				st.update(States::Spawner);
 				st.duration = aux;
 			}
 		}break;
-		case States::Hit_Box: {
+		case States::HitBox: {
+			if (st.duration>=sf::Time::Zero)
 			if (st.time_since_start > st.duration) {
 				mWorld.remove_entity(i);
 			}
 
-			auto own=mWorld.vec_Team[i].owner;
-			mWorld.vec_Position[i].setPosition(
-				mWorld.vec_Position[own].getPosition()
-			);
-			mWorld.vec_Movement[i] = mWorld.vec_Movement[own];
 		}break;
-		case States::Player_Melee: {
-			if (st.time_since_start > st.duration) {
-				st.update(States::Player_Normal);
-			}
-		}break;
+		
 	}
 	ITERATE_END
 }

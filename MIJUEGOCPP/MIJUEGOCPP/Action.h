@@ -5,10 +5,11 @@ namespace Input {
 		down,
 		left,
 		right,
-		shoot,
-		melee,
-		duck,
-		teleport,
+		skill1,
+		skill2,
+		skill3,
+		skill4,
 		size
 	};
 }
+

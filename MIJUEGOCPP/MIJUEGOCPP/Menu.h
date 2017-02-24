@@ -1,6 +1,7 @@
 #pragma once
 #include<vector>
 #include "Button.h"
+/*
 class Menu
 {
 private:
@@ -17,3 +18,4 @@ public:
 
 };
 
+*/

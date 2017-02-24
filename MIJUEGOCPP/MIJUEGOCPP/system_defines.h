@@ -13,7 +13,7 @@ X(State)
 
 #define COMPONENTS_COLLISION \
 X(CollisionBody)\
-X(CollisionTag)\
+X(CollisionInfo)\
 X(Position)
 
 #define COMPONENTS_STATE \

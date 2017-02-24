@@ -13,9 +13,9 @@ namespace BoxType {
 struct CollisionBody :public Component {
 	//Position (relative to the Position component)
 	//set it to (-width/2,-height/2) to center
-	BoxType::Type type;
 	sf::Vector2f offset;
 	sf::Vector2f size;//for circles the x determines the diameter
+	BoxType::Type type;
 
 	CollisionBody() {}
 	CollisionBody(sf::Vector2f&& offset, sf::Vector2f&& size);

@@ -4,6 +4,7 @@ namespace Color {
 	const sf::Color Brown(104, 47, 6);
 	const sf::Color Dark_Green(12, 73, 2);
 	const sf::Color Dark_Blue(1, 5, 81);
+	const sf::Color Grey(128,128,128);
 #define X(Col) const sf::Color Col=sf::Color::##Col;
 	X(Blue)
 	X(Black)

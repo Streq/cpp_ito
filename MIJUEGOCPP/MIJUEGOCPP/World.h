@@ -40,11 +40,13 @@ class World {
 		Handle									vec_players[players];
 
 	public:
-		void									make_player(const sf::Vector2f& pos, short unsigned player);
-		void									make_enemy(const sf::Vector2f& pos);
+		void									make_player(const sf::Vector2f& pos, short unsigned player, Character::ID _class);
+		void									make_zombie(const sf::Vector2f& pos);
 		void									make_bullet(const sf::Vector2f& position, const sf::Vector2f& direction, const sf::Vector2f& inertial_speed, float speed, Handle owner);
-		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);
 		void									make_wall(const sf::Vector2f& position, const sf::Vector2f& size);
+		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);
+		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner, CollisionInfo&& info, sf::Time duration);
+
 		void									make_teleport_scope(const sf::Vector2f& position, const sf::Vector2f & size, Handle owner);
 		void									make_spawner(const sf::Vector2f& pos, sf::Time spawn_time, int amount=-1);
 

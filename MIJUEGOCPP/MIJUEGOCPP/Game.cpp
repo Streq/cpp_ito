@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "EntityClass.h"
 #include "vec_magn.h"
 #include <math.h>
 #include <iostream>
@@ -101,7 +102,7 @@ void Game::process_events() {
 				}
 				if (event.key.code == sf::Keyboard::Num4) {
 					mWorld.clear();
-					zombie_rush_init(1000, 50);
+					zombie_rush_init(2000, 50);
 					//this->zombie_rush_init(2000, 50);
 					break;
 				}
@@ -155,15 +156,19 @@ void Game::render() {
 }
 
 void Game::init() {
+	Skill::init();
+	Character::Stats::init();
+
+
 	#define W(action,input) controller[0].set_key(input_data(PlayerInput::Key::##input,input_data::keyboard),Input::##action);
 	W(up, Up)
 	W(down, Down)
 	W(left, Left)
 	W(right, Right)
-	W(shoot, Z)
-	W(melee, X)
-	W(duck, C)
-	W(teleport, V)
+	W(skill1, Z)
+	W(skill2, X)
+	W(skill3, C)
+	W(skill4, V)
 	#undef W
 
 	#define W(action,axis,sign) controller[1].set_key(input_data(axis,input_data::joy_axis,0,sign),Input::##action);
@@ -173,16 +178,17 @@ void Game::init() {
 	W(right, sf::Joystick::Axis::X, 1)
 	#undef W
 #define W(action,key) controller[1].set_key(input_data(JoyButtons::##key,input_data::joy_button,0),Input::##action);
-	W(shoot, LB)
-	W(melee, RB)
-	W(duck, A)
-	W(teleport, X)
+	W(skill1, LB)
+	W(skill2, RB)
+	W(skill3, A)
+	W(skill4, X)
 	#undef W
-	CollisionTag::init_matrix();
+	CollisionInfo::init_matrix();
 	fps_text=sf::Text(sf::String("fps"), fonts.get(Font::arial), 15u);
-
+	
+	//State::init_globals();
 	//Entity initialization
-	zombie_wave_init_2_players(10,5,50);
+	zombie_wave_init(0,0,0);
 	//zombie_rush_init(100, 50);
 }
 
@@ -222,8 +228,8 @@ void Game::stress_init() {
 
 void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls) {
 	
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0);
-	for (int j = 0; j < spawners; j++)
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0,Character::Minotaur);
+	for (unsigned j = 0; j < spawners; j++)
 		mWorld.make_spawner(
 			sf::Vector2f(
 				50.f + (rand() % (WINDOW_SIZE_X - 100)),
@@ -242,19 +248,19 @@ void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls)
 	mWorld.make_wall
 		( sf::Vector2f(WINDOW_SIZE_X-25, 0)
 		, sf::Vector2f(25, WINDOW_SIZE_Y));
-	for (int i = 0; i < walls; i++) {
+	for (unsigned i = 0; i < walls; i++) {
 		mWorld.make_wall
 			( sf::Vector2f(rand() % WINDOW_SIZE_X, rand() % WINDOW_SIZE_Y)
 			, sf::Vector2f(25.f, 25.f));
 
 	}
 	for (int i = 0; i < zombies; i++) {
-		mWorld.make_enemy(sf::Vector2f(50.f + (rand() % (WINDOW_SIZE_X - 100)) , 50.f + (rand() % (WINDOW_SIZE_Y - 100))));
+		mWorld.make_zombie(sf::Vector2f(50.f + (rand() % (WINDOW_SIZE_X - 100)) , 50.f + (rand() % (WINDOW_SIZE_Y - 100))));
 	}
 }
 
 void Game::zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsigned walls) {
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2 + 100.f, WINDOW_SIZE_Y / 2), 1);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2 + 100.f, WINDOW_SIZE_Y / 2), 1, Character::Minotaur);
 	zombie_wave_init(std::move(zombies), std::move(spawners), std::move(walls));
 	
 }
@@ -263,7 +269,7 @@ void Game::zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsig
 
 void Game::zombie_rush_init(unsigned zombies, unsigned walls) {
 
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2), 0, Character::Minotaur);
 	
 	
 	mWorld.make_wall

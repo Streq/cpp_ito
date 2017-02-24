@@ -26,10 +26,11 @@ void ControllerSystem::update(sf::Time t) {
 	const bool* pressed[players];
 	const bool* updated[players];
 	
-	for (int i = 0; i < players; i++) {
-		updated[i] = player_controller[i].get_updated();
-		pressed[i] = player_controller[i].get_pressed();
+	for (int i2 = 0; i2 < players; i2++) {
+		updated[i2] = player_controller[i2].get_updated();
+		pressed[i2] = player_controller[i2].get_pressed();
 	}
+	
 
 	ITERATE_START
 	Controller &c = mWorld.vec_Controller[i];
@@ -38,56 +39,69 @@ void ControllerSystem::update(sf::Time t) {
 	auto& pos = mWorld.vec_Position[i];
 	auto& mpressed = pressed[c.player];
 	auto& mupdated = updated[c.player];
+	
 	switch (c.controller) {
 		case controller::Player: {
+
+			sf::Vector2f dir = normalize(sf::Vector2f(
+				static_cast<float>(mpressed[Input::right] - mpressed[Input::left]),
+				static_cast<float>(mpressed[Input::down] - mpressed[Input::up])));
+
 			switch (state.current) {
-				case States::Player_Normal: {
-					sf::Vector2f dir = normalize(sf::Vector2f(
-						static_cast<float>(mpressed[Input::right] - mpressed[Input::left]),
-						static_cast<float>(mpressed[Input::down] - mpressed[Input::up])));
-					c.moving_dir = dir;
-					if (c.moving_dir.x != 0 || c.moving_dir.y != 0) {
-						c.facing_dir = c.moving_dir;
+				case States::Normal: {
+					for (unsigned j = Input::skill1; j < Input::skill1 + skill_num; j++){
+						
+						if (mpressed[j] && mupdated[j]) {
+							state.cast(Character::Stats::skill[state.Class][j - Input::skill1]);
+						}
 					}
-					mWorld.vec_Movement[i].velocity += c.moving_dir*Player::stats::acceleration*time;
-					if (mpressed[Input::shoot] && mupdated[Input::shoot]) {
-						const auto& pos = mWorld.vec_Position[i];
-						mWorld.make_bullet(pos.getPosition(), c.facing_dir, mov.velocity, Bullet::stats::speed, i);
+				}//no break on purpose
+				case States::Silenced: {
+					
+					state.moving_dir = dir;
+					if (state.moving_dir.x != 0 || state.moving_dir.y != 0) {
+						state.facing_dir = state.moving_dir;
 					}
-
-					if (mpressed[Input::duck] && mupdated[Input::duck]) {
-						mov.velocity += dir*600.f;
-						state.update(States::Player_Ducking);
-					}
-					if (mpressed[Input::teleport] && mupdated[Input::teleport]) {
-						state.update(States::Player_Teleporting);
-						mWorld.make_teleport_scope(pos.getPosition(), sf::Vector2f(1.f,1.f)*Player::stats::size, i);
-					}
-					if (mpressed[Input::melee] && mupdated[Input::melee]) {
-						sf::Vector2f off(SIGN(c.facing_dir.x),SIGN(c.facing_dir.y));
-						off *= Hit_Box::stats::offset;
-						mov.velocity += normalized(c.facing_dir) * Player::stats::melee_impulse;
-						sf::Vector2f siz(Hit_Box::stats::size, Hit_Box::stats::size);
-						mWorld.make_hit_box(off, siz, i);
-						state.update(States::Player_Melee);
-
-					}
+					
+					mWorld.vec_Movement[i].velocity += state.moving_dir * Character::Stats::mov_acceleration[state.Class] * time;
+					
+				}break;
+				case States::Casting: {
+					/*
+					if (state.skill_counter == 0 && state.time_since_start >= Character::Stats::melee_hitbox_start_frame[state.Class]) {
+						state.skill_counter++;
+						const auto& c = mWorld.vec_Controller[i];
+						auto& mov = mWorld.vec_Movement[i];
+						sf::Vector2f off(SIGN(c.facing_dir.x), SIGN(c.facing_dir.y));
+						CollisionInfo collinfo;
+						collinfo.damage = Character::Stats::melee_hitbox_damage[state.Class];
+						collinfo.type = HitBoxType::Hit;
+						collinfo.stun_time = Character::Stats::melee_hitbox_stun_duration[state.Class];
+						collinfo.tag = Tag::Hit_Box;
+						off *= Character::Stats::melee_offset[state.Class];
+						collinfo.knockback = Character::Stats::melee_hitbox_knockback[state.Class];
+						mov.velocity += normalized(c.facing_dir) * Character::Stats::impulse[state.Class][state.current];
+						auto siz = Character::Stats::melee_hitbox_size_factor[state.Class] * Character::Stats::size[state.Class];
+						sf::Vector2f size(siz, siz);
+						mWorld.make_hit_box(off, size, i, std::move(collinfo), Character::Stats::melee_hitbox_duration[state.Class]);
+						
+					}*/
 				}break;
 				case States::Teleport_Scope:{
 					sf::Vector2f dir = normalize(sf::Vector2f(
 						static_cast<float>(mpressed[Input::right] - mpressed[Input::left]),
 						static_cast<float>(mpressed[Input::down] - mpressed[Input::up])));
-					c.moving_dir = dir;
+					state.moving_dir = dir;
 					
-					mWorld.vec_Movement[i].velocity += c.moving_dir*Teleport_Scope::stats::acceleration*time;
+					mWorld.vec_Movement[i].velocity += state.moving_dir*mWorld.vec_Movement[i].diracceleration*time;
 
 
-					if (!mpressed[Input::teleport]) {
-						Handle owner = mWorld.vec_Team[i].owner;
-						//teleport
+					if (!mpressed[Input::skill4]) {
+						Handle owner = mWorld.vec_Owner[i].owner;
+						//skill4
 						mWorld.vec_Position[owner].setPosition(mWorld.vec_Position[i].getPosition());
 						//change state to normal
-						mWorld.vec_State[owner].update(States::Player_Normal);
+						mWorld.vec_State[owner].update(States::Normal);
 						//kill this mofo scope
 						mWorld.remove_entity(i);
 					}
@@ -121,7 +135,7 @@ void ControllerSystem::update(sf::Time t) {
 			}
 			if (c.target != Handle(-1)) {
 				auto dir = normalize(mWorld.vec_Position[c.target].getPosition() - mWorld.vec_Position[i].getPosition());
-				mov.velocity += dir*Enemy::stats::acceleration*time;
+				mov.velocity += dir*Character::Stats::mov_acceleration[state.Class]*time;
 			}
 		}break;
 	}

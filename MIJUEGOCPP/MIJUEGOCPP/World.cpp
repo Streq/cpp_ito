@@ -95,6 +95,20 @@ Handle World::new_entity() {
 bool World::remove_entity(Handle entity)
 {
 	bool ret = TESTMASK(vec_Entity[entity], flag::Active);//retorna falso si la entidad no existe
+	bool tiene_padre = TESTMASK(vec_Entity[entity], flag::Owner);//retorna falso si no tiene padre
+	const auto& mat = Owner::get_matriz_padre_hijo();
+
+	if (tiene_padre) {
+		Owner::set(vec_Owner[entity].owner, entity, false);
+	}
+
+	
+	for (Handle hijo = 0; hijo < max_entities; hijo++) {
+		if (mat[entity][hijo]) {
+			Owner::set(entity, hijo, false);
+			remove_entity(hijo);
+		}
+	}
 	this->notify_systems(vec_Entity[entity].reset(), entity);
 	return ret;
 }
@@ -118,18 +132,19 @@ void World::clear(){
 	}
 }
 
-void World::make_player(const sf::Vector2f & pos, short unsigned player){
+void World::make_player(const sf::Vector2f & pos, short unsigned player, Character::ID _class){
 	Handle h = new_entity();
 	vec_players[player] = h;
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
-		sf::RectangleShape *c = new sf::RectangleShape(sf::Vector2f(Player::stats::size, Player::stats::size));
+		auto siz=Character::Stats::size[_class];
+		sf::Vector2f size(siz, siz);
+		sf::RectangleShape *c = new sf::RectangleShape(size);
 		c->setOutlineThickness(-1);
-		auto& rect = c->getSize();
 		CollisionBody* box = add_component<CollisionBody>(h);
-		box->offset = -(sf::Vector2f(rect.x, rect.y) / 2.f);
+		box->offset = -(size / 2.f);
 		box->size = c->getSize();
-		c->setOrigin(sf::Vector2f(rect.x, rect.y) / 2.f);
+		c->setOrigin(size / 2.f);
 		r->drawable.reset(c);
 	}
 	Position *p;
@@ -138,27 +153,27 @@ void World::make_player(const sf::Vector2f & pos, short unsigned player){
 	}
 	Movement *m;
 	if (m = add_component<Movement>(h)) {
-		m->friction = Player::stats::friction;
-		m->maxspeed = Player::stats::max_speed;
 	}
-	CollisionTag* tf;
-	if (tf = add_component<CollisionTag>(h)) {
-		tf->tag = Tag::Player;
+	CollisionInfo* tf;
+	if (tf = add_component<CollisionInfo>(h)) {
+		tf->tag = Tag::Character_Entity;
 	}
 	Controller* cont;
 	if (cont = add_component<Controller>(h)) {
 		cont->controller = controller::Player;
-		cont->facing_dir.y = -1.f;
 		cont->player = player;
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
-		st->update(States::Player_Normal);
+		st->Class=_class;
+		st->update(States::Normal);
+		st->facing_dir.y = -1.f;
+
 	}
 
 	Health* hl;
 	if (hl = add_component<Health>(h)) {
-		hl->init(Player::stats::health);
+		hl->init(Character::Stats::health[_class]);
 	}
 
 }
@@ -179,9 +194,14 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 		body->size = sf::Vector2f(1.f, 1.f) * (Bullet::stats::radius * 2.f);
 		body->offset = sf::Vector2f(1.f, 1.f) * (-Bullet::stats::radius);
 	}
-	CollisionTag* tag = add_component<CollisionTag>(h);
+	CollisionInfo* tag = add_component<CollisionInfo>(h);
 	if (tag) {
-		tag->tag = Tag::Bullet;
+		tag->tag = Tag::Projectile;
+		tag->damage = Bullet::stats::damage;
+		tag->on_wall = CollisionInfo::bounce;
+		tag->stun_time = sf::seconds(0.5f);
+		tag->type = HitBoxType::Hit;
+		tag->knockback = 500.f;
 	}
 
 	Movement* mov = add_component<Movement>(h);
@@ -192,9 +212,9 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	if (pos) {
 		pos->setPosition(position);
 	}
-	Team* own = add_component<Team>(h);
+	Owner* own = add_component<Owner>(h);
 	if (own) {
-		own->owner = owner;
+		own->set_owner(owner, h);
 	}
 	
 	TimeSpan* time = add_component<TimeSpan>(h);
@@ -202,10 +222,7 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 		time->time = Bullet::stats::time;
 	}
 	
-	Damage* dmg = add_component<Damage>(h);
-	if (dmg) {
-		dmg->amount = Bullet::stats::damage;
-	}
+	
 
 }
 
@@ -225,27 +242,55 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	}
 	Position *p;
 	if (p = add_component<Position>(h)) {
-		p->setPosition(vec_Position[owner].getPosition());
+		p->relative_to = owner;
 	}
-	CollisionTag *tf;
-	if (tf = add_component<CollisionTag>(h)) {
+	CollisionInfo *tf;
+	if (tf = add_component<CollisionInfo>(h)) {
 		tf->tag = Tag::Hit_Box;
 	}
-	Team* tm;
-	if (tm = add_component<Team>(h)) {
-		tm->owner = owner;
+	Owner* tm;
+	if (tm = add_component<Owner>(h)) {
+		tm->set_owner(owner, h);
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
-		st->update(States::Hit_Box);
+		st->update(States::HitBox);
 	}
-	Damage *dmg;
-	if (dmg = add_component<Damage>(h)) {
-		dmg->amount = Hit_Box::stats::damage;
+}
+
+void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner, CollisionInfo && info, sf::Time duration){
+	Handle h = new_entity();
+	Rendering *r;
+	if (r = add_component<Rendering>(h)) {
+		sf::RectangleShape *c = new sf::RectangleShape(size);
+		c->setFillColor(Color::Red);
+		c->setOrigin(size / 2.f - offset);
+		r->drawable.reset(c);
 	}
-	Movement *mov;
-	if (mov = add_component<Movement>(h)) {
+	CollisionBody* box = add_component<CollisionBody>(h);
+	if (box) {
+		box->size = size;
+		box->offset = -(size / 2.f - offset);
 	}
+	Position *p;
+	if (p = add_component<Position>(h)) {
+		p->relative_to = owner;
+	}
+	CollisionInfo *tf;
+	if (tf = add_component<CollisionInfo>(h)) {
+		*tf = std::move(info);
+	}
+	Owner* tm;
+	if (tm = add_component<Owner>(h)) {
+		tm->set_owner(owner,h);
+	}
+	State *st;
+	if (st = add_component<State>(h)) {
+		st->update(States::HitBox);
+		st->duration = duration;
+		st->just_started = false;
+	}
+	
 }
 
 void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
@@ -265,15 +310,16 @@ void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
 	if (p = add_component<Position>(h)) {
 		p->setPosition(position);
 	}
-	CollisionTag *tf;
-	if (tf = add_component<CollisionTag>(h)) {
-		tf->tag = Tag::Building;
+	CollisionInfo *tf;
+	if (tf = add_component<CollisionInfo>(h)) {
+		tf->tag = Tag::Wall;
 	}
 
 }
 
 void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2f & size, Handle owner){
 	Handle h = new_entity();
+	
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
 		sf::RectangleShape *c = new sf::RectangleShape(size);
@@ -289,8 +335,6 @@ void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2
 	}
 	Movement *m;
 	if (m = add_component<Movement>(h)) {
-		m->friction = Teleport_Scope::stats::friction;
-		m->maxspeed = Teleport_Scope::stats::max_speed;
 	}
 	Controller *cont;
 	if (cont = add_component<Controller>(h)) {
@@ -299,11 +343,12 @@ void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
+		st->Class = Character::Default;
 		st->update(States::Teleport_Scope);
 	}
-	Team *tm;
-	if (tm = add_component<Team>(h)) {
-		tm->owner = owner;
+	Owner *tm;
+	if (tm = add_component<Owner>(h)) {
+		tm->set_owner(owner, h);
 	}
 }
 
@@ -311,7 +356,8 @@ void World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amou
 	Handle h = new_entity();
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
-		sf::Vector2f msize (Enemy::stats::size, Enemy::stats::size);
+		auto siz = Character::Stats::size[Character::Zombie];
+		sf::Vector2f msize (siz,siz);
 		sf::RectangleShape *c = new sf::RectangleShape(msize);
 		c->setFillColor(Color::Transparent);
 		c->setOutlineThickness(-1.f);
@@ -327,6 +373,7 @@ void World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amou
 	if (st = add_component<State>(h)) {
 		st->update(States::Spawner);
 		st->duration = spawn_time;
+		st->Class = Character::Zombie;
 	}
 	if (amount >= 0) {
 		TimeSpan *ts;
@@ -338,18 +385,18 @@ void World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amou
 
 
 
-void World::make_enemy(const sf::Vector2f & pos) {
+void World::make_zombie(const sf::Vector2f & pos) {
 	Handle h = new_entity();
+	auto siz = Character::Stats::size[Character::Zombie];
+	sf::Vector2f size = sf::Vector2f(siz, siz);
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
-		sf::RectangleShape *c = new sf::RectangleShape(sf::Vector2f(Enemy::stats::size, Enemy::stats::size));
-		c->setFillColor(sf::Color::Green);
+		sf::RectangleShape *c = new sf::RectangleShape(size);
 		c->setOutlineThickness(-1);
-		auto& rect = c->getSize();
 		CollisionBody* box = add_component<CollisionBody>(h);
-		box->offset = -(sf::Vector2f(rect.x, rect.y) / 2.f);
-		box->size = c->getSize();
-		c->setOrigin(sf::Vector2f(rect.x, rect.y) / 2.f);
+		box->offset = -(size / 2.f);
+		box->size = size;
+		c->setOrigin(size / 2.f);
 		r->drawable.reset(c);
 	}
 	Position *p;
@@ -358,12 +405,10 @@ void World::make_enemy(const sf::Vector2f & pos) {
 	}
 	Movement *m;
 	if (m = add_component<Movement>(h)) {
-		m->friction = Enemy::stats::friction;
-		m->maxspeed = Enemy::stats::max_speed;
 	}
-	CollisionTag *tf;
-	if (tf = add_component<CollisionTag>(h)) {
-		tf->tag = Tag::Enemy;
+	CollisionInfo *tf;
+	if (tf = add_component<CollisionInfo>(h)) {
+		tf->tag = Tag::Character_Entity;
 	}
 	Controller* cont;
 	if (cont = add_component<Controller>(h)) {
@@ -371,14 +416,18 @@ void World::make_enemy(const sf::Vector2f & pos) {
 	}
 	State* st;
 	if (st = add_component<State>(h)) {
-		st->update(States::Enemy_Normal);
+		st->Class = Character::Zombie;
+		st->update(States::Normal);
 	}
 	Health* hl;
 	if (hl = add_component<Health>(h)) {
-		hl->init(Enemy::stats::health);
+		hl->init(Character::Stats::health[Character::Zombie]);
 	}
-	Damage* dmg;
-	if(dmg = add_component<Damage>(h)){
-		dmg->amount = Enemy::stats::damage;
-	}
+	/*CollisionInfo inf;
+	inf.damage = Character::Stats::melee_hitbox_damage[Character::Zombie];
+	inf.type = HitBoxType::Hit;
+	inf.tag = Tag::Hit_Box;
+	inf.knockback = 100.f;
+	inf.stun_time = sf::seconds(0.5f);
+	make_hit_box(sf::Vector2f(0, 0), size, h, std::move(inf), sf::seconds(-1.f));*/
 }

@@ -21,6 +21,7 @@ namespace Skill {
 	extern sf::Time duration[size];
 	extern int damage[size];
 	extern CollisionInfo col_info[size];
+	extern float bullet_speed[size];
 	extern void init();
 }
 

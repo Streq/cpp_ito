@@ -99,20 +99,35 @@ bool World::remove_entity(Handle entity)
 	const auto& mat = Owner::get_matriz_padre_hijo();
 
 	if (tiene_padre) {
-		Owner::set(vec_Owner[entity].owner, entity, false);
+		Owner::set(vec_Owner[entity].owner, entity, Relacion::none);
 	}
 
 	
 	for (Handle hijo = 0; hijo < max_entities; hijo++) {
 		if (mat[entity][hijo]) {
-			Owner::set(entity, hijo, false);
-			remove_entity(hijo);
+			Owner::set(entity, hijo, Relacion::none);
+			switch(mat[entity][hijo]){
+				case Relacion::composition:
+				case Relacion::delete_on_hurt:{
+					remove_entity(hijo);
+				}
+				
+			}
 		}
 	}
 	this->notify_systems(vec_Entity[entity].reset(), entity);
 	return ret;
 }
 
+void World::remove_children(Handle entity, Relacion::ID criteria){
+	const auto& mat = Owner::get_matriz_padre_hijo();
+	for (Handle hijo = 0; hijo < max_entities; hijo++) {
+		if (mat[entity][hijo]==criteria) {
+				Owner::set(entity, hijo, Relacion::none);
+				remove_entity(hijo);
+		}
+	}
+}
 
 
 
@@ -178,7 +193,7 @@ void World::make_player(const sf::Vector2f & pos, short unsigned player, Charact
 
 }
 
-void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, Handle owner)
+void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, Handle owner)
 {
 	Handle h = new_entity();
 	Rendering* rend = add_component<Rendering>(h);
@@ -196,17 +211,14 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	}
 	CollisionInfo* tag = add_component<CollisionInfo>(h);
 	if (tag) {
-		tag->tag = Tag::Projectile;
-		tag->damage = Bullet::stats::damage;
-		tag->on_wall = CollisionInfo::bounce;
-		tag->stun_time = sf::seconds(0.5f);
-		tag->type = HitBoxType::Hit;
-		tag->knockback = 500.f;
+		*tag = colinfo;
 	}
 
 	Movement* mov = add_component<Movement>(h);
 	if (mov) {
 		mov->velocity = inertial_speed + direction*speed;
+		mov->capped = false;
+		mov->friction = 0.f;
 	}
 	Position* pos = add_component<Position>(h);
 	if (pos) {
@@ -214,7 +226,7 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	}
 	Owner* own = add_component<Owner>(h);
 	if (own) {
-		own->set_owner(owner, h);
+		own->set_owner(owner, h ,Relacion::aggregation);
 	}
 	
 	TimeSpan* time = add_component<TimeSpan>(h);
@@ -250,7 +262,7 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	}
 	Owner* tm;
 	if (tm = add_component<Owner>(h)) {
-		tm->set_owner(owner, h);
+		tm->set_owner(owner, h, Relacion::delete_on_hurt);
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
@@ -282,7 +294,7 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	}
 	Owner* tm;
 	if (tm = add_component<Owner>(h)) {
-		tm->set_owner(owner,h);
+		tm->set_owner(owner, h, Relacion::delete_on_hurt);
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
@@ -348,7 +360,7 @@ void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2
 	}
 	Owner *tm;
 	if (tm = add_component<Owner>(h)) {
-		tm->set_owner(owner, h);
+		tm->set_owner(owner, h, Relacion::delete_on_hurt);
 	}
 }
 

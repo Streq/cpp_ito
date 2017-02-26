@@ -27,6 +27,9 @@ namespace Character{
 		//Para calcular fricción e impulso en golpe
 		static float mass[ID::size];
 		
+		//Para calcular fricción
+		static float friction[ID::size];
+
 		//todavia no se si va tar
 		static float mana[ID::size];
 		

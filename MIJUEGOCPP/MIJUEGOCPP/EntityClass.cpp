@@ -16,6 +16,7 @@ float Character::Stats::m_attack[ID::size];
 float Character::Stats::mov_speed[ID::size];
 float Character::Stats::mov_acceleration[ID::size];
 float Character::Stats::mass[ID::size];
+float Character::Stats::friction[ID::size];
 float Character::Stats::mana[ID::size];
 Skill::ID Character::Stats::skill[ID::size][skill_num];
 int Character::Stats::hitbox_type[ID::size][States::size];
@@ -30,9 +31,10 @@ set(health,ch,100.f)\
 set(size,ch,10.f)\
 set(p_attack,ch,1.f)\
 set(m_attack,ch,1.f)\
-set(mov_speed,ch,200.f)\
-set(mov_acceleration,ch,600.f)\
-set(mass,ch,1.f)\
+set(mov_speed,ch,300.f)\
+set(mov_acceleration,ch,2400.f)\
+set(mass, ch, 1.f)\
+set(friction, ch, 1200.f)\
 set(mana,ch,10.f)\
 setst(hitbox_type, ch, Hurt, HitBoxType::Intangible)\
 setst(hitbox_type, ch, Casting, HitBoxType::Damageable)\
@@ -44,8 +46,7 @@ setst(hitbox_type, ch, Silenced, HitBoxType::Damageable)
 	size[ID::Minotaur] = 12.f;
 	size[ID::Giant] = 30.f;
 
-	set(mov_speed, Zombie, 400.f);
-
+	set(mov_speed, Zombie, 150.f);
 	health[ID::Zombie] = 30.f;
 	health[ID::Minotaur] = 150.f;
 	health[ID::Giant] = 300.f;
@@ -60,7 +61,7 @@ set_skill(ch,2,sk2);\
 set_skill(ch,3,sk3);
 
 	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Dash, Teleport);
-	set_skills(Minotaur, Simple_Melee, Ram, Dash, Stun_Roar);
+	set_skills(Minotaur, Simple_Melee, Simple_Shot, Bounce_Shot, Stun_Roar);
 	set_skills(Giant, Slow_Big_Melee, None, None, None);
 	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash, None);
 

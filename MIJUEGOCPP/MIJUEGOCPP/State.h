@@ -17,6 +17,9 @@ struct State : public Component {
 	
 	Skill::ID current_skill;
 
+	bool pressed[Skill::size];
+	bool updated[Skill::size];
+
 	//to use for any purpose of the current skill
 	unsigned skill_counter;
 	

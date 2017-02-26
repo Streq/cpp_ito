@@ -5,16 +5,16 @@
 struct Owner :public Component {
 	Handle owner;
 private:
-	static matriz_booleana matriz_padre_hijo;
+	static matriz_padre_hijo_t matriz_padre_hijo;
 public:
-	inline static const matriz_booleana& get_matriz_padre_hijo(){ 
+	inline static const matriz_padre_hijo_t& get_matriz_padre_hijo(){ 
 		return matriz_padre_hijo;
 	};
-	inline static void set(Handle padre, Handle hijo, bool val=true) {
+	inline static void set(Handle padre, Handle hijo, Relacion::ID val=Relacion::composition) {
 		matriz_padre_hijo[padre][hijo]=val;
 	};
-	inline void set_owner(Handle padre, Handle hijo) {
-		matriz_padre_hijo[padre][hijo] = true;
+	inline void set_owner(Handle padre, Handle hijo, Relacion::ID val) {
+		matriz_padre_hijo[padre][hijo] = val;
 		owner = padre;
 	}
 	

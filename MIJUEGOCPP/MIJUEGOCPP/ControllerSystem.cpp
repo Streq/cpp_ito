@@ -47,14 +47,15 @@ void ControllerSystem::update(sf::Time t) {
 				static_cast<float>(mpressed[Input::right] - mpressed[Input::left]),
 				static_cast<float>(mpressed[Input::down] - mpressed[Input::up])));
 
+			for (unsigned j = Input::skill1; j < Input::skill1 + skill_num; j++) {
+				Skill::ID _skill = Character::Stats::skill[state.Class][j - Input::skill1];
+				state.updated[_skill] = mupdated[j];
+				state.pressed[_skill] = mpressed[j];
+				
+			}
 			switch (state.current) {
 				case States::Normal: {
-					for (unsigned j = Input::skill1; j < Input::skill1 + skill_num; j++){
-						
-						if (mpressed[j] && mupdated[j]) {
-							state.cast(Character::Stats::skill[state.Class][j - Input::skill1]);
-						}
-					}
+					
 				}//no break on purpose
 				case States::Silenced: {
 					
@@ -63,29 +64,10 @@ void ControllerSystem::update(sf::Time t) {
 						state.facing_dir = state.moving_dir;
 					}
 					
-					mWorld.vec_Movement[i].velocity += state.moving_dir * Character::Stats::mov_acceleration[state.Class] * time;
 					
 				}break;
 				case States::Casting: {
-					/*
-					if (state.skill_counter == 0 && state.time_since_start >= Character::Stats::melee_hitbox_start_frame[state.Class]) {
-						state.skill_counter++;
-						const auto& c = mWorld.vec_Controller[i];
-						auto& mov = mWorld.vec_Movement[i];
-						sf::Vector2f off(SIGN(c.facing_dir.x), SIGN(c.facing_dir.y));
-						CollisionInfo collinfo;
-						collinfo.damage = Character::Stats::melee_hitbox_damage[state.Class];
-						collinfo.type = HitBoxType::Hit;
-						collinfo.stun_time = Character::Stats::melee_hitbox_stun_duration[state.Class];
-						collinfo.tag = Tag::Hit_Box;
-						off *= Character::Stats::melee_offset[state.Class];
-						collinfo.knockback = Character::Stats::melee_hitbox_knockback[state.Class];
-						mov.velocity += normalized(c.facing_dir) * Character::Stats::impulse[state.Class][state.current];
-						auto siz = Character::Stats::melee_hitbox_size_factor[state.Class] * Character::Stats::size[state.Class];
-						sf::Vector2f size(siz, siz);
-						mWorld.make_hit_box(off, size, i, std::move(collinfo), Character::Stats::melee_hitbox_duration[state.Class]);
-						
-					}*/
+					
 				}break;
 				case States::Teleport_Scope:{
 					sf::Vector2f dir = normalize(sf::Vector2f(
@@ -134,8 +116,7 @@ void ControllerSystem::update(sf::Time t) {
 				c.target = current_player;
 			}
 			if (c.target != Handle(-1)) {
-				auto dir = normalize(mWorld.vec_Position[c.target].getPosition() - mWorld.vec_Position[i].getPosition());
-				mov.velocity += dir*Character::Stats::mov_acceleration[state.Class]*time;
+				state.moving_dir = normalize(mWorld.vec_Position[c.target].getPosition() - mWorld.vec_Position[i].getPosition());
 			}
 		}break;
 	}

@@ -25,13 +25,14 @@ void MovementSystem::update(sf::Time t) {
 		Movement& m = mWorld.vec_Movement[i];
 		Position& p = mWorld.vec_Position[i];
 		m.velocity += m.acceleration * time;
+		
 		if (m.friction > 0) {
 			sf::Vector2f fric = normalized(m.velocity) * m.friction * time;
 			m.velocity.x = approach(m.velocity.x, 0.f, abs(fric.x));
 			m.velocity.y = approach(m.velocity.y, 0.f, abs(fric.y));
 		}
 
-		if (m.maxspeed > 0) {
+		if (m.capped) {
 			sf::Vector2f max = normalized(m.velocity) * m.maxspeed;
 			m.velocity.x = clamp(m.velocity.x, -abs(max.x), abs(max.x));
 			m.velocity.y = clamp(m.velocity.y, -abs(max.y), abs(max.y));

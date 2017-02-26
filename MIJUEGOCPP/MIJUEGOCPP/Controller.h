@@ -13,5 +13,4 @@ struct Controller :public Component {
 	controller::ID controller;
 	short unsigned player;
 	Handle target=-1;
-	bool actions[Input::size];
 };

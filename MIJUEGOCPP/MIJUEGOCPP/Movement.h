@@ -8,4 +8,5 @@ struct Movement : public Component {
 	float rotation;
 	float friction;
 	float maxspeed;
+	bool capped=true;
 };

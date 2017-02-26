@@ -102,7 +102,30 @@ void Game::process_events() {
 				}
 				if (event.key.code == sf::Keyboard::Num4) {
 					mWorld.clear();
-					zombie_rush_init(2000, 50);
+					zombie_rush_init(1000, 50);
+					//this->zombie_rush_init(2000, 50);
+					break;
+				}
+				if (event.key.code == sf::Keyboard::Num5) {
+					mWorld.clear();
+					zombie_rush_init(1000, 0);
+					//this->zombie_rush_init(2000, 50);
+					break;
+				}
+				if (event.key.code == sf::Keyboard::Num6) {
+					mWorld.clear();
+					zombie_rush_init(0, 0);
+					//this->zombie_rush_init(2000, 50);
+					break;
+				}
+				if (event.key.code == sf::Keyboard::Num7) {
+					mWorld.clear();
+					zombie_rush_init(4, 0);
+					//this->zombie_rush_init(2000, 50);
+					break;
+				}if (event.key.code == sf::Keyboard::Num8) {
+					mWorld.clear();
+					zombie_rush_init(20, 50);
 					//this->zombie_rush_init(2000, 50);
 					break;
 				}
@@ -160,17 +183,28 @@ void Game::init() {
 	Character::Stats::init();
 
 
-	#define W(action,input) controller[0].set_key(input_data(PlayerInput::Key::##input,input_data::keyboard),Input::##action);
-	W(up, Up)
-	W(down, Down)
-	W(left, Left)
-	W(right, Right)
-	W(skill1, Z)
-	W(skill2, X)
-	W(skill3, C)
-	W(skill4, V)
+	#define W(player, action,input) controller[player].set_key(input_data(PlayerInput::Key::##input,input_data::keyboard),Input::##action);
+	W(0,up, Up)
+	W(0,down, Down)
+	W(0,left, Left)
+	W(0,right, Right)
+	W(0,skill1, Z)
+	W(0,skill2, X)
+	W(0,skill3, C)
+	W(0,skill4, V)
+
+	W(1, up, W)
+	W(1, down, S)
+	W(1, left, A)
+	W(1, right, D)
+	W(1, skill1, Q)
+	W(1, skill2, Q)
+	W(1, skill3, Q)
+	W(1, skill4, Q)
+
 	#undef W
 
+	/*
 	#define W(action,axis,sign) controller[1].set_key(input_data(axis,input_data::joy_axis,0,sign),Input::##action);
 	W(up, sf::Joystick::Axis::Y,-1)
 	W(down, sf::Joystick::Axis::Y, 1)
@@ -183,6 +217,7 @@ void Game::init() {
 	W(skill3, A)
 	W(skill4, X)
 	#undef W
+	*/
 	CollisionInfo::init_matrix();
 	fps_text=sf::Text(sf::String("fps"), fonts.get(Font::arial), 15u);
 	

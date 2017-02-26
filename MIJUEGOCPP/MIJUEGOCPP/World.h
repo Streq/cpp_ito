@@ -30,6 +30,7 @@ class World {
 		
 		Handle									new_entity();
 		bool									remove_entity(Handle);
+		void									remove_children(Handle, Relacion::ID criteria);
 		template<typename C> C*					add_component(Handle);//(returns reference to component) 
 		template<typename C> C*					activate_component(Handle);//(returns reference to component) 
 		template <typename C> bool				remove_component(Handle);
@@ -42,7 +43,7 @@ class World {
 	public:
 		void									make_player(const sf::Vector2f& pos, short unsigned player, Character::ID _class);
 		void									make_zombie(const sf::Vector2f& pos);
-		void									make_bullet(const sf::Vector2f& position, const sf::Vector2f& direction, const sf::Vector2f& inertial_speed, float speed, Handle owner);
+		void									make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo && colinfo, Handle owner);
 		void									make_wall(const sf::Vector2f& position, const sf::Vector2f& size);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner, CollisionInfo&& info, sf::Time duration);

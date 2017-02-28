@@ -13,6 +13,7 @@ namespace Tag {
 		Character_Entity,//Interacts with Buildings
 		Projectile,
 		Hit_Box,//Interacts with other Hit_Boxes
+		Scope,
 		size
 		/*		
 		#define X(tag) tag,

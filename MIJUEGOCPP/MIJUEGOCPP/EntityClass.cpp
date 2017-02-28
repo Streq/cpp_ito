@@ -61,7 +61,7 @@ set_skill(ch,2,sk2);\
 set_skill(ch,3,sk3);
 
 	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Dash, Teleport);
-	set_skills(Minotaur, Simple_Melee, Simple_Shot, Bounce_Shot, Stun_Roar);
+	set_skills(Minotaur, Simple_Melee, Ram, Bounce_Shot, Teleport);
 	set_skills(Giant, Slow_Big_Melee, None, None, None);
 	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash, None);
 

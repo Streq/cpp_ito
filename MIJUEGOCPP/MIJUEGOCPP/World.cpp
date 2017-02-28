@@ -329,7 +329,7 @@ void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
 
 }
 
-void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2f & size, Handle owner){
+void World::make_teleport_scope(const sf::Vector2f & position, float maxspeed, const sf::Vector2f & size, Handle owner){
 	Handle h = new_entity();
 	
 	Rendering *r;
@@ -347,6 +347,9 @@ void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2
 	}
 	Movement *m;
 	if (m = add_component<Movement>(h)) {
+		m->maxspeed = maxspeed;
+		m->capped = true;
+		m->friction = Skill::friction[Skill::Teleport];
 	}
 	Controller *cont;
 	if (cont = add_component<Controller>(h)) {
@@ -361,6 +364,16 @@ void World::make_teleport_scope(const sf::Vector2f & position, const sf::Vector2
 	Owner *tm;
 	if (tm = add_component<Owner>(h)) {
 		tm->set_owner(owner, h, Relacion::delete_on_hurt);
+	}
+	CollisionInfo *ci;
+	if (ci = add_component<CollisionInfo>(h)) {
+		*ci = Skill::col_info[Skill::Teleport];
+	}
+	CollisionBody *cb;
+	if (cb = add_component<CollisionBody>(h)) {
+		cb->offset = -size / 2.f;
+		cb->size = size;
+		cb->type = BoxType::Box;
 	}
 }
 

@@ -4,17 +4,17 @@
 namespace Skill {
 	enum ID {
 		None,
-		Simple_Melee,
-		Mirror_Melee,//Tennist
-		Slow_Big_Melee,//Giant
-		Dash,//Time_Traveler
-		Dash_Strike,//Swordsman
-		Simple_Shot,
-		Bounce_Shot,
-		Teleport,//Time_Traveler
-		Ram,//Minotaur
-		Wave_Shot,//Time_Traveler
-		Stun_Roar,//Minotaur
+		Simple_Melee,//funca
+		Mirror_Melee,//
+		Slow_Big_Melee,//
+		Dash,//
+		Dash_Strike,//
+		Simple_Shot,//funca
+		Bounce_Shot,//funca
+		Teleport,//funca
+		Ram,//
+		Wave_Shot,//
+		Stun_Roar,//
 		size
 	};
 	extern sf::Time buildup[size];
@@ -22,6 +22,9 @@ namespace Skill {
 	extern int damage[size];
 	extern CollisionInfo col_info[size];
 	extern float bullet_speed[size];
+	extern float max_speed[size];
+	extern float acceleration[size];
+	extern float friction[size];
 	extern void init();
 }
 

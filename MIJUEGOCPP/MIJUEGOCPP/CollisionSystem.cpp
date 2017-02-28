@@ -201,10 +201,17 @@ void CollisionSystem::handle_collisions(float time) {
 
 		CollisionBody& col1 = entity_boxes[h1];
 		CollisionBody& col2 = entity_boxes[h2];
+		
+		State& st1 = mWorld.vec_State[h1];
+		State& st2 = mWorld.vec_State[h2];
+		
 		switch (t1.tag) {
 		case Tag::Wall: {
+			if (t2.tag == Tag::Scope) {
+				st2.skill_counter = 1;
+			}
 			if (t2.tag == Tag::Character_Entity || t2.tag == Tag::Projectile) {
-
+				st2.wall = true;
 				if (t2.on_wall == CollisionInfo::On_Wall::remove) {
 					mWorld.remove_entity(h2);
 					break;

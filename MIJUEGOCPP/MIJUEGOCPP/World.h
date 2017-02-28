@@ -48,7 +48,7 @@ class World {
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner, CollisionInfo&& info, sf::Time duration);
 
-		void									make_teleport_scope(const sf::Vector2f& position, const sf::Vector2f & size, Handle owner);
+		void									make_teleport_scope(const sf::Vector2f& position,float maxspeed, const sf::Vector2f & size, Handle owner);
 		void									make_spawner(const sf::Vector2f& pos, sf::Time spawn_time, int amount=-1);
 
 };

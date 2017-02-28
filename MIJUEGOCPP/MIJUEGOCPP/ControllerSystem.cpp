@@ -75,18 +75,6 @@ void ControllerSystem::update(sf::Time t) {
 						static_cast<float>(mpressed[Input::down] - mpressed[Input::up])));
 					state.moving_dir = dir;
 					
-					mWorld.vec_Movement[i].velocity += state.moving_dir*mWorld.vec_Movement[i].diracceleration*time;
-
-
-					if (!mpressed[Input::skill4]) {
-						Handle owner = mWorld.vec_Owner[i].owner;
-						//skill4
-						mWorld.vec_Position[owner].setPosition(mWorld.vec_Position[i].getPosition());
-						//change state to normal
-						mWorld.vec_State[owner].update(States::Normal);
-						//kill this mofo scope
-						mWorld.remove_entity(i);
-					}
 				}break;
 			}
 		}break;
@@ -94,7 +82,7 @@ void ControllerSystem::update(sf::Time t) {
 		case controller::Enemy: {
 
 			if (c.target==Handle(-1) || mWorld.vec_Controller[c.target].controller != controller::Player || !mWorld.vec_Entity[i][type::Active]) {
-				//look for closest player
+				//look for closest player_states
 				float distance = -1;
 				Handle current_player = -1;
 				for (int j = 0; j < players; j++) {
@@ -117,6 +105,7 @@ void ControllerSystem::update(sf::Time t) {
 			}
 			if (c.target != Handle(-1)) {
 				state.moving_dir = normalize(mWorld.vec_Position[c.target].getPosition() - mWorld.vec_Position[i].getPosition());
+
 			}
 		}break;
 	}

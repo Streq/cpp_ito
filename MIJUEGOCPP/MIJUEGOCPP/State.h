@@ -12,6 +12,8 @@ struct State : public Component {
 	sf::Vector2f facing_dir;
 	sf::Vector2f moving_dir;
 
+	bool wall;
+
 	sf::Time time_since_start;
 	sf::Time duration;
 	

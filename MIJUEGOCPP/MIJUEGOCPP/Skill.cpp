@@ -5,7 +5,9 @@ sf::Time Skill::duration[Skill::size];
 int Skill::damage[Skill::size];
 CollisionInfo Skill::col_info[size];
 float Skill::bullet_speed[size];
-
+float Skill::acceleration[size];
+float Skill::max_speed[size];
+float Skill::friction[size];
 void Skill::init() {
 	buildup[Simple_Melee] = sf::seconds(0);
 	duration[Simple_Melee] = dt_max_fps * 15.f;
@@ -13,7 +15,7 @@ void Skill::init() {
 	col_info[Simple_Melee].tag = Tag::Hit_Box;
 	col_info[Simple_Melee].type = HitBoxType::Hit;
 	col_info[Simple_Melee].stun_time = sf::seconds(0.5);
-	col_info[Simple_Melee].knockback = 1000.f;
+	col_info[Simple_Melee].knockback = 700.f;
 
 	buildup[Simple_Shot] = sf::seconds(0);
 	duration[Simple_Shot] = dt_max_fps * 2.f;
@@ -35,4 +37,22 @@ void Skill::init() {
 	col_info[Bounce_Shot].stun_time = sf::seconds(0.5);
 	col_info[Bounce_Shot].knockback = 600.f;
 	col_info[Bounce_Shot].on_wall = CollisionInfo::bounce;
+
+	buildup[Teleport] = sf::seconds(0);
+	max_speed[Teleport] = 2000.f;
+	acceleration[Teleport] = 120000.f;
+	friction[Teleport] = 60000.f;
+	col_info[Teleport].tag = Tag::Scope;
+
+
+	buildup[Ram] = sf::seconds(0);
+	duration[Ram] = dt_max_fps * 40.f;
+	damage[Ram] = 10.f;
+	acceleration[Ram] = 6000.f;
+	max_speed[Ram] = 800.f;
+	col_info[Ram].tag = Tag::Hit_Box;
+	col_info[Ram].type = HitBoxType::Hit;
+	col_info[Ram].stun_time = sf::seconds(0.5);
+	col_info[Ram].knockback = 1000.f;
+
 }

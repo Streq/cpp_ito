@@ -3,7 +3,8 @@
 #include "components_header.h"
 #include <SFML\Graphics.hpp>
 #include "Color.h"
-
+#include "vec_magn.h"
+#include <iostream>
 template<typename C> C*					World::add_component(Handle) { const a = 3; const a = 4; }
 template <typename C> bool				World::remove_component(Handle) { const a = 3; const a = 4; }
 template<typename C> std::vector<C>&	World::get_component_vec() { const a = 3; const a = 4; }
@@ -193,7 +194,7 @@ void World::make_player(const sf::Vector2f & pos, short unsigned player, Charact
 
 }
 
-void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, Handle owner)
+void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner)
 {
 	Handle h = new_entity();
 	Rendering* rend = add_component<Rendering>(h);
@@ -231,7 +232,7 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	
 	TimeSpan* time = add_component<TimeSpan>(h);
 	if (time) {
-		time->time = Bullet::stats::time;
+		time->time = duration;
 	}
 	
 	
@@ -303,6 +304,65 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 		st->just_started = false;
 	}
 	
+}
+
+void World::make_wave_bullet(const sf::Vector2f & position, const sf::Vector2f & axis_direction, float angle, float axis_relative_acceleration, float init_speed, CollisionInfo && colinfo, sf::Time duration, Handle owner)
+{
+	Handle h = new_entity();
+	Rendering* rend = add_component<Rendering>(h);
+	if (rend) {
+		sf::CircleShape* circ = new sf::CircleShape(Bullet::stats::radius);
+		circ->setOrigin(Bullet::stats::radius, Bullet::stats::radius);
+		circ->setFillColor(sf::Color::Magenta);
+		rend->drawable.reset(circ);
+	}
+	CollisionBody* body = add_component<CollisionBody>(h);
+	if (body) {
+		body->type = BoxType::Circle;
+		body->size = sf::Vector2f(1.f, 1.f) * (Bullet::stats::radius * 2.f);
+		body->offset = sf::Vector2f(1.f, 1.f) * (-Bullet::stats::radius);
+	}
+	CollisionInfo* tag = add_component<CollisionInfo>(h);
+	if (tag) {
+		*tag = colinfo;
+	}
+
+	Movement* mov = add_component<Movement>(h);
+	if (mov) {
+
+		mov->maxspeed = init_speed / cosf(angle);
+		float _angle = get_angle(axis_direction);
+		mov->velocity = from_angle(_angle + angle)*mov->maxspeed;
+		
+		//mov->velocity = axis_direction*init_speed;
+		mov->capped = false;
+		mov->friction = 0.f;
+	}
+	Position* pos = add_component<Position>(h);
+	if (pos) {
+		pos->setPosition(position);
+	}
+	Owner* own = add_component<Owner>(h);
+	if (own) {
+		own->set_owner(owner, h, Relacion::aggregation);
+	}
+	State* st = add_component<State>(h);
+	if (st) {
+		st->update(States::Wave_Shot);
+		st->moving_dir = normalize(sf::Vector2f(-axis_direction.y,axis_direction.x));
+		if (angle < 0){
+			st->moving_dir = -st->moving_dir;
+		}
+		else if (angle == 0.f) {
+			st->moving_dir *= 0.f;
+		}
+	}
+
+	TimeSpan* time = add_component<TimeSpan>(h);
+	if (time) {
+		time->time = duration;
+	}
+
 }
 
 void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){

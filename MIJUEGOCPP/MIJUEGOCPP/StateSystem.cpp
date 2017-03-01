@@ -3,7 +3,7 @@
 #include "components_header.h"
 #include "EntityClass.h"
 #include "vec_magn.h"
-
+#include "clamp.h"
 StateSystem::StateSystem(World& world)
 	:System(
 		world,
@@ -98,6 +98,18 @@ void StateSystem::update(sf::Time dtime){
 				st.update(States::Normal);
 			}; 
 		}break;
+		case States::Wave_Shot: {
+
+			mov.velocity += st.moving_dir * Skill::acceleration[Skill::Wave_Shot] * time;
+			
+
+
+			if (vec_magn(mov.velocity) >= mov.maxspeed) {
+				st.moving_dir = -st.moving_dir;
+			}
+			
+
+		}break;
 		case States::Casting: {
 			switch (st.current_skill) {
 				case Skill::Simple_Melee: {
@@ -128,7 +140,7 @@ void StateSystem::update(sf::Time dtime){
 								inf.damage = Skill::damage[st.current_skill] * Character::Stats::m_attack[st.Class];
 								float siz = 5.f;
 
-								mWorld.make_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), i);
+								mWorld.make_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
 								st.skill_counter++;
 							}
 						}break;
@@ -174,11 +186,12 @@ void StateSystem::update(sf::Time dtime){
 							mov.velocity += st.facing_dir * Skill::acceleration[st.current_skill] * time;
 							if (st.time_since_start >= Skill::duration[st.current_skill]) {
 								st.update(States::Normal);
+								colinf.on_wall = CollisionInfo::stop;
+
 							}
 							if (st.wall) {
 								st.duration = sf::seconds(0.5f);
 								mov.velocity /= 2.f;
-								colinf.on_wall = CollisionInfo::stop;
 								colinf.type = HitBoxType::Invincible;
 								st.time_since_start = sf::Time::Zero;
 								mWorld.remove_children(i, Relacion::delete_on_hurt);
@@ -188,9 +201,35 @@ void StateSystem::update(sf::Time dtime){
 						case 2: {
 							if (st.time_since_start > st.duration) {
 								st.update(States::Normal);
+								colinf.on_wall = CollisionInfo::stop;
 							}
 						}
 								
+					}
+				}break;
+				case Skill::Wave_Shot: {
+					switch (st.skill_counter) {
+					case 0: {
+						if (st.time_since_start >= Skill::buildup[st.current_skill]) {
+							CollisionInfo inf;// inf2;
+							inf = Skill::col_info[st.current_skill];
+							inf.damage = Skill::damage[st.current_skill] * Character::Stats::m_attack[st.Class];
+							float siz = 5.f;
+							//inf2 = inf;
+							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, Skill::shot_angle[st.current_skill], Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -Skill::shot_angle[st.current_skill], Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							//mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, Skill::shot_angle[st.current_skill]/2, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							//mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -Skill::shot_angle[st.current_skill]/2, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, 0, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+
+							st.skill_counter++;
+						}
+					}break;
+
+
+					}
+					if (st.time_since_start >= Skill::duration[st.current_skill]) {
+						st.update(States::Normal);
 					}
 				}
 			}

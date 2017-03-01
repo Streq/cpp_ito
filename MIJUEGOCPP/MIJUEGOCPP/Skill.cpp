@@ -1,13 +1,16 @@
 #include "Skill.h"
-
+#include "vec_magn.h"
 sf::Time Skill::buildup[Skill::size];
 sf::Time Skill::duration[Skill::size];
+sf::Time Skill::bullet_duration[size];
 int Skill::damage[Skill::size];
 CollisionInfo Skill::col_info[size];
 float Skill::bullet_speed[size];
 float Skill::acceleration[size];
 float Skill::max_speed[size];
 float Skill::friction[size];
+float Skill::shot_angle[size];
+
 void Skill::init() {
 	buildup[Simple_Melee] = sf::seconds(0);
 	duration[Simple_Melee] = dt_max_fps * 15.f;
@@ -19,6 +22,7 @@ void Skill::init() {
 
 	buildup[Simple_Shot] = sf::seconds(0);
 	duration[Simple_Shot] = dt_max_fps * 2.f;
+	bullet_duration[Simple_Shot] = sf::seconds(2.f);
 	bullet_speed[Simple_Shot] = 600.f;
 	damage[Simple_Shot] = 10.f;
 	col_info[Simple_Shot].tag = Tag::Projectile;
@@ -30,6 +34,7 @@ void Skill::init() {
 
 	buildup[Bounce_Shot] = sf::seconds(0);
 	duration[Bounce_Shot] = dt_max_fps * 5.f;
+	bullet_duration[Bounce_Shot] = sf::seconds(2.f);
 	bullet_speed[Bounce_Shot] = 500.f;
 	damage[Bounce_Shot] = 10.f;
 	col_info[Bounce_Shot].tag = Tag::Projectile;
@@ -37,6 +42,7 @@ void Skill::init() {
 	col_info[Bounce_Shot].stun_time = sf::seconds(0.5);
 	col_info[Bounce_Shot].knockback = 600.f;
 	col_info[Bounce_Shot].on_wall = CollisionInfo::bounce;
+
 
 	buildup[Teleport] = sf::seconds(0);
 	max_speed[Teleport] = 2000.f;
@@ -55,4 +61,18 @@ void Skill::init() {
 	col_info[Ram].stun_time = sf::seconds(0.5);
 	col_info[Ram].knockback = 1000.f;
 
+
+
+	buildup[Wave_Shot] = sf::seconds(0);
+	duration[Wave_Shot] = dt_max_fps * 2.f;
+	bullet_speed[Wave_Shot] = 300.f;
+	acceleration[Wave_Shot] = 2400.f;
+	shot_angle[Wave_Shot] = 45.f/180.f*M_PI;
+	damage[Wave_Shot] = 10.f;
+	col_info[Wave_Shot].tag = Tag::Projectile;
+	col_info[Wave_Shot].type = HitBoxType::Hit;
+	col_info[Wave_Shot].stun_time = sf::seconds(0.5);
+	col_info[Wave_Shot].knockback = 600.f;
+	col_info[Wave_Shot].on_wall = CollisionInfo::remove;
+	bullet_duration[Wave_Shot] = sf::seconds(4.f);
 }

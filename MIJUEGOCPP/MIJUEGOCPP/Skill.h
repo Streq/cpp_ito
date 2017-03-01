@@ -12,7 +12,7 @@ namespace Skill {
 		Simple_Shot,//funca
 		Bounce_Shot,//funca
 		Teleport,//funca
-		Ram,//
+		Ram,//funca
 		Wave_Shot,//
 		Stun_Roar,//
 		size
@@ -24,7 +24,9 @@ namespace Skill {
 	extern float bullet_speed[size];
 	extern float max_speed[size];
 	extern float acceleration[size];
+	extern sf::Time bullet_duration[size];
 	extern float friction[size];
+	extern float shot_angle[size];
 	extern void init();
 }
 

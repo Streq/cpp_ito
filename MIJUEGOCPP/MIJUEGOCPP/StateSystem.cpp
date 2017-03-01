@@ -100,12 +100,28 @@ void StateSystem::update(sf::Time dtime){
 		}break;
 		case States::Wave_Shot: {
 
-			mov.velocity += st.moving_dir * Skill::acceleration[Skill::Wave_Shot] * time;
+			/*
+			normal_acceleration
+			initial_tan_speed        remains constant
+			initial_normal_speed     changes with time
 			
+			each frame normal_speed += normal_acceleration*frame_time
+			if normal_speed>=initial_normal_speed then normal_speed = 2*initial_normal_speed - normal_speed
 
+			*/
+			sf::Vector2f& normal_direction = st.moving_dir;
+			sf::Vector2f tangent_direction(normal(normal_direction));
+			
+			float normal_acceleration = Skill::acceleration[Skill::Wave_Shot];
+			mov.velocity += normal_direction * normal_acceleration * time;
 
-			if (vec_magn(mov.velocity) >= mov.maxspeed) {
-				st.moving_dir = -st.moving_dir;
+			float& initial_normal_speed = mov.maxspeed;
+			float normal_speed = mov.velocity.x*st.moving_dir.x + mov.velocity.y*st.moving_dir.y;
+			float tangent_speed = abs(mov.velocity.x*tangent_direction.x+mov.velocity.y*tangent_direction.y);
+			if (normal_speed > initial_normal_speed) {
+				mov.velocity += normal_direction * (2 * (initial_normal_speed - normal_speed));
+				normal_direction = -normal_direction;
+				
 			}
 			
 
@@ -216,11 +232,11 @@ void StateSystem::update(sf::Time dtime){
 							inf.damage = Skill::damage[st.current_skill] * Character::Stats::m_attack[st.Class];
 							float siz = 5.f;
 							//inf2 = inf;
-							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, Skill::shot_angle[st.current_skill], Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -Skill::shot_angle[st.current_skill], Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-							//mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, Skill::shot_angle[st.current_skill]/2, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-							//mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -Skill::shot_angle[st.current_skill]/2, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, 0, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir,  Skill::normal_speed[st.current_skill], Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -Skill::normal_speed[st.current_skill], Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							//mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, Skill::normal_speed[st.current_skill]/2, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							//mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -Skill::normal_speed[st.current_skill]/2, Skill::acceleration[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+							mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, 0, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
 
 							st.skill_counter++;
 						}

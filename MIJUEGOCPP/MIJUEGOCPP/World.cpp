@@ -306,7 +306,7 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	
 }
 
-void World::make_wave_bullet(const sf::Vector2f & position, const sf::Vector2f & axis_direction, float angle, float axis_relative_acceleration, float init_speed, CollisionInfo && colinfo, sf::Time duration, Handle owner)
+void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& axis_direction, float normal_speed, float tangent_speed, float normal_acceleration, CollisionInfo&& colinfo, sf::Time duration, Handle owner)
 {
 	Handle h = new_entity();
 	Rendering* rend = add_component<Rendering>(h);
@@ -330,11 +330,10 @@ void World::make_wave_bullet(const sf::Vector2f & position, const sf::Vector2f &
 	Movement* mov = add_component<Movement>(h);
 	if (mov) {
 
-		mov->maxspeed = init_speed / cosf(angle);
-		float _angle = get_angle(axis_direction);
-		mov->velocity = from_angle(_angle + angle)*mov->maxspeed;
-		
+		mov->maxspeed = abs(normal_speed);
+		//mov->velocity = from_angle(_angle + angle)*mov->maxspeed;
 		//mov->velocity = axis_direction*init_speed;
+		mov->velocity = axis_direction*tangent_speed + normal(axis_direction)*normal_speed;
 		mov->capped = false;
 		mov->friction = 0.f;
 	}
@@ -349,11 +348,11 @@ void World::make_wave_bullet(const sf::Vector2f & position, const sf::Vector2f &
 	State* st = add_component<State>(h);
 	if (st) {
 		st->update(States::Wave_Shot);
-		st->moving_dir = normalize(sf::Vector2f(-axis_direction.y,axis_direction.x));
-		if (angle < 0){
+		st->moving_dir = normalized(normal(axis_direction));
+		if (normal_speed < 0){
 			st->moving_dir = -st->moving_dir;
 		}
-		else if (angle == 0.f) {
+		else if (normal_speed == 0.f) {
 			st->moving_dir *= 0.f;
 		}
 	}

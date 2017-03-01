@@ -52,3 +52,7 @@ inline sf::Vector2f from_angle(float angle) {
 inline float get_angle(const sf::Vector2f& vec) {
 	return (atan2f(vec.x, vec.y)-M_PI/2.f);
 }
+
+inline sf::Vector2f normal(const sf::Vector2f& vec) {
+	return sf::Vector2f(-vec.y, vec.x);
+}

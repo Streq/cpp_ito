@@ -47,7 +47,7 @@ class World {
 		void									make_wall(const sf::Vector2f& position, const sf::Vector2f& size);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner, CollisionInfo&& info, sf::Time duration);
-		void									make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& axis_direction, float angle, float axis_relative_acceleration, float init_speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner);
+		void									make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& axis_direction, float normal_speed, float tangent_speed, float normal_acceleration, CollisionInfo&& colinfo, sf::Time duration, Handle owner);
 		void									make_teleport_scope(const sf::Vector2f& position,float maxspeed, const sf::Vector2f & size, Handle owner);
 		void									make_spawner(const sf::Vector2f& pos, sf::Time spawn_time, int amount=-1);
 

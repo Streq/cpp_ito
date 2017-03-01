@@ -26,7 +26,7 @@ namespace Skill {
 	extern float acceleration[size];
 	extern sf::Time bullet_duration[size];
 	extern float friction[size];
-	extern float shot_angle[size];
+	extern float normal_speed[size];
 	extern void init();
 }
 

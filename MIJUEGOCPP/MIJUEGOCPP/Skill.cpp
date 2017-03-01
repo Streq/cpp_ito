@@ -9,7 +9,7 @@ float Skill::bullet_speed[size];
 float Skill::acceleration[size];
 float Skill::max_speed[size];
 float Skill::friction[size];
-float Skill::shot_angle[size];
+float Skill::normal_speed[size];
 
 void Skill::init() {
 	buildup[Simple_Melee] = sf::seconds(0);
@@ -66,13 +66,13 @@ void Skill::init() {
 	buildup[Wave_Shot] = sf::seconds(0);
 	duration[Wave_Shot] = dt_max_fps * 2.f;
 	bullet_speed[Wave_Shot] = 300.f;
-	acceleration[Wave_Shot] = 2400.f;
-	shot_angle[Wave_Shot] = 45.f/180.f*M_PI;
+	acceleration[Wave_Shot] = 900.f;
+	normal_speed[Wave_Shot] = 300.f;
 	damage[Wave_Shot] = 10.f;
 	col_info[Wave_Shot].tag = Tag::Projectile;
 	col_info[Wave_Shot].type = HitBoxType::Hit;
 	col_info[Wave_Shot].stun_time = sf::seconds(0.5);
 	col_info[Wave_Shot].knockback = 600.f;
-	col_info[Wave_Shot].on_wall = CollisionInfo::remove;
-	bullet_duration[Wave_Shot] = sf::seconds(4.f);
+	col_info[Wave_Shot].on_wall = CollisionInfo::pass_through;
+	bullet_duration[Wave_Shot] = sf::seconds(10.f);
 }

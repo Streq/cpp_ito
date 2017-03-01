@@ -207,63 +207,73 @@ void CollisionSystem::handle_collisions(float time) {
 		
 		switch (t1.tag) {
 		case Tag::Wall: {
-			if (t2.tag == Tag::Scope) {
-				st2.skill_counter = 1;
-			}
-			if (t2.tag == Tag::Character_Entity || t2.tag == Tag::Projectile) {
-				st2.wall = true;
-				if (t2.on_wall == CollisionInfo::On_Wall::remove) {
-					mWorld.remove_entity(h2);
-					break;
-				}
+			switch(t2.tag){
+				case Tag::Scope: {
+					st2.skill_counter = 1;
+				}break;
 
-				mWorld.vec_Owner[h2].owner = h1;
+				case Tag::Character_Entity:
+				case Tag::Projectile: {
+					st2.wall = true;
+
+					switch (t2.on_wall) {
+						case CollisionInfo::remove: {
+							mWorld.remove_entity(h2);
+						}break;
+						case CollisionInfo::bounce:
+						case CollisionInfo::stop: {
+
+							mWorld.vec_Owner[h2].owner = h1;
 
 
-				auto aux_col2 = col2;
-				//if no longer colliding (from previous collision resolution) no handling is needed
-				if (!check_collision_box(col2, col1)) { break; }
-				//get the collision box tf outta the collision zone
-				//aux_col2.offset -= mov2.velocity*time;
-				aux_col2.offset = pos2.frame_start_position + mWorld.vec_CollisionBody[h2].offset;
-				int mov_x = SIGN(mov2.frame_start_velocity.x);
-				int mov_y = SIGN(mov2.frame_start_velocity.y);
-				//approach horizontally
-				if (mov_x) {
-					while (aux_col2.offset.x != col2.offset.x) {
-						auto prev_frame_x = aux_col2.offset.x;
-						aux_col2.offset.x = approach(aux_col2.offset.x, col2.offset.x, 1);
-						if (check_collision_box(aux_col2, col1)) {
-							mov2.velocity.x = -mov2.velocity.x * (t2.on_wall == CollisionInfo::On_Wall::bounce);
+							auto aux_col2 = col2;
+							//if no longer colliding (from previous collision resolution) no handling is needed
+							if (!check_collision_box(col2, col1)) { break; }
+							//get the collision box tf outta the collision zone
+							//aux_col2.offset -= mov2.velocity*time;
+							aux_col2.offset = pos2.frame_start_position + mWorld.vec_CollisionBody[h2].offset;
+							int mov_x = SIGN(mov2.frame_start_velocity.x);
+							int mov_y = SIGN(mov2.frame_start_velocity.y);
+							//approach horizontally
+							if (mov_x) {
+								while (aux_col2.offset.x != col2.offset.x) {
+									auto prev_frame_x = aux_col2.offset.x;
+									aux_col2.offset.x = approach(aux_col2.offset.x, col2.offset.x, 1);
+									if (check_collision_box(aux_col2, col1)) {
+										mov2.velocity.x = -mov2.velocity.x * (t2.on_wall == CollisionInfo::On_Wall::bounce);
 
-							aux_col2.offset.x = prev_frame_x;
-							break;
-						}
+										aux_col2.offset.x = prev_frame_x;
+										break;
+									}
+								}
+
+							}
+							//approach vertically
+							if (mov_y) {
+								while (aux_col2.offset.y != col2.offset.y) {
+									auto prev_frame_y = aux_col2.offset.y;
+									aux_col2.offset.y = approach(aux_col2.offset.y, col2.offset.y, 1);
+									if (check_collision_box(aux_col2, col1)) {
+										mov2.velocity.y = -mov2.velocity.y * (t2.on_wall == CollisionInfo::On_Wall::bounce);
+										aux_col2.offset.y = prev_frame_y;
+										break;
+									}
+								}
+							}
+
+							//if we still fucked up
+							//auto dir = normalized(box.offset - col1.offset);
+							//while (check_collision_box(box, col1)) {
+							//	box.offset += dir;
+							//}
+							col2.offset = aux_col2.offset;
+							pos2.setPosition(aux_col2.offset - mWorld.vec_CollisionBody[h2].offset);
+
+						}break;
 					}
+					
 
-				}
-				//approach vertically
-				if (mov_y) {
-					while (aux_col2.offset.y != col2.offset.y) {
-						auto prev_frame_y = aux_col2.offset.y;
-						aux_col2.offset.y = approach(aux_col2.offset.y, col2.offset.y, 1);
-						if (check_collision_box(aux_col2, col1)) {
-							mov2.velocity.y = -mov2.velocity.y * (t2.on_wall == CollisionInfo::On_Wall::bounce);
-							aux_col2.offset.y = prev_frame_y;
-							break;
-						}
-					}
-				}
-
-				//if we still fucked up
-				//auto dir = normalized(box.offset - col1.offset);
-				//while (check_collision_box(box, col1)) {
-				//	box.offset += dir;
-				//}
-				col2.offset = aux_col2.offset;
-				pos2.setPosition(aux_col2.offset - mWorld.vec_CollisionBody[h2].offset);
-
-
+				}break;
 			}
 		}break;
 		case Tag::Character_Entity: {

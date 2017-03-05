@@ -36,6 +36,12 @@ namespace Character{
 		static float melee_hitbox_size_factor[ID::size];
 		static sf::Color color[ID::size][States::size];
 		static int hitbox_type[ID::size][States::size];
+
+		static int physical_box_type[ID::size][States::size];
+		static int offensive_hitbox_type[ID::size][States::size];
+		static int defensive_hitbox_type[ID::size][States::size];
+		static int on_wall[ID::size];
+
 		//Habilidades
 		static Skill::ID skill[ID::size][skill_num];
 

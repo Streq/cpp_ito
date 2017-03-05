@@ -21,6 +21,12 @@ float Character::Stats::mana[ID::size];
 Skill::ID Character::Stats::skill[ID::size][skill_num];
 int Character::Stats::hitbox_type[ID::size][States::size];
 sf::Color Character::Stats::color[ID::size][States::size];
+int Character::Stats::physical_box_type[ID::size][States::size];
+int Character::Stats::offensive_hitbox_type[ID::size][States::size];
+int Character::Stats::defensive_hitbox_type[ID::size][States::size];
+int Character::Stats::on_wall[ID::size];
+
+
 
 #define set(att, ch, val) Character::Stats::##att[ID::##ch]=val;
 #define setst(att, ch, st, val) Character::Stats::##att[ID::##ch][States::##st] = val;
@@ -36,13 +42,33 @@ set(mov_acceleration,ch,2400.f)\
 set(mass, ch, 1.f)\
 set(friction, ch, 1200.f)\
 set(mana,ch,10.f)\
+set(on_wall,ch,CollisionInfo::stop)\
 setst(hitbox_type, ch, Hurt, HitBoxType::Intangible)\
+setst(offensive_hitbox_type, ch, Hurt, OTag::None)\
+setst(defensive_hitbox_type, ch, Hurt, DTag::Intangible)\
+setst(physical_box_type, ch, Hurt, PTag::Dynamic_Solid)\
 setst(hitbox_type, ch, Casting, HitBoxType::Damageable)\
+setst(offensive_hitbox_type, ch, Casting, OTag::None)\
+setst(defensive_hitbox_type, ch, Casting, DTag::Damageable)\
+setst(physical_box_type, ch, Casting, PTag::Dynamic_Solid)\
 setst(hitbox_type, ch, Normal, HitBoxType::Damageable)\
-setst(hitbox_type, ch, Silenced, HitBoxType::Damageable)
+setst(offensive_hitbox_type, ch, Normal, OTag::None)\
+setst(defensive_hitbox_type, ch, Normal, DTag::Damageable)\
+setst(physical_box_type, ch, Normal, PTag::Dynamic_Solid)\
+setst(hitbox_type, ch, Silenced, HitBoxType::Damageable)\
+setst(offensive_hitbox_type, ch, Silenced, OTag::None)\
+setst(defensive_hitbox_type, ch, Silenced, DTag::Damageable)\
+setst(physical_box_type, ch, Silenced, PTag::Dynamic_Solid)\
+setst(hitbox_type, ch, Stunned, HitBoxType::Damageable)\
+setst(offensive_hitbox_type, ch, Stunned, OTag::None)\
+setst(defensive_hitbox_type, ch, Stunned, DTag::Damageable)\
+setst(physical_box_type, ch, Stunned, PTag::Dynamic_Solid)
 	do_for_all_chars;
 #undef X
 
+	setst(offensive_hitbox_type, Zombie, Normal, OTag::Damage);
+
+	
 	size[ID::Minotaur] = 12.f;
 	size[ID::Giant] = 30.f;
 

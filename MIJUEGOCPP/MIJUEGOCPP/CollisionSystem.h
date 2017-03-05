@@ -20,8 +20,10 @@ class CollisionSystem : public System {
 
 	private:
 		//Grid collision
-
+		
 		CollisionMatrix										collision_matrix = {};
+		CollisionMatrix										collision_matrix_physics = {};
+		CollisionMatrix										collision_matrix_hitbox = {};
 		#ifdef LISTS
 		std::vector<std::vector<Handle>>					section_entities;
 		#endif //LISTS
@@ -39,6 +41,8 @@ class CollisionSystem : public System {
 		std::vector<sf::Vector2f>							frame_start_offset;
 		void												check_collisions(float time);
 		void												handle_collisions(float time);
+		void												handle_hitbox_collisions(float time);
+		void												handle_physics_collisions(float time);
 
 		inline unsigned										first_child(unsigned nodo) { return nodo*grid_direct_children + 1; };
 		inline unsigned										children_end(unsigned nodo) { return nodo*grid_direct_children + grid_direct_children + 1; };
@@ -48,5 +52,7 @@ class CollisionSystem : public System {
 		static bool											check_collision_circle(const CollisionBody& c1, const CollisionBody& c2);
 		void												translate_boxes_to_global();
 		inline void											collide(Handle h1, Handle h2);
+		inline void											collide_physics(Handle h1, Handle h2);
+		inline void											collide_hitbox(Handle h1, Handle h2);
 };
 

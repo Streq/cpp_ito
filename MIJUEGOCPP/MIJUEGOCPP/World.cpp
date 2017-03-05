@@ -173,6 +173,10 @@ void World::make_player(const sf::Vector2f & pos, short unsigned player, Charact
 	CollisionInfo* tf;
 	if (tf = add_component<CollisionInfo>(h)) {
 		tf->tag = Tag::Character_Entity;
+		tf->pTag = PTag::Dynamic_Solid;
+		tf->dTag = DTag::Damageable;
+		tf->oTag = OTag::None;
+
 	}
 	Controller* cont;
 	if (cont = add_component<Controller>(h)) {
@@ -186,12 +190,14 @@ void World::make_player(const sf::Vector2f & pos, short unsigned player, Charact
 		st->facing_dir.y = -1.f;
 
 	}
-
 	Health* hl;
 	if (hl = add_component<Health>(h)) {
 		hl->init(Character::Stats::health[_class]);
 	}
-
+	Team* tm = add_component<Team>(h);
+	if (tm) {
+		tm->id=Team::None;
+	}
 }
 
 void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner)
@@ -230,6 +236,12 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 		own->set_owner(owner, h ,Relacion::aggregation);
 	}
 	
+	Team* tm = add_component<Team>(h);
+	if (tm) {
+		tm->id=vec_Team[owner].id;
+		tm->caster = owner;
+	}
+
 	TimeSpan* time = add_component<TimeSpan>(h);
 	if (time) {
 		time->time = duration;
@@ -261,9 +273,14 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	if (tf = add_component<CollisionInfo>(h)) {
 		tf->tag = Tag::Hit_Box;
 	}
-	Owner* tm;
-	if (tm = add_component<Owner>(h)) {
-		tm->set_owner(owner, h, Relacion::delete_on_hurt);
+	Owner* ow;
+	if (ow = add_component<Owner>(h)) {
+		ow->set_owner(owner, h, Relacion::delete_on_hurt);
+	}
+	Team* tm = add_component<Team>(h);
+	if (tm) {
+		tm->id=vec_Team[owner].id;
+		tm->caster = owner;
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
@@ -293,9 +310,14 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	if (tf = add_component<CollisionInfo>(h)) {
 		*tf = std::move(info);
 	}
-	Owner* tm;
-	if (tm = add_component<Owner>(h)) {
-		tm->set_owner(owner, h, Relacion::delete_on_hurt);
+	Owner* own;
+	if (own = add_component<Owner>(h)) {
+		own->set_owner(owner, h, Relacion::delete_on_hurt);
+	}
+	Team* tm = add_component<Team>(h);
+	if (tm) {
+		tm->id=vec_Team[owner].id;
+		tm->caster = owner;
 	}
 	State *st;
 	if (st = add_component<State>(h)) {
@@ -325,6 +347,7 @@ void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& a
 	CollisionInfo* tag = add_component<CollisionInfo>(h);
 	if (tag) {
 		*tag = colinfo;
+		
 	}
 
 	Movement* mov = add_component<Movement>(h);
@@ -356,7 +379,11 @@ void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& a
 			st->moving_dir *= 0.f;
 		}
 	}
-
+	Team* tm = add_component<Team>(h);
+	if (tm) {
+		tm->id=vec_Team[owner].id;
+		tm->caster = owner;
+	}
 	TimeSpan* time = add_component<TimeSpan>(h);
 	if (time) {
 		time->time = duration;
@@ -384,6 +411,9 @@ void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
 	CollisionInfo *tf;
 	if (tf = add_component<CollisionInfo>(h)) {
 		tf->tag = Tag::Wall;
+		tf->pTag = PTag::Static;
+		tf->dTag = DTag::Intangible;
+		tf->oTag = OTag::None;
 	}
 
 }
@@ -458,6 +488,7 @@ void World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amou
 		st->update(States::Spawner);
 		st->duration = spawn_time;
 		st->Class = Character::Zombie;
+
 	}
 	if (amount >= 0) {
 		TimeSpan *ts;
@@ -493,6 +524,12 @@ void World::make_zombie(const sf::Vector2f & pos) {
 	CollisionInfo *tf;
 	if (tf = add_component<CollisionInfo>(h)) {
 		tf->tag = Tag::Character_Entity;
+		tf->pTag = PTag::Dynamic_Solid;
+		tf->dTag = DTag::Damageable;
+		tf->oTag = OTag::Damage;
+		tf->damage = 10.f;
+		tf->knockback = 400.f;
+		tf->stun_time = sf::seconds(0.25f);
 	}
 	Controller* cont;
 	if (cont = add_component<Controller>(h)) {
@@ -507,6 +544,14 @@ void World::make_zombie(const sf::Vector2f & pos) {
 	if (hl = add_component<Health>(h)) {
 		hl->init(Character::Stats::health[Character::Zombie]);
 	}
+	Team* tm = add_component<Team>(h);
+	if (tm) {
+		tm->id = Team::HORDE;
+	}
+	//Owner* own;
+	//if (own = add_component<Owner>(h)){
+	//	own->team = 0;
+	//}
 	/*CollisionInfo inf;
 	inf.damage = Character::Stats::melee_hitbox_damage[Character::Zombie];
 	inf.type = HitBoxType::Hit;

@@ -3,7 +3,8 @@
 #include "Handle.h"
 #include "defines.h"
 struct Owner :public Component {
-	Handle owner;
+	Handle owner=max_entities;
+	bool lost_on_wall=false;
 private:
 	static matriz_padre_hijo_t matriz_padre_hijo;
 public:

@@ -11,10 +11,13 @@ namespace Skill {
 		Dash_Strike,//
 		Simple_Shot,//funca
 		Bounce_Shot,//funca
-		Teleport,//funca
-		Ram,//funca
-		Wave_Shot,//
-		Stun_Roar,//
+		Teleport,	//funca
+		Ram,		//funca
+		Wave_Shot,	//funca
+		/*Wave_Shot2,
+		Wave_Shot3,*/
+		Stun_Roar,//NEXT ONE
+		telekinetic_blades,
 		size
 	};
 	extern sf::Time buildup[size];

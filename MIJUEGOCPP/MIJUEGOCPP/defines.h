@@ -47,6 +47,10 @@ X(State)\
 X(Owner)\
 X(TimeSpan)\
 X(Health)\
-X(Damage)
+X(Damage)\
+X(Team)
 #define TESTMASK(a,b) ((Flagset(a) & Flagset(b))==b)
 
+#define PTag Physics_Tag
+#define OTag Offensive_Tag
+#define DTag Defensive_Tag

@@ -26,8 +26,11 @@ class World {
 		std::vector<Entity>						vec_Entity;
 
 		std::queue<Collision>					collision_queue;
+		std::queue<Collision>					collision_queue_physics;
+		std::queue<Collision>					collision_queue_hitbox;
 
-		
+
+
 		Handle									new_entity();
 		bool									remove_entity(Handle);
 		void									remove_children(Handle, Relacion::ID criteria);

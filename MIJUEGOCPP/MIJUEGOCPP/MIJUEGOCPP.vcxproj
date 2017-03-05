@@ -228,6 +228,7 @@
     <ClInclude Include="system_defines.h" />
     <ClInclude Include="System_includes.h" />
     <ClInclude Include="Tag.h" />
+    <ClInclude Include="Team.h" />
     <ClInclude Include="TextureHolder.h" />
     <ClInclude Include="TimeSpan.h" />
     <ClInclude Include="TimeSystem.h" />

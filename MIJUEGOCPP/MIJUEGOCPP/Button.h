@@ -18,8 +18,10 @@ class Button : public Component
 								Button(FontHolder& fonts);
 
 		void					setCallback(Callback callback);
-		void					setText(const std::string& text);
+		void					setText(const std::string& text, bool adjust_size=true);
 		void					setToggle(bool flag);
+		void					setSize(const sf::Vector2f&);
+
 
 		virtual bool			is_selectable() const;
 		virtual void			select();

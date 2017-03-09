@@ -138,6 +138,7 @@ void StateSystem::update(sf::Time dtime){
 		{
 			switch(st.current_skill){
 				case Skill::Simple_Melee:
+				case Skill::Mirror_Melee:
 				{
 					switch(st.skill_counter){
 						case 0:
@@ -148,7 +149,7 @@ void StateSystem::update(sf::Time dtime){
 								inf.damage = Skill::damage[st.current_skill] * Character::Stats::p_attack[st.Class];
 								float siz = Character::Stats::size[st.Class];
 
-								mWorld.make_hit_box(sf::Vector2f(SIGN(st.facing_dir.x), SIGN(st.facing_dir.y)) * siz, siz*sf::Vector2f(3, 3), i, std::move(inf), dt_max_fps*10.f);
+								mWorld.make_hit_box(sf::Vector2f(SIGN(st.facing_dir.x), SIGN(st.facing_dir.y)) * siz, siz*sf::Vector2f(3, 3), i, std::move(inf), Skill::hb_duration[st.current_skill]);
 								st.skill_counter++;
 							}
 						}break;
@@ -271,7 +272,43 @@ void StateSystem::update(sf::Time dtime){
 					if(st.time_since_start >= Skill::duration[st.current_skill]){
 						st.update(States::Normal);
 					}
-				}
+				}break;
+				case Skill::Dash:{
+					switch(st.skill_counter){
+						case 0:{
+							if(st.time_since_start>=Skill::buildup[st.current_skill])
+								mov.maxspeed = Skill::max_speed[st.current_skill];
+							mov.velocity += st.facing_dir * Skill::normal_speed[st.current_skill];
+							st.skill_counter++;
+						}break;
+						case 1:{
+							if(st.time_since_start>=Skill::duration[st.current_skill]){
+								st.update(States::Normal);
+							}
+						}
+					}
+				}break;case Skill::Dash_Strike:{
+					switch(st.skill_counter){
+						case 0:{
+							if(st.time_since_start>=Skill::buildup[st.current_skill])
+								mov.maxspeed = Skill::max_speed[st.current_skill];
+							mov.velocity += st.facing_dir * Skill::normal_speed[st.current_skill];
+							CollisionInfo inf;
+							inf = Skill::col_info[st.current_skill];
+							inf.damage = Skill::damage[st.current_skill] * Character::Stats::p_attack[st.Class];
+							float siz = Character::Stats::size[st.Class];
+
+							mWorld.make_hit_box(sf::Vector2f(SIGN(st.facing_dir.x), SIGN(st.facing_dir.y)) * siz, siz*sf::Vector2f(3, 3), i, std::move(inf), dt_max_fps*10.f);
+
+							st.skill_counter++;
+						}break;
+						case 1:{
+							if(st.time_since_start>=Skill::duration[st.current_skill]){
+								st.update(States::Normal);
+							}
+						}
+					}
+				}break;
 			}
 		}break;
 		case States::Spawner:

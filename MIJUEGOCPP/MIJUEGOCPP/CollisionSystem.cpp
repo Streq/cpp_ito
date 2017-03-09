@@ -229,6 +229,8 @@ void CollisionSystem::handle_physics_collisions(float time){
 		State& st1 = mWorld.vec_State[h1];
 		State& st2 = mWorld.vec_State[h2];
 
+		Team& tm1= mWorld.vec_Team[h1];
+		Team& tm2= mWorld.vec_Team[h2];
 		switch(t1.pTag){
 			case PTag::Static:
 			{
@@ -249,10 +251,13 @@ void CollisionSystem::handle_physics_collisions(float time){
 								//if no longer colliding (from previous collision resolution) no handling is needed
 								if(!check_collision_box(col2, col1)){ break; }
 
-								auto& own2 = mWorld.vec_Owner[h2];
-								if(own2.lost_on_wall) own2.owner = h1;
+								if(tm2.lost_on_wall) {
+									tm2.caster = max_entities;
+									tm2.id = Team::None;
+								}
+								
 
-
+								
 								auto aux_col2 = col2;
 
 								//get the collision box tf outta the collision zone
@@ -338,42 +343,58 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 		State& st1 = mWorld.vec_State[h1];
 		State& st2 = mWorld.vec_State[h2];
 
-		const auto& own1 = mWorld.vec_Team[h1];
-		const auto& own2 = mWorld.vec_Team[h2];
+		auto& own1 = mWorld.vec_Team[h1];
+		auto& own2 = mWorld.vec_Team[h2];
 
+		bool team_match= (own1.id==Team::None) || own1.id!=own2.id;
 
-		switch(t1.dTag){
-			case DTag::Damageable:{
-				switch(t2.oTag){
-					case OTag::Damage:
-					case OTag::Stun:{
-						const auto& team1=mWorld.vec_Team[h1].id;
-						const auto& team2=mWorld.vec_Team[h2].id;
+		if(team_match && h1 != own2.caster){
 
-						bool team_match= (team1==Team::None) || team1!=team2;
-						if(team_match && h1 != own2.caster){
-							sf::Vector2f pos2owner(pos2.getPosition());
-							if(pos2.relative_to!=max_entities){
-								pos2owner+=mWorld.vec_Position[pos2.relative_to].getPosition();
-							}
-							mov1.velocity = normalize(pos1.getPosition() - pos2owner) * t2.knockback;
+			switch(t1.dTag){
+				case DTag::Damageable:{
 
-							States::ID stat = (t2.oTag==OTag::Damage)?States::Hurt : States::Stunned;
-							mWorld.vec_State[h1].update(States::Hurt);
+					switch(t2.oTag){
+
+						case OTag::Damage:
+						case OTag::Stun:{
+							const auto& team1=own1.id;
+							const auto& team2=own2.id;
+
+							bool team_match= (team1==Team::None) || team1!=team2;
+							if(team_match && h1 != own2.caster){
+								sf::Vector2f pos2owner(pos2.getPosition());
+								mov1.velocity = normalize(mov2.velocity) * t2.momentum_knockback;
 							
-							mWorld.vec_State[h1].duration = t2.stun_time;
-							mWorld.vec_Health[h1].incoming_damage += t2.damage;
-							if(t2.delete_on_hit)mWorld.remove_entity(h2);
+								if(pos2.relative_to!=max_entities){
+									pos2owner+=mWorld.vec_Position[pos2.relative_to].getPosition();
+								}
+								mov1.velocity += normalize(pos1.getPosition() - pos2owner) * t2.knockback;
+								
+							
+							
+								States::ID stat = (t2.oTag==OTag::Damage)?States::Hurt : States::Stunned;
+								mWorld.vec_State[h1].update(States::Hurt);
+							
+								mWorld.vec_State[h1].duration = t2.stun_time;
+								mWorld.vec_Health[h1].incoming_damage += t2.damage;
+								if(t2.delete_on_hit)mWorld.remove_entity(h2);
+						
+						}break;
+					}
+				}break;
+				case DTag::Reflect:{
+					if(t2.reflectable){
+							own2.caster=h1;
+							own2.id=own1.id;
+							mov2.velocity=-mov2.velocity;
 						}
-					}break;
+					}
+				}break;
+				case DTag::Invincible:{
+					if(t2.delete_on_hit)mWorld.remove_entity(h2);
 				}
-			}break;
-			case DTag::Invincible:{
-				if(t2.delete_on_hit)mWorld.remove_entity(h2);
 			}
 		}
-
-
 		cqueue.pop();
 	}
 }

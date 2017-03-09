@@ -7,8 +7,8 @@ namespace Skill {
 		Simple_Melee,//funca
 		Mirror_Melee,//
 		Slow_Big_Melee,//
-		Dash,//
-		Dash_Strike,//
+		Dash,		//funca
+		Dash_Strike,//funca
 		Simple_Shot,//funca
 		Bounce_Shot,//funca
 		Teleport,	//funca
@@ -22,6 +22,7 @@ namespace Skill {
 	};
 	extern sf::Time buildup[size];
 	extern sf::Time duration[size];
+	extern sf::Time hb_duration[size];
 	extern int damage[size];
 	extern CollisionInfo col_info[size];
 	extern float bullet_speed[size];

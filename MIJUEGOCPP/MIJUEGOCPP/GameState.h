@@ -18,6 +18,7 @@ class GameState{
 			STATE_GAME_MODE,
 			STATE_GAME,
 			STATE_CHARACTER_SELECT,
+			STATE_PAUSE
 		};
 
 

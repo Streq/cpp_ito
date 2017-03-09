@@ -26,7 +26,7 @@ void GameStateStack::handle_event(const sf::Event & e){
 }
 
 void GameStateStack::draw() const{
-	for(auto itr=mStack.rbegin(); itr!=mStack.rend(); itr++){
+	for(auto itr=mStack.begin(); itr!=mStack.end(); itr++){
 		(*itr)->draw();
 	}
 }

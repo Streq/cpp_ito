@@ -86,23 +86,23 @@ set_skill(ch,1,sk1);\
 set_skill(ch,2,sk2);\
 set_skill(ch,3,sk3);
 
-	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Dash, Teleport);
+	set_skills(TimeTraveler, Bounce_Shot, Mirror_Melee, Dash_Strike, Teleport);
 	set_skills(Minotaur, Simple_Melee, Ram, Wave_Shot, Teleport);
 	set_skills(Giant, Slow_Big_Melee, None, None, None);
-	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash, None);
+	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash_Strike, None);
 
 
 
 
 	
 #define set_color(ch, st, col) color[ID::##ch][States::##st]=col;
-	set_color(TimeTraveler, Normal, Color::Blue);
+	set_color(TimeTraveler, Normal, Color::Green);
 	set_color(TimeTraveler, Hurt, Color::Red);
-	set_color(TimeTraveler, Casting, Color::Blue + Color::Grey);
+	set_color(TimeTraveler, Casting, Color::Green + Color::Grey);
 
-	set_color(Tennist, Normal, Color::Green);
+	set_color(Tennist, Normal, Color::Blue);
 	set_color(Tennist, Hurt, Color::Red);
-	set_color(Tennist, Casting, Color::Green + Color::Grey);
+	set_color(Tennist, Casting, Color::Blue + Color::Grey);
 
 	set_color(Minotaur, Normal, Color::Magenta);
 	set_color(Minotaur, Hurt, Color::Red);

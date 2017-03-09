@@ -27,13 +27,29 @@ void GUI::Button::setCallback(Callback callback){
 	mCallback=callback;
 }
 
-void GUI::Button::setText(const std::string & text){
+void GUI::Button::setText(const std::string & text, bool adjust_size){
 	mText.setString(text);
 	centerOrigin(mText);
+	if(adjust_size){
+		auto bounds = mText.getGlobalBounds();
+		auto cur_size = mSprite.getSize();
+		if(bounds.width >= cur_size.x){
+			float dif=bounds.width + 5 - cur_size.x;
+			cur_size.x += dif;
+
+			
+			mSprite.setSize(cur_size);
+			mSprite.move(-dif / 2.f, 0.f);
+		}
+	}
 }
 
 void GUI::Button::setToggle(bool flag){
 	mIsToggle=flag;
+}
+
+void GUI::Button::setSize(const sf::Vector2f &size){
+	mSprite.setSize(size);
 }
 
 bool GUI::Button::is_selectable() const{

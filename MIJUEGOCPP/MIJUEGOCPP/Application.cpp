@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "defines.h"
 #include "MenuState.h"
+#include "PauseState.h"
 #include "Game.h"
 Application::Application():
 	mWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y), "mi juegazo", sf::Style::Default),
@@ -73,6 +74,7 @@ void Application::render(){
 void Application::register_states(){
 	mStateStack.register_state<MenuState>(GameState::STATE_MAIN_MENU);
 	mStateStack.register_state<Game>(GameState::STATE_GAME);
+	mStateStack.register_state<PauseState>(GameState::STATE_PAUSE);
 }
 
 void Application::run(){

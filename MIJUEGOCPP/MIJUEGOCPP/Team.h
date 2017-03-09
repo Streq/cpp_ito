@@ -11,5 +11,6 @@ struct Team : public Component{
 		TEAM_4
 	};
 	int id = None;
+	bool lost_on_wall = false;
 	Handle caster = max_entities;
 };

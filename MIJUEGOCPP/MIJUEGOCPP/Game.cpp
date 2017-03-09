@@ -72,52 +72,56 @@ bool Game::handle_event(const sf::Event& e) {
 			input_data inp(e.key.code, input_data::keyboard);
 			for (int i = 0; i < MAX_PLAYERS; i++)
 				(*mContext.controllers)[i].update_key(inp, false);
-			if (e.key.code == sf::Keyboard::Num1) {
-				mWorld.clear();
-				zombie_wave_init(10, 5, 50);
-				//this->zombie_rush_init(2000, 50);
-				break;
+			
+			switch(e.key.code){
+				case sf::Keyboard::Return:{
+					requestStackPush(GameState::STATE_PAUSE);
+				}break;
+				case sf::Keyboard::Num1: {
+					mWorld.clear();
+					zombie_wave_init(10, 5, 50);
+					//this->zombie_rush_init(2000, 50);
+				}break;
+				case sf::Keyboard::Num2: {
+					mWorld.clear();
+					zombie_wave_init_2_players(10, 5, 50);
+				}break;
+				case sf::Keyboard::Num3: {
+					mWorld.clear();
+					zombie_wave_init_2_players(0, 0, 50);
+					//this->zombie_rush_init(2000, 50);
+				}break;
+				case sf::Keyboard::Num4: {
+					mWorld.clear();
+					zombie_rush_init(1000, 50);
+					//this->zombie_rush_init(2000, 50);
+				}break;
+				case sf::Keyboard::Num5: {
+					mWorld.clear();
+					zombie_rush_init(1000, 0);
+					//this->zombie_rush_init(2000, 50);
+					
+				}break;
+				case sf::Keyboard::Num6: {
+					mWorld.clear();
+					zombie_rush_init(0, 0);
+					//this->zombie_rush_init(2000, 50);
+					
+				}break;
+				case sf::Keyboard::Num7: {
+					mWorld.clear();
+					zombie_rush_init(4, 0);
+					//this->zombie_rush_init(2000, 50);
+					
+				}break;
+				case sf::Keyboard::Num8: {
+					mWorld.clear();
+					zombie_rush_init(20, 50);
+					//this->zombie_rush_init(2000, 50);
+					
+				}break;
 			}
-			if (e.key.code == sf::Keyboard::Num2) {
-				mWorld.clear();
-				zombie_wave_init_2_players(10, 5, 50);
-				break;
-			}
-			if (e.key.code == sf::Keyboard::Num3) {
-				mWorld.clear();
-				zombie_wave_init_2_players(0, 0, 50);
-				//this->zombie_rush_init(2000, 50);
-				break;
-			}
-			if (e.key.code == sf::Keyboard::Num4) {
-				mWorld.clear();
-				zombie_rush_init(1000, 50);
-				//this->zombie_rush_init(2000, 50);
-				break;
-			}
-			if (e.key.code == sf::Keyboard::Num5) {
-				mWorld.clear();
-				zombie_rush_init(1000, 0);
-				//this->zombie_rush_init(2000, 50);
-				break;
-			}
-			if (e.key.code == sf::Keyboard::Num6) {
-				mWorld.clear();
-				zombie_rush_init(0, 0);
-				//this->zombie_rush_init(2000, 50);
-				break;
-			}
-			if (e.key.code == sf::Keyboard::Num7) {
-				mWorld.clear();
-				zombie_rush_init(4, 0);
-				//this->zombie_rush_init(2000, 50);
-				break;
-			}if (e.key.code == sf::Keyboard::Num8) {
-				mWorld.clear();
-				zombie_rush_init(20, 50);
-				//this->zombie_rush_init(2000, 50);
-				break;
-			}
+			
 		}break;
 			
 		case sf::Event::KeyPressed:{
@@ -164,6 +168,7 @@ bool Game::update(sf::Time dt) {
 }
 
 void Game::draw() const{
+	mContext.window->clear(Color::Super_Dark_Green);
 	mRenderSystem->draw(*mContext.window);
 }
 
@@ -231,7 +236,7 @@ void Game::stress_init() {
 
 void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls) {
 	
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0,Character::Minotaur);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0,Character::TimeTraveler);
 	for (unsigned j = 0; j < spawners; j++)
 		mWorld.make_spawner(
 			sf::Vector2f(
@@ -263,7 +268,7 @@ void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls)
 }
 
 void Game::zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsigned walls) {
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2 + 100.f, WINDOW_SIZE_Y / 2), 1, Character::Minotaur);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2 + 100.f, WINDOW_SIZE_Y / 2), 1, Character::TimeTraveler);
 	zombie_wave_init(std::move(zombies), std::move(spawners), std::move(walls));
 	
 }
@@ -272,7 +277,7 @@ void Game::zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsig
 
 void Game::zombie_rush_init(unsigned zombies, unsigned walls) {
 
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2), 0, Character::Minotaur);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2), 0, Character::TimeTraveler);
 	
 	
 	mWorld.make_wall

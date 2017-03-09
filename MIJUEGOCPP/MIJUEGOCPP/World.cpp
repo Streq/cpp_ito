@@ -240,6 +240,7 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	if (tm) {
 		tm->id=vec_Team[owner].id;
 		tm->caster = owner;
+		tm->lost_on_wall = true;
 	}
 
 	TimeSpan* time = add_component<TimeSpan>(h);

@@ -18,7 +18,7 @@ MenuState::MenuState(GameStateStack & stack, Context cont):
 	exitButton->setCallback([this](){
 		this->requestStackClear();
 	});
-	exitButton->setPosition(200,300);
+	exitButton->setPosition(200,250);
 	mContainer.pack(playButton);
 	mContainer.pack(exitButton);
 	

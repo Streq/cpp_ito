@@ -8,12 +8,12 @@ enum {
 	WINDOW_SIZE_Y = 600,
 	FPS = 60,
 	MAX_FPS = 60,
-	players = 2,
+	MAX_PLAYERS = 2,
 	skill_num = 4,
 };
 const sf::Time dt = sf::seconds(1.0f / FPS);
 const sf::Time dt_max_fps = sf::seconds(1.0f / MAX_FPS);
-const sf::Time fps_update_time = sf::seconds(1.f);
+const sf::Time time_fps_update = sf::seconds(1.f);
 const float joy_deadzone = 40.f;
 
 namespace Relacion {

@@ -19,7 +19,7 @@ void Skill::init() {
 	col_info[Simple_Melee].dTag = DTag::Intangible;
 	col_info[Simple_Melee].oTag = OTag::Damage;
 	col_info[Simple_Melee].pTag = PTag::Intangible;
-	col_info[Simple_Melee].delete_on_hit = true;
+	col_info[Simple_Melee].delete_on_hit = false;
 	col_info[Simple_Melee].stun_time = sf::seconds(0.5);
 	col_info[Simple_Melee].knockback = 700.f;
 

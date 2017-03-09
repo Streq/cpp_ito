@@ -41,7 +41,7 @@ class World {
 		World(std::vector<ptr<System>>&,const sf::Vector2f& size);
 		const sf::Vector2f&						getSize() const;
 		void									clear();
-		Handle									vec_players[players];
+		Handle									vec_players[MAX_PLAYERS];
 
 	public:
 		void									make_player(const sf::Vector2f& pos, short unsigned player, Character::ID _class);

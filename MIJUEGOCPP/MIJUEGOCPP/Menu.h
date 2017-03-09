@@ -1,8 +1,13 @@
 #pragma once
-#include<vector>
-#include "Button.h"
 /*
-class Menu
+#include<SFML/Graphics.hpp>
+#include<vector>
+
+
+#include "Button.h"
+
+
+class Menu : public sf::Drawable
 {
 private:
 	void															execute(unsigned);
@@ -17,5 +22,4 @@ public:
 	void															go_back();
 
 };
-
 */

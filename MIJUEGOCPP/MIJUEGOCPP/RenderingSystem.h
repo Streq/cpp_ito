@@ -5,6 +5,7 @@
 class RenderingSystem :public System{
 public:
 	virtual void							update(sf::Time);
+	void									draw(sf::RenderWindow& window);
 	RenderingSystem(World&,sf::RenderTarget&);
 	
 	sf::RenderTarget&						mWindow;

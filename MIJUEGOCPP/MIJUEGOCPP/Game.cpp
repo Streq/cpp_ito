@@ -6,30 +6,28 @@
 #include "System_includes.h"
 #include "components_header.h"
 extern long long colisiones = 0;
-Game::Game()
-: mWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y), "mi juegazo", sf::Style::Default)
-, vec_System()
-, mWorld(this->vec_System,sf::Vector2f(WINDOW_SIZE_X,WINDOW_SIZE_Y))	
+Game::Game(GameStateStack& s, Context c):
+	GameState(s,c),
+	vec_System(),
+	mWorld(this->vec_System,sf::Vector2f(WINDOW_SIZE_X,WINDOW_SIZE_Y))	
 {	
 	srand(time(NULL));
-	fonts.load(Font::arial, "Resources/arial.ttf");
-
+	
 	vec_System.push_back(ptr<System>(new TimeSystem(this->mWorld)));
-	vec_System.push_back(ptr<System>(new ControllerSystem(this->mWorld, this->controller)));
+	vec_System.push_back(ptr<System>(new ControllerSystem(this->mWorld, *mContext.controllers)));
 	vec_System.push_back(ptr<System>(new StateSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new MovementSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new CollisionSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new HealthSystem(this->mWorld)));
-	vec_System.push_back(ptr<System>(new RenderingSystem(this->mWorld, this->mWindow)));
 	
-	mWindow.setKeyRepeatEnabled(false);
-	mWindow.setVerticalSyncEnabled(true);
+	mRenderSystem = new RenderingSystem(mWorld, *(mContext.window));
+	vec_System.push_back(ptr<System>(mRenderSystem));
 	
+	init();
 }
-
+/*
 int Game::run() {
 	init();
-	clock.restart();
 	sf::Time elapsed_time = sf::Time::Zero;
 	sf::Time accum_time = sf::Time::Zero;
 	sf::Time fps_timer = sf::Time::Zero;
@@ -37,7 +35,7 @@ int Game::run() {
 	
 	
 	while (mWindow.isOpen()) {
-		process_events();
+		handle_events();
 		sf::Time frame_time=clock.restart();
 		accum_time += frame_time;
 		bool hubo_frame = false;
@@ -47,8 +45,8 @@ int Game::run() {
 			accum_time -= dt;
 			elapsed_time += dt;
 			fps_timer += dt;
-			for (int i = 0; i < players; i++)
-				controller[i].clear_updated();
+			for (int i = 0; i < MAX_PLAYERS; i++)
+				(*mContext.controllers)[i].clear_updated();
 		}
 		if (fps_timer >= fps_update_time) {
 			update_fps(frame_count);
@@ -58,124 +56,115 @@ int Game::run() {
 		frame_count+=hubo_frame;
 		if (hubo_frame) {
 			mWindow.draw(fps_text);
-			render();
+			draw();
 		}
 	}
 
 	return 0;
 }
+*/
 
-inline void Game::update_fps(sf::Uint16 fps_count) {
-	fps_text.setString("fps:" + std::to_string(fps_count));
-}
 
-void Game::process_events() {
+bool Game::handle_event(const sf::Event& e) {
 
-	sf::Event event;
-	while (mWindow.pollEvent(event)) {
-		switch (event.type) {
-
-			case sf::Event::Closed:
-				mWindow.close();
+	switch (e.type) {
+		case sf::Event::KeyReleased:{
+			input_data inp(e.key.code, input_data::keyboard);
+			for (int i = 0; i < MAX_PLAYERS; i++)
+				(*mContext.controllers)[i].update_key(inp, false);
+			if (e.key.code == sf::Keyboard::Num1) {
+				mWorld.clear();
+				zombie_wave_init(10, 5, 50);
+				//this->zombie_rush_init(2000, 50);
 				break;
-
-			case sf::Event::KeyReleased:{
-				input_data inp(event.key.code, input_data::keyboard);
-				for (int i = 0; i < players; i++)
-					controller[i].update_key(inp, false);
-				if (event.key.code == sf::Keyboard::Num1) {
-					mWorld.clear();
-					zombie_wave_init(10, 5, 50);
-					//this->zombie_rush_init(2000, 50);
-					break;
-				}
-				if (event.key.code == sf::Keyboard::Num2) {
-					mWorld.clear();
-					zombie_wave_init_2_players(10, 5, 50);
-					break;
-				}
-				if (event.key.code == sf::Keyboard::Num3) {
-					mWorld.clear();
-					zombie_wave_init_2_players(0, 0, 50);
-					//this->zombie_rush_init(2000, 50);
-					break;
-				}
-				if (event.key.code == sf::Keyboard::Num4) {
-					mWorld.clear();
-					zombie_rush_init(1000, 50);
-					//this->zombie_rush_init(2000, 50);
-					break;
-				}
-				if (event.key.code == sf::Keyboard::Num5) {
-					mWorld.clear();
-					zombie_rush_init(1000, 0);
-					//this->zombie_rush_init(2000, 50);
-					break;
-				}
-				if (event.key.code == sf::Keyboard::Num6) {
-					mWorld.clear();
-					zombie_rush_init(0, 0);
-					//this->zombie_rush_init(2000, 50);
-					break;
-				}
-				if (event.key.code == sf::Keyboard::Num7) {
-					mWorld.clear();
-					zombie_rush_init(4, 0);
-					//this->zombie_rush_init(2000, 50);
-					break;
-				}if (event.key.code == sf::Keyboard::Num8) {
-					mWorld.clear();
-					zombie_rush_init(20, 50);
-					//this->zombie_rush_init(2000, 50);
-					break;
-				}
-			}break;
+			}
+			if (e.key.code == sf::Keyboard::Num2) {
+				mWorld.clear();
+				zombie_wave_init_2_players(10, 5, 50);
+				break;
+			}
+			if (e.key.code == sf::Keyboard::Num3) {
+				mWorld.clear();
+				zombie_wave_init_2_players(0, 0, 50);
+				//this->zombie_rush_init(2000, 50);
+				break;
+			}
+			if (e.key.code == sf::Keyboard::Num4) {
+				mWorld.clear();
+				zombie_rush_init(1000, 50);
+				//this->zombie_rush_init(2000, 50);
+				break;
+			}
+			if (e.key.code == sf::Keyboard::Num5) {
+				mWorld.clear();
+				zombie_rush_init(1000, 0);
+				//this->zombie_rush_init(2000, 50);
+				break;
+			}
+			if (e.key.code == sf::Keyboard::Num6) {
+				mWorld.clear();
+				zombie_rush_init(0, 0);
+				//this->zombie_rush_init(2000, 50);
+				break;
+			}
+			if (e.key.code == sf::Keyboard::Num7) {
+				mWorld.clear();
+				zombie_rush_init(4, 0);
+				//this->zombie_rush_init(2000, 50);
+				break;
+			}if (e.key.code == sf::Keyboard::Num8) {
+				mWorld.clear();
+				zombie_rush_init(20, 50);
+				//this->zombie_rush_init(2000, 50);
+				break;
+			}
+		}break;
 			
-			case sf::Event::KeyPressed:{
-				input_data inp(event.key.code, input_data::keyboard);
-				for (int i = 0; i < players; i++)
-					controller[i].update_key(inp, true);
+		case sf::Event::KeyPressed:{
+			input_data inp(e.key.code, input_data::keyboard);
+			for (int i = 0; i < MAX_PLAYERS; i++)
+				(*mContext.controllers)[i].update_key(inp, true);
 			
-			}break;
+		}break;
 
-			case sf::Event::JoystickMoved:{
-				bool pushed = abs(event.joystickMove.position) > joy_deadzone;
-				int axis_pos = SIGN(event.joystickMove.position);
-				input_data inppos(event.joystickMove.axis, input_data::Type::joy_axis, event.joystickMove.joystickId, axis_pos);
-				input_data inpneg(event.joystickMove.axis, input_data::Type::joy_axis, event.joystickMove.joystickId, -axis_pos);
-				for (int i = 0; i < players; i++){
-					controller[i].update_key(inppos, pushed);
-					controller[i].update_key(inpneg, false);
-				}
-				//std::cout << inp.code << " " << inp.type << " " << inp.joy_ID << " " << inp.pos_axis << " "<< event.joystickMove.position << std::endl;
-			}break;
+		case sf::Event::JoystickMoved:{
+			bool pushed = abs(e.joystickMove.position) > joy_deadzone;
+			int axis_pos = SIGN(e.joystickMove.position);
+			input_data inppos(e.joystickMove.axis, input_data::Type::joy_axis, e.joystickMove.joystickId, axis_pos);
+			input_data inpneg(e.joystickMove.axis, input_data::Type::joy_axis, e.joystickMove.joystickId, -axis_pos);
+			for (int i = 0; i < MAX_PLAYERS; i++){
+				(*mContext.controllers)[i].update_key(inppos, pushed);
+				(*mContext.controllers)[i].update_key(inpneg, false);
+			}
+			//std::cout << inp.code << " " << inp.type << " " << inp.joy_ID << " " << inp.pos_axis << " "<< event.joystickMove.position << std::endl;
+		}break;
 
-			case sf::Event::JoystickButtonPressed: {
-				input_data inp(event.joystickButton.button, input_data::joy_button,event.joystickButton.joystickId);
-				for (int i = 0; i < players; i++)
-					controller[i].update_key(inp, true);
-			}break;
+		case sf::Event::JoystickButtonPressed: {
+			input_data inp(e.joystickButton.button, input_data::joy_button,e.joystickButton.joystickId);
+			for (int i = 0; i < MAX_PLAYERS; i++)
+				(*mContext.controllers)[i].update_key(inp, true);
+		}break;
 
-			case sf::Event::JoystickButtonReleased: {
-				input_data inp(event.joystickButton.button, input_data::joy_button, event.joystickButton.joystickId);
-				for (int i = 0; i < players; i++)
-					controller[i].update_key(inp, false);
-				std::cout << "se apreto la tecla " << event.joystickButton.button << std::endl;
-			}break;
-		}
+		case sf::Event::JoystickButtonReleased: {
+			input_data inp(e.joystickButton.button, input_data::joy_button, e.joystickButton.joystickId);
+			for (int i = 0; i < MAX_PLAYERS; i++)
+				(*mContext.controllers)[i].update_key(inp, false);
+			std::cout << "se apreto la tecla " << e.joystickButton.button << std::endl;
+		}break;
 	}
-
+	return false;
 }
 
-void Game::update(const sf::Time& dt) {
+bool Game::update(sf::Time dt) {
 	
 	for (ptr<System>& sys : vec_System) {
 		sys->update(dt);
 	}
+	return false;
 }
 
-void Game::render() {
-	mWindow.display();
+void Game::draw() const{
+	mRenderSystem->draw(*mContext.window);
 }
 
 void Game::init() {
@@ -183,35 +172,15 @@ void Game::init() {
 	Character::Stats::init();
 
 
-	#define W(player, action,input) controller[player].set_key(input_data(PlayerInput::Key::##input,input_data::keyboard),Input::##action);
-	W(0,up, Up)
-	W(0,down, Down)
-	W(0,left, Left)
-	W(0,right, Right)
-	W(0,skill1, Z)
-	W(0,skill2, X)
-	W(0,skill3, C)
-	W(0,skill4, V)
-
-	W(1, up, W)
-	W(1, down, S)
-	W(1, left, A)
-	W(1, right, D)
-	W(1, skill1, Q)
-	W(1, skill2, Q)
-	W(1, skill3, Q)
-	W(1, skill4, Q)
-
-	#undef W
-
+	
 	/*
-	#define W(action,axis,sign) controller[1].set_key(input_data(axis,input_data::joy_axis,0,sign),Input::##action);
+	#define W(action,axis,sign) (*mContext.controllers)[1].set_key(input_data(axis,input_data::joy_axis,0,sign),Input::##action);
 	W(up, sf::Joystick::Axis::Y,-1)
 	W(down, sf::Joystick::Axis::Y, 1)
 	W(left, sf::Joystick::Axis::X, -1)
 	W(right, sf::Joystick::Axis::X, 1)
 	#undef W
-#define W(action,key) controller[1].set_key(input_data(JoyButtons::##key,input_data::joy_button,0),Input::##action);
+#define W(action,key) (*mContext.controllers)[1].set_key(input_data(JoyButtons::##key,input_data::joy_button,0),Input::##action);
 	W(skill1, LB)
 	W(skill2, RB)
 	W(skill3, A)
@@ -219,7 +188,6 @@ void Game::init() {
 	#undef W
 	*/
 	CollisionInfo::init_matrix();
-	fps_text=sf::Text(sf::String("fps"), fonts.get(Font::arial), 15u);
 	
 	//State::init_globals();
 	//Entity initialization
@@ -235,7 +203,7 @@ void Game::stress_init() {
 		Rendering *r;
 		if (r = mWorld.add_component<Rendering>(h)) {
 			//sf::RectangleShape *c = new sf::RectangleShape(sf::Vector2f(10.f,100.f));
-			sf::Text *c = new sf::Text("________HABIA UNA VEZ UN BARCO CHIQUITO QUE VIVIA EN PEHUAJO PERO UN DIA SE MARCHO NADIE SUPO BIEN POR QUE_______", fonts.get(Font::arial), 15u);
+			sf::Text *c = new sf::Text("________HABIA UNA VEZ UN BARCO CHIQUITO QUE VIVIA EN PEHUAJO PERO UN DIA SE MARCHO NADIE SUPO BIEN POR QUE_______", mContext.fonts->get(Font::arial), 15u);
 			c->setFillColor(sf::Color::Blue);//(rand(), rand(), rand()));
 			//auto& rect=c->getSize();
 			auto& rect = c->getGlobalBounds();
@@ -245,7 +213,7 @@ void Game::stress_init() {
 		}
 		Position *p;
 		if (p = mWorld.add_component<Position>(h)) {
-			p->setPosition(sf::Vector2f(static_cast<float>((rand() - rand()) % int(mWindow.getSize().x * 1.2)), static_cast<float>((rand() - rand()) % int(mWindow.getSize().y * 1.2))));
+			p->setPosition(sf::Vector2f(static_cast<float>((rand() - rand()) % int(WINDOW_SIZE_X * 1.2)), static_cast<float>((rand() - rand()) % int(WINDOW_SIZE_Y * 1.2))));
 		}
 		Movement *m;
 		if (m = mWorld.add_component<Movement>(h)) {

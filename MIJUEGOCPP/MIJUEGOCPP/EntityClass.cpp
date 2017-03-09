@@ -46,7 +46,7 @@ set(on_wall,ch,CollisionInfo::stop)\
 setst(hitbox_type, ch, Hurt, HitBoxType::Intangible)\
 setst(offensive_hitbox_type, ch, Hurt, OTag::None)\
 setst(defensive_hitbox_type, ch, Hurt, DTag::Intangible)\
-setst(physical_box_type, ch, Hurt, PTag::Dynamic_Solid)\
+setst(physical_box_type, ch, Hurt, PTag::Dynamic_Non_Solid)\
 setst(hitbox_type, ch, Casting, HitBoxType::Damageable)\
 setst(offensive_hitbox_type, ch, Casting, OTag::None)\
 setst(defensive_hitbox_type, ch, Casting, DTag::Damageable)\

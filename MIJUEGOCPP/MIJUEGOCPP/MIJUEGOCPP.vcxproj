@@ -159,15 +159,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionBody.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="CollisionInfo.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Container.cpp" />
     <ClCompile Include="EntityClass.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GameStateStack.cpp" />
+    <ClCompile Include="GUI_Component.cpp" />
     <ClCompile Include="HealthSystem.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="StateSystem.cpp" />
     <ClCompile Include="PlayerInput.cpp" />
@@ -185,8 +191,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Action.h" />
+    <ClInclude Include="Application.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Container.h" />
     <ClInclude Include="EntityClass.h" />
     <ClInclude Include="clamp.h" />
     <ClInclude Include="Collision.h" />
@@ -200,12 +208,16 @@
     <ClInclude Include="ControllerSystem.h" />
     <ClInclude Include="Damage.h" />
     <ClInclude Include="FontHolder.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameStateStack.h" />
+    <ClInclude Include="GUI_Component.h" />
     <ClInclude Include="Handle.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Health.h" />
     <ClInclude Include="HealthSystem.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="States.h" />
@@ -230,6 +242,7 @@
     <ClInclude Include="Tag.h" />
     <ClInclude Include="Team.h" />
     <ClInclude Include="TextureHolder.h" />
+    <ClInclude Include="Text_Util.h" />
     <ClInclude Include="TimeSpan.h" />
     <ClInclude Include="TimeSystem.h" />
     <ClInclude Include="vec_magn.h" />

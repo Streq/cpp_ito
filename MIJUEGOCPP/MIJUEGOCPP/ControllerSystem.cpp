@@ -23,10 +23,10 @@ ControllerSystem::ControllerSystem(World& world, controllers& input)
 
 void ControllerSystem::update(sf::Time t) {
 	float time = t.asSeconds();
-	const bool* pressed[players];
-	const bool* updated[players];
+	const bool* pressed[MAX_PLAYERS];
+	const bool* updated[MAX_PLAYERS];
 	
-	for (int i2 = 0; i2 < players; i2++) {
+	for (int i2 = 0; i2 < MAX_PLAYERS; i2++) {
 		updated[i2] = player_controller[i2].get_updated();
 		pressed[i2] = player_controller[i2].get_pressed();
 	}
@@ -85,7 +85,7 @@ void ControllerSystem::update(sf::Time t) {
 				//look for closest player_states
 				float distance = -1;
 				Handle current_player = -1;
-				for (int j = 0; j < players; j++) {
+				for (int j = 0; j < MAX_PLAYERS; j++) {
 					Handle player = mWorld.vec_players[j];
 					if (entities[player] && mWorld.vec_Controller[player].controller==controller::Player) {
 						if (distance < 0) {

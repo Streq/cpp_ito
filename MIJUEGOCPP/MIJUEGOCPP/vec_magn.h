@@ -56,3 +56,4 @@ inline float get_angle(const sf::Vector2f& vec) {
 inline sf::Vector2f normal(const sf::Vector2f& vec) {
 	return sf::Vector2f(-vec.y, vec.x);
 }
+

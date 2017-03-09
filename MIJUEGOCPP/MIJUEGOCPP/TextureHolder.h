@@ -2,9 +2,7 @@
 #include "ResourceHolder.h"
 namespace Texture {
 	enum ID {
-		Player,
-		Enemy,
-		jajax
+		MENU_BACKGROUND
 	};
 }
 

@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
-#include "Game.h"
+#include "Application.h"
 int main(){
-	Game mJuego;
-	return mJuego.run();
+	Application mJuego;
+	mJuego.run();
+	return 0;
 }

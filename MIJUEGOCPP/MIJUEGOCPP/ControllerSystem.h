@@ -5,7 +5,7 @@
 class ControllerSystem : public System {
 public:
 
-	typedef PlayerInput controllers[players];
+	typedef std::array<PlayerInput,MAX_PLAYERS> controllers;
 	virtual void							update(sf::Time);
 	ControllerSystem(World&, controllers&);
 

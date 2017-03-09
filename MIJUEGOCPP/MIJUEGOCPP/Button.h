@@ -1,12 +1,52 @@
 #pragma once
 #include <SFML/Graphics/Text.hpp>
-/*
-#include "Game.h"
-class Button
+#include <functional>
+#include "GUI_Component.h"
+#include "FontHolder.h"
+class Game;
+
+namespace GUI{
+
+
+class Button : public Component
 {
-public:
-	sf::Text						label;
-	void							click();
-	void (Game::*					function) ();
+
+	public:
+		typedef std::function<void()>	Callback;
+		typedef std::shared_ptr<Button> Ptr;
+
+								Button(FontHolder& fonts);
+
+		void					setCallback(Callback callback);
+		void					setText(const std::string& text);
+		void					setToggle(bool flag);
+
+		virtual bool			is_selectable() const;
+		virtual void			select();
+		virtual void			deselect();
+
+		virtual void			activate();
+		virtual void			deactivate();
+
+		virtual void			handle_event(const sf::Event& event);
+
+
+	private:	
+		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
+	
+		static sf::Color				Color_Not_Selected;
+		static sf::Color				Color_Selected;
+		static sf::Color				Color_Pressed;
+		static sf::Color				Color_Not_Pressed;
+
+
+
+		sf::Text						mText;
+		Callback						mCallback;
+		sf::RectangleShape				mSprite;
+		bool							mIsToggle;
 };
-*/
+
+
+
+}

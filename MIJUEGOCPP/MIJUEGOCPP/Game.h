@@ -4,29 +4,22 @@
 #include "World.h"
 #include "FontHolder.h"
 #include "defines.h"
-
-class Game {
+#include "GameState.h"
+#include "RenderingSystem.h"
+class Game : public GameState{
+	public:
+		//int					run();
+		Game(GameStateStack& s, Context c);
 	private:
-
-		sf::RenderWindow			mWindow;
-		
-		
-		sf::Clock					clock;
-		PlayerInput					controller[2];
-		
 		std::vector<ptr<System>>	vec_System;
 		World						mWorld;
+		RenderingSystem*			mRenderSystem;
 		
-		FontHolder					fonts;
-		sf::Text					fps_text;
-
 	private:
-		void				process_events();
-		void				update(const sf::Time& tiempo);
+		virtual bool		update(sf::Time tiempo);
+		virtual void		draw() const;
 		void				init();
-		void				render();
-		void				update_fps(sf::Uint16 fps_count);
-
+		virtual bool		handle_event(const sf::Event& e);
 
 	private:
 		void				stress_init();
@@ -34,7 +27,5 @@ class Game {
 		void				zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsigned walls);
 		void				zombie_rush_init(unsigned zombies, unsigned walls);
 		void				player_init();
-	public:
-		int					run();
-							Game();
+	
 };

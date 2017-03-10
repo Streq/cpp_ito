@@ -16,7 +16,7 @@ class CollisionSystem : public System {
 		virtual void							update(sf::Time);
 		CollisionSystem(World&);
 		
-		typedef bool CollisionMatrix[max_entities][max_entities];
+		typedef bool CollisionMatrix[MAX_ENTITIES][MAX_ENTITIES];
 
 	private:
 		//Grid collision
@@ -47,6 +47,7 @@ class CollisionSystem : public System {
 		inline unsigned										first_child(unsigned nodo) { return nodo*grid_direct_children + 1; };
 		inline unsigned										children_end(unsigned nodo) { return nodo*grid_direct_children + grid_direct_children + 1; };
 		inline unsigned										parent(unsigned nodo) { return (nodo - 1)/grid_direct_children; };
+		static bool											check_collision(const CollisionBody& box1, const CollisionBody& box2);
 		static bool											check_collision_box(const CollisionBody& b1, const CollisionBody& b2);
 		static bool											check_collision_circle_box(const CollisionBody& circ, const CollisionBody& box);
 		static bool											check_collision_circle(const CollisionBody& c1, const CollisionBody& c2);

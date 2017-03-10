@@ -202,7 +202,7 @@ void Game::init() {
 
 void Game::stress_init() {
 
-	for (size_t i = 0; i < max_entities; i++)
+	for (size_t i = 0; i < MAX_ENTITIES; i++)
 	{
 		Handle h = mWorld.new_entity();
 		Rendering *r;
@@ -236,7 +236,7 @@ void Game::stress_init() {
 
 void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls) {
 	
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0,Character::TimeTraveler);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0, mContext.settings->get_players()[0]);
 	for (unsigned j = 0; j < spawners; j++)
 		mWorld.make_spawner(
 			sf::Vector2f(
@@ -268,7 +268,7 @@ void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls)
 }
 
 void Game::zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsigned walls) {
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2 + 100.f, WINDOW_SIZE_Y / 2), 1, Character::TimeTraveler);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2 + 100.f, WINDOW_SIZE_Y / 2), 1, mContext.settings->get_players()[0]);
 	zombie_wave_init(std::move(zombies), std::move(spawners), std::move(walls));
 	
 }
@@ -277,7 +277,7 @@ void Game::zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsig
 
 void Game::zombie_rush_init(unsigned zombies, unsigned walls) {
 
-	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2), 0, Character::TimeTraveler);
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2), 0, mContext.settings->get_players()[0]);
 	
 	
 	mWorld.make_wall

@@ -36,10 +36,10 @@ class Button : public Component
 	private:	
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
 	
-		static sf::Color				Color_Not_Selected;
-		static sf::Color				Color_Selected;
-		static sf::Color				Color_Pressed;
-		static sf::Color				Color_Not_Pressed;
+		static const sf::Color&				Color_Not_Selected;
+		static const sf::Color&				Color_Selected;
+		static const sf::Color&				Color_Pressed;
+		static const sf::Color&				Color_Not_Pressed;
 
 
 

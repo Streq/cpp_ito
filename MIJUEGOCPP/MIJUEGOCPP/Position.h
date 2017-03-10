@@ -4,7 +4,7 @@
 #include "SFML\Graphics\Transformable.hpp"
 struct Position : public Component, public sf::Transformable {
 	sf::Vector2f frame_start_position;
-	Handle relative_to = max_entities;
+	Handle relative_to = MAX_ENTITIES;
 };
 
 /*

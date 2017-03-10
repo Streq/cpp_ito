@@ -165,6 +165,7 @@
     <ClCompile Include="CollisionBody.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="CollisionInfo.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Container.cpp" />
     <ClCompile Include="EntityClass.cpp" />
@@ -175,6 +176,8 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="PauseState.cpp" />
+    <ClCompile Include="SelectionState.cpp" />
+    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="StateSystem.cpp" />
     <ClCompile Include="PlayerInput.cpp" />
@@ -221,6 +224,8 @@
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="PauseState.h" />
+    <ClInclude Include="SelectionState.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="States.h" />
     <ClInclude Include="Owner.h" />

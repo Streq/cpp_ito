@@ -12,8 +12,8 @@ template<typename C> C*					World::activate_component(Handle) { const a = 3; con
 
 
 World::World(std::vector<ptr<System>>& vec,const sf::Vector2f& size)
-	: vec_Entity(max_entities)
-#define X(Comp) , vec_##Comp(max_entities)
+	: vec_Entity(MAX_ENTITIES)
+#define X(Comp) , vec_##Comp(MAX_ENTITIES)
 	DO_X_FOR_COMPONENT_LIST
 #undef X
 	, vec_system(vec)
@@ -84,13 +84,13 @@ DO_X_FOR_COMPONENT_LIST
 
 
 Handle World::new_entity() {
-	for (uint32_t i = 0; i < max_entities; i++) {
+	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
 		if ((vec_Entity[i] & (Flagset)flag::Active).none()) {//si la entidad no existe	
 			vec_Entity[i] = flag::Active;
 			return i;
 		}
 	}
-	return max_entities;
+	return MAX_ENTITIES;
 }
 
 bool World::remove_entity(Handle entity)
@@ -104,7 +104,7 @@ bool World::remove_entity(Handle entity)
 	}
 
 	
-	for (Handle hijo = 0; hijo < max_entities; hijo++) {
+	for (Handle hijo = 0; hijo < MAX_ENTITIES; hijo++) {
 		if (mat[entity][hijo]) {
 			Owner::set(entity, hijo, Relacion::none);
 			switch(mat[entity][hijo]){
@@ -122,7 +122,7 @@ bool World::remove_entity(Handle entity)
 
 void World::remove_children(Handle entity, Relacion::ID criteria){
 	const auto& mat = Owner::get_matriz_padre_hijo();
-	for (Handle hijo = 0; hijo < max_entities; hijo++) {
+	for (Handle hijo = 0; hijo < MAX_ENTITIES; hijo++) {
 		if (mat[entity][hijo]==criteria) {
 				Owner::set(entity, hijo, Relacion::none);
 				remove_entity(hijo);
@@ -143,7 +143,7 @@ void World::notify_systems(const Flagset& fl, Handle h) {
 const sf::Vector2f&	World::getSize() const { return size; }
 
 void World::clear(){
-	for (Handle i = 0; i < max_entities; i++) {
+	for (Handle i = 0; i < MAX_ENTITIES; i++) {
 		remove_entity(i);
 	}
 }
@@ -240,7 +240,6 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	if (tm) {
 		tm->id=vec_Team[owner].id;
 		tm->caster = owner;
-		tm->lost_on_wall = true;
 	}
 
 	TimeSpan* time = add_component<TimeSpan>(h);
@@ -257,7 +256,7 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
 		sf::RectangleShape *c = new sf::RectangleShape(size);
-		c->setFillColor(Color::Red);
+		c->setFillColor(Color::Transparent);
 		c->setOrigin(size / 2.f - offset);
 		r->drawable.reset(c);
 	}
@@ -289,19 +288,28 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	}
 }
 
-void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner, CollisionInfo && info, sf::Time duration){
+void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner, CollisionInfo && info, sf::Time duration, BoxType::Type btype){
 	Handle h = new_entity();
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
-		sf::RectangleShape *c = new sf::RectangleShape(size);
-		c->setFillColor(Color::Red);
-		c->setOrigin(size / 2.f - offset);
-		r->drawable.reset(c);
+		switch(btype){
+			case BoxType::Box:{
+				sf::RectangleShape *c = new sf::RectangleShape(size);
+				c->setFillColor(Color::Red);
+				c->setOrigin(size / 2.f - offset);
+				r->drawable.reset(c);
+			}break;
+			case BoxType::Circle:{
+				sf::CircleShape *c = new sf::CircleShape(size.x / 2.f, 100u);
+				c->setFillColor(Color::Red);
+				c->setOrigin(size / 2.f - offset);
+				r->drawable.reset(c);
+			}break;
+		}
 	}
 	CollisionBody* box = add_component<CollisionBody>(h);
 	if (box) {
-		box->size = size;
-		box->offset = -(size / 2.f - offset);
+		*box=CollisionBody(offset-size/2.f,size,btype);
 	}
 	Position *p;
 	if (p = add_component<Position>(h)) {

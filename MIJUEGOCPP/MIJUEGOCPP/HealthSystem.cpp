@@ -1,5 +1,5 @@
 #include "HealthSystem.h"
-
+#include <iostream>
 
 HealthSystem::HealthSystem(World& mWorld) :
 	System(
@@ -19,7 +19,11 @@ HealthSystem::HealthSystem(World& mWorld) :
 void HealthSystem::update(sf::Time){
 	ITERATE_START
 	auto& health = mWorld.vec_Health[i];
-	if (!health.invulnerable) {
+	if (!health.invulnerable && health.incoming_damage) {
+		if(health.current>=30.f){
+			std::cout<<"vida: "<<health.current<<std::endl;
+			std::cout<<"daño: "<<health.incoming_damage<<std::endl;
+		}
 		health.current -= health.incoming_damage;
 	}
 	health.incoming_damage = 0;

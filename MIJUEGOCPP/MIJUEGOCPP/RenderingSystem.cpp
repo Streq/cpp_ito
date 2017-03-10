@@ -44,7 +44,7 @@ void RenderingSystem::update(sf::Time t) {
 void RenderingSystem::draw(sf::RenderWindow & window){
 	ITERATE_START
 	const auto& pos= mWorld.vec_Position[i];
-	if(pos.relative_to==max_entities)
+	if(pos.relative_to==MAX_ENTITIES)
 		mWindow.draw(*mWorld.vec_Rendering[i].drawable, pos.getTransform());
 	else {
 		const auto& pos_relative_to = mWorld.vec_Position[pos.relative_to];

@@ -2,10 +2,13 @@
 #include "defines.h"
 #include "MenuState.h"
 #include "PauseState.h"
+#include "SelectionState.h"
 #include "Game.h"
+#include "Color.h"
 Application::Application():
 	mWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y), "mi juegazo", sf::Style::Default),
-	mStateStack(GameState::Context(mWindow,mFonts,mTextures,mControllers))
+	mStateStack(GameState::Context(mWindow,mFonts,mTextures,mControllers,mSettings)),
+	mSettings()
 {
 
 	mFonts.load(Font::arial, "Resources/arial.ttf");
@@ -25,25 +28,26 @@ Application::Application():
 	mStateStack.apply_changes();
 
 	#define W(player, action, input) mControllers[player].set_key(input_data(PlayerInput::Key::##input,input_data::keyboard),Input::##action);
-		W(0,up, Up)
-		W(0,down, Down)
-		W(0,left, Left)
-		W(0,right, Right)
-		W(0,skill1, Z)
-		W(0,skill2, X)
-		W(0,skill3, C)
-		W(0,skill4, V)
+		W(0,up, Up);
+		W(0,down, Down);
+		W(0,left, Left);
+		W(0,right, Right);
+		W(0,skill1, Z);
+		W(0,skill2, X);
+		W(0,skill3, C);
+		W(0,skill4, V);
 
-		W(1, up, W)
-		W(1, down, S)
-		W(1, left, A)
-		W(1, right, D)
-		W(1, skill1, Q)
-		W(1, skill2, Q)
-		W(1, skill3, Q)
-		W(1, skill4, Q)
+		W(1, up, W);
+		W(1, down, S);
+		W(1, left, A);
+		W(1, right, D);
+		W(1, skill1, Q);
+		W(1, skill2, Q);
+		W(1, skill3, Q);
+		W(1, skill4, Q);
 	#undef W
 
+	mSettings.set_players(1);
 }
 
 void Application::handle_events(){
@@ -75,6 +79,8 @@ void Application::register_states(){
 	mStateStack.register_state<MenuState>(GameState::STATE_MAIN_MENU);
 	mStateStack.register_state<Game>(GameState::STATE_GAME);
 	mStateStack.register_state<PauseState>(GameState::STATE_PAUSE);
+	mStateStack.register_state<SelectionState>(GameState::STATE_CHARACTER_SELECT);
+
 }
 
 void Application::run(){

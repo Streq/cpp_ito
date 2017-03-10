@@ -17,7 +17,7 @@ CollisionSystem::CollisionSystem(World& world)
 #undef X
 				flag::none),
 			Flagset(flag::none))),
-	entity_boxes(max_entities),
+	entity_boxes(MAX_ENTITIES),
 	section_boxes(grid_nodes)
 #ifdef LISTS
 	, section_entities(grid_nodes)
@@ -159,7 +159,8 @@ void CollisionSystem::check_collisions(float time){
 				if(pcol || hbcol12 || hbcol21){
 					const auto& box1 = entity_boxes[h1];
 					const auto& box2 = entity_boxes[h2];
-					if(check_collision_box(box1, box2)){
+					
+					if(check_collision(box1,box2)){
 						if(!collision_matrix[h1][h2]++){
 							if(pcol)mWorld.collision_queue_physics.push(Collision(h1, h2));
 							if(hbcol12)mWorld.collision_queue_hitbox.push(Collision(h1, h2));
@@ -251,12 +252,13 @@ void CollisionSystem::handle_physics_collisions(float time){
 								//if no longer colliding (from previous collision resolution) no handling is needed
 								if(!check_collision_box(col2, col1)){ break; }
 
-								if(tm2.lost_on_wall) {
-									tm2.caster = max_entities;
+								if(t2.change_team_on_wall) {
+									tm2.caster = MAX_ENTITIES;
 									tm2.id = Team::None;
 								}
 								
 
+								t2.last_reflection = MAX_ENTITIES;
 								
 								auto aux_col2 = col2;
 
@@ -354,7 +356,6 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 				case DTag::Damageable:{
 
 					switch(t2.oTag){
-
 						case OTag::Damage:
 						case OTag::Stun:{
 							const auto& team1=own1.id;
@@ -365,7 +366,7 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 								sf::Vector2f pos2owner(pos2.getPosition());
 								mov1.velocity = normalize(mov2.velocity) * t2.momentum_knockback;
 							
-								if(pos2.relative_to!=max_entities){
+								if(pos2.relative_to!=MAX_ENTITIES){
 									pos2owner+=mWorld.vec_Position[pos2.relative_to].getPosition();
 								}
 								mov1.velocity += normalize(pos1.getPosition() - pos2owner) * t2.knockback;
@@ -373,26 +374,28 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 							
 							
 								States::ID stat = (t2.oTag==OTag::Damage)?States::Hurt : States::Stunned;
-								mWorld.vec_State[h1].update(States::Hurt);
+								mWorld.vec_State[h1].update(stat);
 							
 								mWorld.vec_State[h1].duration = t2.stun_time;
 								mWorld.vec_Health[h1].incoming_damage += t2.damage;
-								if(t2.delete_on_hit)mWorld.remove_entity(h2);
-						
+								if(t2.delete_on_hit){
+									mWorld.remove_entity(h2);
+								}
+							}
 						}break;
 					}
 				}break;
 				case DTag::Reflect:{
-					if(t2.reflectable){
-							own2.caster=h1;
+					if(t2.reflectable && t2.last_reflection != h1){
+							own2.caster=own1.caster;
 							own2.id=own1.id;
 							mov2.velocity=-mov2.velocity;
-						}
+							t2.last_reflection = h1;
 					}
 				}break;
 				case DTag::Invincible:{
 					if(t2.delete_on_hit)mWorld.remove_entity(h2);
-				}
+				}break;
 			}
 		}
 		cqueue.pop();
@@ -579,6 +582,31 @@ void CollisionSystem::handle_collisions(float time){
 }
 */
 
+bool CollisionSystem::check_collision(const CollisionBody & box1, const CollisionBody & box2){
+	switch(box1.type){
+		case BoxType::Box:{
+			switch (box2.type){
+				case BoxType::Box:{
+					return check_collision_box(box1,box2);
+				}break;
+				case BoxType::Circle:{
+					return check_collision_circle_box(box2,box1);
+				}break;
+			}
+		}break;
+		case BoxType::Circle:{
+			switch (box2.type){
+				case BoxType::Box:{
+					return check_collision_circle_box(box1,box2);
+				}break;
+				case BoxType::Circle:{
+					return check_collision_circle(box1,box2);
+				}break;
+			}
+		}break;
+	}
+}
+
 bool inline CollisionSystem::check_collision_box(const CollisionBody& b1, const CollisionBody& b2){
 	return
 		!(b1.offset.x > b2.offset.x + b2.size.x //leftmost side to the right of rightmost side
@@ -593,20 +621,20 @@ bool inline CollisionSystem::check_collision_box(const CollisionBody& b1, const 
 
 void CollisionSystem::translate_boxes_to_global(){
 	ITERATE_START
-		const CollisionBody& box = mWorld.vec_CollisionBody[i];
+	const CollisionBody& box = mWorld.vec_CollisionBody[i];
 
 	const auto& pos = mWorld.vec_Position[i];
 
 	const Handle& h_rel = pos.relative_to;
 
 	sf::Vector2f p1(pos.getPosition() + box.offset);
-	if(h_rel != max_entities){
+	if(h_rel != MAX_ENTITIES){
 		p1 += mWorld.vec_Position[h_rel].getPosition();
 	}
 
 	sf::Vector2f p2(box.size);
 
-	entity_boxes[i] = CollisionBody(std::move(p1), std::move(p2));
+	entity_boxes[i] = CollisionBody(std::move(p1), std::move(p2), box.type);
 	ITERATE_END
 }
 
@@ -621,7 +649,7 @@ inline void CollisionSystem::collide(Handle h1, Handle h2){
 
 inline bool CollisionSystem::check_collision_circle(const CollisionBody& c1, const CollisionBody& c2){
 	auto dist = c1.offset - c2.offset;
-	return vec_magn(dist) * 2.f > COLLISION_BODY_DIAMETER(c1) + COLLISION_BODY_DIAMETER(c2);
+	return vec_magn(dist)*2 > COLLISION_BODY_DIAMETER(c1) + COLLISION_BODY_DIAMETER(c2);
 }
 
 inline bool CollisionSystem::check_collision_circle_box(const CollisionBody& cir, const CollisionBody& box){
@@ -638,5 +666,5 @@ inline bool CollisionSystem::check_collision_circle_box(const CollisionBody& cir
 		clamp(cirpos.y, recmin.y, recmax.y)
 		);
 
-	return vec_magn(closest_point - cirpos) * 2.f < cirpos.x;
+	return vec_magn(closest_point - cirpos) * 2.f < cir.size.x;
 }

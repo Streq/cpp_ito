@@ -3,7 +3,7 @@
 #include <SFML\System\Time.hpp>
 #include <SFML\Graphics\Color.hpp>
 enum {
-	max_entities = 4000,
+	MAX_ENTITIES = 4000,
 	WINDOW_SIZE_X = 1200,
 	WINDOW_SIZE_Y = 600,
 	FPS = 60,
@@ -25,7 +25,7 @@ namespace Relacion {
 		size
 	};
 }
-typedef Relacion::ID matriz_padre_hijo_t[max_entities][max_entities];
+typedef Relacion::ID matriz_padre_hijo_t[MAX_ENTITIES][MAX_ENTITIES];
 
 #define SIGN(num) ((num>0)-(num<0))
 

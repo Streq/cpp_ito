@@ -27,5 +27,5 @@ class Application{
 		FontHolder							mFonts;
 		TextureHolder						mTextures;
 		std::array<PlayerInput,MAX_PLAYERS>	mControllers;
-
+		Settings							mSettings;
 };

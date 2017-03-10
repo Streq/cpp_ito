@@ -4,8 +4,8 @@
 #include "FontHolder.h"
 #include "TextureHolder.h"
 #include <memory>
-class PlayerInput;
-
+#include "Settings.h"
+#include "PlayerInput.h"
 class GameStateStack;
 class GameState{
 	public:
@@ -24,12 +24,13 @@ class GameState{
 
 		struct Context
 		{
-			Context(sf::RenderWindow& window, FontHolder& fonts, TextureHolder& textures, std::array<PlayerInput,2>& controllers);
+			Context(sf::RenderWindow& window, FontHolder& fonts, TextureHolder& textures, std::array<PlayerInput,2>& controllers, Settings& settings);
 
 			sf::RenderWindow*			window;
 			FontHolder*					fonts;
 			TextureHolder*				textures;
 			std::array<PlayerInput,2>*	controllers;
+			Settings*					settings;
 		};
 		GameState(GameStateStack& s,Context c);
 

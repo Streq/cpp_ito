@@ -22,10 +22,11 @@ GameState::Context GameState::getContext()const{
 	return mContext;
 }
 
-GameState::Context::Context(sf::RenderWindow & window, FontHolder& fonts, TextureHolder& textures, std::array<PlayerInput, 2>& controllers):
+GameState::Context::Context(sf::RenderWindow & window, FontHolder& fonts, TextureHolder& textures, std::array<PlayerInput, 2>& controllers, Settings& settings):
 	window(&window),
 	fonts(&fonts),
 	textures(&textures),
-	controllers(&controllers)
+	controllers(&controllers),
+	settings(&settings)
 {
 }

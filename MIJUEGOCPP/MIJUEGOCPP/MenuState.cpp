@@ -9,7 +9,7 @@ MenuState::MenuState(GameStateStack & stack, Context cont):
 	playButton->setText("Jugar");
 	playButton->setCallback([this](){
 		this->requestStackPop();
-		this->requestStackPush(STATE_GAME);
+		this->requestStackPush(STATE_CHARACTER_SELECT);
 	});
 	playButton->setPosition(200,200);
 

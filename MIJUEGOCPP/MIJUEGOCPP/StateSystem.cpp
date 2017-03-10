@@ -287,7 +287,8 @@ void StateSystem::update(sf::Time dtime){
 							}
 						}
 					}
-				}break;case Skill::Dash_Strike:{
+				}break;
+				case Skill::Dash_Strike:{
 					switch(st.skill_counter){
 						case 0:{
 							if(st.time_since_start>=Skill::buildup[st.current_skill])
@@ -307,6 +308,25 @@ void StateSystem::update(sf::Time dtime){
 								st.update(States::Normal);
 							}
 						}
+					}
+				}break;
+				case Skill::Stun_Roar:{
+					switch(st.skill_counter){
+						case 0:
+						{
+							if(st.time_since_start >= Skill::buildup[st.current_skill]){
+								CollisionInfo inf;
+								inf = Skill::col_info[st.current_skill];
+								inf.damage = Skill::damage[st.current_skill] * Character::Stats::p_attack[st.Class];
+								float siz = Character::Stats::size[st.Class];
+
+								mWorld.make_hit_box(sf::Vector2f(0,0) * siz, sf::Vector2f(300, 300), i, std::move(inf), Skill::hb_duration[st.current_skill], BoxType::Circle);
+								st.skill_counter++;
+							}
+						}break;
+					}
+					if(st.time_since_start >= Skill::duration[st.current_skill]){
+						st.update(States::Normal);
 					}
 				}break;
 			}

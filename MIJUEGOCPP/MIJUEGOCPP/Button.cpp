@@ -1,10 +1,10 @@
 #include "Button.h"
 #include "Text_Util.h"
-
-sf::Color	GUI::Button::Color_Not_Selected = sf::Color::Transparent;
-sf::Color	GUI::Button::Color_Selected = sf::Color::White;
-sf::Color	GUI::Button::Color_Pressed = sf::Color(100,100,100);
-sf::Color	GUI::Button::Color_Not_Pressed = sf::Color(200,200,200);
+#include "Color.h"
+const sf::Color& GUI::Button::Color_Not_Selected = Color::Transparent;
+const sf::Color& GUI::Button::Color_Selected = Color::White;
+const sf::Color& GUI::Button::Color_Pressed = sf::Color(100,100,100);
+const sf::Color& GUI::Button::Color_Not_Pressed = sf::Color(200,200,200);
 
 
 GUI::Button::Button(FontHolder & fonts): 
@@ -34,7 +34,7 @@ void GUI::Button::setText(const std::string & text, bool adjust_size){
 		auto bounds = mText.getGlobalBounds();
 		auto cur_size = mSprite.getSize();
 		if(bounds.width >= cur_size.x){
-			float dif=bounds.width + 5 - cur_size.x;
+			float dif=bounds.width + 10 - cur_size.x;
 			cur_size.x += dif;
 
 			

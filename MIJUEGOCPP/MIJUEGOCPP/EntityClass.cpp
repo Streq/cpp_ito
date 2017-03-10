@@ -62,7 +62,7 @@ setst(physical_box_type, ch, Silenced, PTag::Dynamic_Solid)\
 setst(hitbox_type, ch, Stunned, HitBoxType::Damageable)\
 setst(offensive_hitbox_type, ch, Stunned, OTag::None)\
 setst(defensive_hitbox_type, ch, Stunned, DTag::Damageable)\
-setst(physical_box_type, ch, Stunned, PTag::Dynamic_Solid)
+setst(physical_box_type, ch, Stunned, PTag::Dynamic_Non_Solid)
 	do_for_all_chars;
 #undef X
 
@@ -86,10 +86,10 @@ set_skill(ch,1,sk1);\
 set_skill(ch,2,sk2);\
 set_skill(ch,3,sk3);
 
-	set_skills(TimeTraveler, Bounce_Shot, Mirror_Melee, Dash_Strike, Teleport);
-	set_skills(Minotaur, Simple_Melee, Ram, Wave_Shot, Teleport);
-	set_skills(Giant, Slow_Big_Melee, None, None, None);
-	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash_Strike, None);
+	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Dash, Teleport);
+	set_skills(Minotaur, Simple_Melee, Ram, Dash_Strike, Stun_Roar);
+	set_skills(Giant, Slow_Big_Melee, Quake, None, None);
+	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash_Strike, Tennis_Ball);
 
 
 

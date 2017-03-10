@@ -17,7 +17,9 @@ struct CollisionBody :public Component {
 	sf::Vector2f size;//for circles the x determines the diameter
 	BoxType::Type type;
 
-	CollisionBody() {}
-	CollisionBody(sf::Vector2f&& offset, sf::Vector2f&& size);
-	CollisionBody(const sf::Vector2f& offset, const sf::Vector2f& size);
+	CollisionBody();
+	CollisionBody(sf::Vector2f&& offset, sf::Vector2f&& size, BoxType::Type type=BoxType::Box);
+	CollisionBody(const sf::Vector2f& offset, const sf::Vector2f& size, BoxType::Type type=BoxType::Box);
+
+	
 };

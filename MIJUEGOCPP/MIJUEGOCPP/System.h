@@ -7,8 +7,8 @@
 #include <array>
 #include <vector>
 
-typedef std::array<bool, max_entities> ENTITIES;
-#define ITERATE_START for (size_t i = 0; i < max_entities; i++) { if (entities[i]) {
+typedef std::array<bool, MAX_ENTITIES> ENTITIES;
+#define ITERATE_START for (size_t i = 0; i < MAX_ENTITIES; i++) { if (entities[i]) {
 #define ITERATE_END }}
 
 

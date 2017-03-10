@@ -5,7 +5,7 @@ namespace Skill {
 	enum ID {
 		None,
 		Simple_Melee,//funca
-		Mirror_Melee,//
+		Mirror_Melee,//funca
 		Slow_Big_Melee,//
 		Dash,		//funca
 		Dash_Strike,//funca
@@ -17,7 +17,9 @@ namespace Skill {
 		/*Wave_Shot2,
 		Wave_Shot3,*/
 		Stun_Roar,//NEXT ONE
-		telekinetic_blades,
+		Telekinetic_Blades,
+		Tennis_Ball,
+		Quake,
 		size
 	};
 	extern sf::Time buildup[size];

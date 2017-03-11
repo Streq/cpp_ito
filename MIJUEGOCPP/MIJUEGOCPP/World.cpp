@@ -196,25 +196,25 @@ void World::make_player(const sf::Vector2f & pos, short unsigned player, Charact
 	}
 	Team* tm = add_component<Team>(h);
 	if (tm) {
-		tm->id=Team::None;
+		tm->team=Team::None;
 	}
 }
 
-void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner)
+void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner,float radius, sf::Color color)
 {
 	Handle h = new_entity();
 	Rendering* rend = add_component<Rendering>(h);
 	if (rend) {
-		sf::CircleShape* circ = new sf::CircleShape(Bullet::stats::radius);
-		circ->setOrigin(Bullet::stats::radius,Bullet::stats::radius);
-		circ->setFillColor(sf::Color::Red);
+		sf::CircleShape* circ = new sf::CircleShape(radius);
+		circ->setOrigin(radius,radius);
+		circ->setFillColor(color);
 		rend->drawable.reset(circ);
 	}
 	CollisionBody* body = add_component<CollisionBody>(h);
 	if (body) {
 		body->type = BoxType::Circle;
-		body->size = sf::Vector2f(1.f, 1.f) * (Bullet::stats::radius * 2.f);
-		body->offset = sf::Vector2f(1.f, 1.f) * (-Bullet::stats::radius);
+		body->size = sf::Vector2f(1.f, 1.f) * (radius * 2.f);
+		body->offset = sf::Vector2f(1.f, 1.f) * (-radius);
 	}
 	CollisionInfo* tag = add_component<CollisionInfo>(h);
 	if (tag) {
@@ -238,15 +238,16 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	
 	Team* tm = add_component<Team>(h);
 	if (tm) {
-		tm->id=vec_Team[owner].id;
+		tm->team=vec_Team[owner].team;
 		tm->caster = owner;
 	}
 
-	TimeSpan* time = add_component<TimeSpan>(h);
-	if (time) {
-		time->time = duration;
+	if(duration>=sf::Time::Zero){
+		TimeSpan* time = add_component<TimeSpan>(h);
+		if (time) {
+			time->time = duration;
+		}
 	}
-	
 	
 
 }
@@ -279,7 +280,7 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	}
 	Team* tm = add_component<Team>(h);
 	if (tm) {
-		tm->id=vec_Team[owner].id;
+		tm->team=vec_Team[owner].team;
 		tm->caster = owner;
 	}
 	State *st;
@@ -325,7 +326,7 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 	}
 	Team* tm = add_component<Team>(h);
 	if (tm) {
-		tm->id=vec_Team[owner].id;
+		tm->team=vec_Team[owner].team;
 		tm->caster = owner;
 	}
 	State *st;
@@ -365,7 +366,8 @@ void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& a
 		mov->maxspeed = abs(normal_speed);
 		//mov->velocity = from_angle(_angle + angle)*mov->maxspeed;
 		//mov->velocity = axis_direction*init_speed;
-		mov->velocity = axis_direction*tangent_speed + normal(axis_direction)*normal_speed;
+		mov->velocity = axis_direction*tangent_speed; //+ normal(axis_direction)*normal_speed;
+		mov->velocity += (float)SIGN(normal_speed)*normal(axis_direction)*Skill::acceleration[Skill::Wave_Shot]*-cos(dt.asSeconds()*Skill::period_factor[Skill::Wave_Shot])*dt.asSeconds()*0.5f;
 		mov->capped = false;
 		mov->friction = 0.f;
 	}
@@ -384,13 +386,13 @@ void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& a
 		if (normal_speed < 0){
 			st->moving_dir = -st->moving_dir;
 		}
-		else if (normal_speed == 0.f) {
-			st->moving_dir *= 0.f;
-		}
+		//else if (normal_speed == 0.f) {
+		//	st->moving_dir *= 0.f;
+		//}
 	}
 	Team* tm = add_component<Team>(h);
 	if (tm) {
-		tm->id=vec_Team[owner].id;
+		tm->team=vec_Team[owner].team;
 		tm->caster = owner;
 	}
 	TimeSpan* time = add_component<TimeSpan>(h);
@@ -555,7 +557,7 @@ void World::make_zombie(const sf::Vector2f & pos) {
 	}
 	Team* tm = add_component<Team>(h);
 	if (tm) {
-		tm->id = Team::HORDE;
+		tm->team = Team::HORDE;
 	}
 	//Owner* own;
 	//if (own = add_component<Owner>(h)){

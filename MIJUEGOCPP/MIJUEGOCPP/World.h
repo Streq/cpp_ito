@@ -46,7 +46,7 @@ class World {
 	public:
 		void									make_player(const sf::Vector2f& pos, short unsigned player, Character::ID _class);
 		void									make_zombie(const sf::Vector2f& pos);
-		void									make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo && colinfo, sf::Time duration, Handle owner);
+		void									make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo && colinfo, sf::Time duration, Handle owner, float radius = 5.f, sf::Color color=Color::Red);
 		void									make_wall(const sf::Vector2f& position, const sf::Vector2f& size);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner);
 		void									make_hit_box(const sf::Vector2f& offset, const sf::Vector2f& size, Handle owner, CollisionInfo&& info, sf::Time duration, BoxType::Type btype = BoxType::Box);

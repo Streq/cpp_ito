@@ -62,7 +62,7 @@ setst(physical_box_type, ch, Silenced, PTag::Dynamic_Solid)\
 setst(hitbox_type, ch, Stunned, HitBoxType::Damageable)\
 setst(offensive_hitbox_type, ch, Stunned, OTag::None)\
 setst(defensive_hitbox_type, ch, Stunned, DTag::Damageable)\
-setst(physical_box_type, ch, Stunned, PTag::Dynamic_Non_Solid)
+setst(physical_box_type, ch, Stunned, PTag::Dynamic_Solid)
 	do_for_all_chars;
 #undef X
 

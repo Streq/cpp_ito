@@ -16,7 +16,7 @@ namespace Skill {
 		Wave_Shot,	//funca
 		/*Wave_Shot2,
 		Wave_Shot3,*/
-		Stun_Roar,//NEXT ONE
+		Stun_Roar,	//funca
 		Telekinetic_Blades,
 		Tennis_Ball,
 		Quake,
@@ -25,6 +25,7 @@ namespace Skill {
 	extern sf::Time buildup[size];
 	extern sf::Time duration[size];
 	extern sf::Time hb_duration[size];
+	extern sf::Color bullet_color[size];
 	extern int damage[size];
 	extern CollisionInfo col_info[size];
 	extern float bullet_speed[size];
@@ -33,6 +34,8 @@ namespace Skill {
 	extern sf::Time bullet_duration[size];
 	extern float friction[size];
 	extern float normal_speed[size];
+	extern float bullet_radius[size];
+	extern float period_factor[size];
 	extern void init();
 }
 

@@ -10,6 +10,6 @@ struct Team : public Component{
 		TEAM_3,
 		TEAM_4
 	};
-	int id = None;
+	int team = None;
 	Handle caster = MAX_ENTITIES;
 };

@@ -254,7 +254,7 @@ void CollisionSystem::handle_physics_collisions(float time){
 
 								if(t2.change_team_on_wall) {
 									tm2.caster = MAX_ENTITIES;
-									tm2.id = Team::None;
+									tm2.team = Team::None;
 								}
 								
 
@@ -348,7 +348,7 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 		auto& own1 = mWorld.vec_Team[h1];
 		auto& own2 = mWorld.vec_Team[h2];
 
-		bool team_match= (own1.id==Team::None) || own1.id!=own2.id;
+		bool team_match= (own1.team==Team::None) || own1.team!=own2.team;
 
 		if(team_match && h1 != own2.caster){
 
@@ -358,18 +358,18 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 					switch(t2.oTag){
 						case OTag::Damage:
 						case OTag::Stun:{
-							const auto& team1=own1.id;
-							const auto& team2=own2.id;
+							const auto& team1 = own1.team;
+							const auto& team2 = own2.team;
 
 							bool team_match= (team1==Team::None) || team1!=team2;
 							if(team_match && h1 != own2.caster){
 								sf::Vector2f pos2owner(pos2.getPosition());
-								mov1.velocity = normalize(mov2.velocity) * t2.momentum_knockback;
+								mov1.velocity = normalized(mov2.velocity) * t2.momentum_knockback;
 							
 								if(pos2.relative_to!=MAX_ENTITIES){
 									pos2owner+=mWorld.vec_Position[pos2.relative_to].getPosition();
 								}
-								mov1.velocity += normalize(pos1.getPosition() - pos2owner) * t2.knockback;
+								mov1.velocity += normalized(pos1.getPosition() - pos2owner) * t2.knockback;
 								
 							
 							
@@ -388,7 +388,7 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 				case DTag::Reflect:{
 					if(t2.reflectable && t2.last_reflection != h1){
 							own2.caster=own1.caster;
-							own2.id=own1.id;
+							own2.team=own1.team;
 							mov2.velocity=-mov2.velocity;
 							t2.last_reflection = h1;
 					}

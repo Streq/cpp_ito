@@ -72,7 +72,8 @@ setst(physical_box_type, ch, Stunned, PTag::Dynamic_Solid)
 	size[ID::Minotaur] = 12.f;
 	size[ID::Giant] = 30.f;
 
-	set(mov_speed, Zombie, 150.f);
+	p_attack[ID::Minotaur] = 2.f;
+	set(mov_speed, Zombie, 125.f);
 	health[ID::Zombie] = 30.f;
 	health[ID::Minotaur] = 150.f;
 	health[ID::Giant] = 300.f;

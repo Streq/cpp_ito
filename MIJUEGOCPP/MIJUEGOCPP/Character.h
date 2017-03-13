@@ -1,12 +1,14 @@
 #pragma once
 namespace Character {
 	enum ID {
-			Default,
-			Zombie,
-			Minotaur,
-			TimeTraveler,
-			Tennist,
-			Giant,
-			size
-		};
+		Tennist,
+		TimeTraveler,
+		Minotaur,	
+		Giant,
+			
+		Playables=Giant+1,
+		Default,
+		Zombie,
+		size
+	};
 }

@@ -149,9 +149,9 @@ void Skill::init() {
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 2.f;
 	bullet_speed[sk] = 400.f;
-	acceleration[sk] = 6000.f;
+	acceleration[sk] = 12000.f;
 	normal_speed[sk] = 0.f;
-	period_factor[sk] = 15.f;
+	period_factor[sk] = 20.f;
 	damage[sk] = 10.f;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;

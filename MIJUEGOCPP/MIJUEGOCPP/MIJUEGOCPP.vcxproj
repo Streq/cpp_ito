@@ -190,6 +190,8 @@
     <ClCompile Include="Requeriments.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Owner.cpp" />
+    <ClCompile Include="TextBox.cpp" />
+    <ClCompile Include="TextHolder.cpp" />
     <ClCompile Include="TimeSystem.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
@@ -248,12 +250,19 @@
     <ClInclude Include="System_includes.h" />
     <ClInclude Include="Tag.h" />
     <ClInclude Include="Team.h" />
+    <ClInclude Include="TextBox.h" />
+    <ClInclude Include="TextHolder.h" />
     <ClInclude Include="TextureHolder.h" />
     <ClInclude Include="Text_Util.h" />
     <ClInclude Include="TimeSpan.h" />
     <ClInclude Include="TimeSystem.h" />
     <ClInclude Include="vec_magn.h" />
     <ClInclude Include="World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\..\..\..\Desktop\characterattacks.txt" />
+    <Text Include="..\..\..\..\..\..\Desktop\creditos.txt" />
+    <Text Include="..\..\..\..\..\..\Desktop\howtoplay.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

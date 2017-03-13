@@ -10,7 +10,9 @@ class Container: public Component{
 		virtual bool				is_selectable()const;
 		virtual void				handle_event(const sf::Event&);
 		void						pack(Component::Ptr comp);
-		
+		int							getIndex()const;
+
+
 	private:
 		virtual void				draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	

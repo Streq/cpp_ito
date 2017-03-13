@@ -4,6 +4,7 @@
 #include "GameStateStack.h"
 #include "FontHolder.h"
 #include "TextureHolder.h"
+#include "TextHolder.h"
 #include "PlayerInput.h"
 #include <array>
 #include "defines.h"
@@ -24,8 +25,11 @@ class Application{
 		sf::Text							mFps_text;
 		sf::RenderWindow					mWindow;
 		GameStateStack						mStateStack;
+		//Resources
 		FontHolder							mFonts;
 		TextureHolder						mTextures;
+		TextHolder							mTexts;
+		
 		std::array<PlayerInput,MAX_PLAYERS>	mControllers;
 		Settings							mSettings;
 };

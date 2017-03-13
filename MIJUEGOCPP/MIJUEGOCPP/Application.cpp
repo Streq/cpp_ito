@@ -7,13 +7,20 @@
 #include "Color.h"
 Application::Application():
 	mWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y), "mi juegazo", sf::Style::Default),
-	mStateStack(GameState::Context(mWindow,mFonts,mTextures,mControllers,mSettings)),
+	mStateStack(GameState::Context(mWindow,mFonts,mTextures,mTexts,mControllers,mSettings)),
 	mSettings()
 {
 
 	mFonts.load(Font::arial, "Resources/arial.ttf");
+	mFonts.load(Font::consola,"Resources/consola.ttf");
+
 
 	mTextures.load(Texture::MENU_BACKGROUND, "Resources/start_screen.png");
+
+	mTexts.load(TextFile::CharacterAttacks, "Resources/characterattacks.txt");
+	mTexts.load(TextFile::Credits, "Resources/creditos.txt");
+	mTexts.load(TextFile::HowToPlay, "Resources/howtoplay.txt");
+	
 	mFps_text.setCharacterSize(15u);
 	mFps_text.setFont(mFonts.get(Font::arial));
 	mFps_text.setString("fps:");

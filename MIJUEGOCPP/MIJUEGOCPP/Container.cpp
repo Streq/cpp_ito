@@ -36,6 +36,10 @@ void GUI::Container::pack(Component::Ptr comp){
 	}
 }
 
+int GUI::Container::getIndex() const{
+	return mSelectedChild;
+}
+
 void GUI::Container::draw(sf::RenderTarget & target, sf::RenderStates states) const{
 	states.transform *= getTransform();
 	for(auto itr = mChildren.begin(); itr != mChildren.end(); itr++){

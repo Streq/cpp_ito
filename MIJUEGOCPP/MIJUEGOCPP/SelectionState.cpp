@@ -1,10 +1,14 @@
 #include "SelectionState.h"
 #include "Button.h"
 #include <memory>
+#include <iostream>
 SelectionState::SelectionState(GameStateStack & stack, Context cont):
 	GameState(stack, cont),
-	mContainer()
+	mContainer(),
+	mCurrentDescription(-1),
+	mDescription(cont.fonts->get(Font::consola),70,15U)
 {
+	load_descriptions();
 	GUI::Button::Ptr tenista(new GUI::Button(*mContext.fonts));
 	tenista->setText("Juani el tenista mágico");
 	tenista->setCallback([this](){
@@ -41,7 +45,7 @@ SelectionState::SelectionState(GameStateStack & stack, Context cont):
 	});
 	giant->setPosition(200,350);
 
-	
+	mDescription.setPosition(350,200);
 	
 	mContainer.pack(tenista);
 	mContainer.pack(time_traveler);
@@ -49,6 +53,7 @@ SelectionState::SelectionState(GameStateStack & stack, Context cont):
 	mContainer.pack(giant);
 
 	mBackground.setTexture(mContext.textures->get(Texture::MENU_BACKGROUND));
+
 }
 
 bool SelectionState::handle_event(const sf::Event & e){
@@ -57,10 +62,46 @@ bool SelectionState::handle_event(const sf::Event & e){
 }
 
 bool SelectionState::update(sf::Time tiempo){
+	auto ind=mContainer.getIndex();
+	if(mCurrentDescription != ind){
+		mCurrentDescription = ind;
+		if(mCurrentDescription>=0)
+			mDescription.setText(mDescriptions[mCurrentDescription]);
+	};
+
 	return false;
 }
 
 void SelectionState::draw()const{
 	mContext.window->draw(mBackground);
 	mContext.window->draw(mContainer);
+	mContext.window->draw(mDescription);
+}
+
+void SelectionState::load_descriptions(){
+	std::string& descriptions=mContext.texts->get(TextFile::CharacterAttacks);
+	size_t begin;
+	size_t end;
+	std::string keyword;
+
+	#define load_attacks(ch) \
+	keyword=#ch+std::string(":");\
+	begin=descriptions.find(keyword)+keyword.size();\
+	end=descriptions.find("///",begin);\
+	mDescriptions[Character::##ch]=descriptions.substr(begin,end-begin);
+	
+	#define info_attacks \
+	//std::cout<<"keyword:"<<keyword<<std::endl<<"begin:"<<begin<<std::endl<<"end:"<<end<<std::endl;
+	load_attacks(Minotaur);
+	//info_attacks;
+	load_attacks(Tennist);
+	//info_attacks;
+	load_attacks(Giant);
+	//info_attacks;
+	load_attacks(TimeTraveler);
+	//info_attacks;
+	//for(const auto& str : mDescriptions){
+	//	std::cout<<str<<std::endl;
+	//}
+
 }

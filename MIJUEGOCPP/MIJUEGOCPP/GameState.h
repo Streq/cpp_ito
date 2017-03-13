@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include "FontHolder.h"
 #include "TextureHolder.h"
+#include "TextHolder.h"
 #include <memory>
 #include "Settings.h"
 #include "PlayerInput.h"
@@ -24,11 +25,12 @@ class GameState{
 
 		struct Context
 		{
-			Context(sf::RenderWindow& window, FontHolder& fonts, TextureHolder& textures, std::array<PlayerInput,2>& controllers, Settings& settings);
+			Context(sf::RenderWindow& window, FontHolder& fonts, TextureHolder& textures, TextHolder& texts, std::array<PlayerInput,2>& controllers, Settings& settings);
 
 			sf::RenderWindow*			window;
 			FontHolder*					fonts;
 			TextureHolder*				textures;
+			TextHolder*					texts;
 			std::array<PlayerInput,2>*	controllers;
 			Settings*					settings;
 		};

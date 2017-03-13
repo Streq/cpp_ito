@@ -106,14 +106,14 @@ bool World::remove_entity(Handle entity)
 	
 	for (Handle hijo = 0; hijo < MAX_ENTITIES; hijo++) {
 		if (mat[entity][hijo]) {
-			Owner::set(entity, hijo, Relacion::none);
 			switch(mat[entity][hijo]){
 				case Relacion::composition:
 				case Relacion::delete_on_hurt:{
 					remove_entity(hijo);
 				}
-				
 			}
+
+			Owner::set(entity, hijo, Relacion::none);
 		}
 	}
 	this->notify_systems(vec_Entity[entity].reset(), entity);

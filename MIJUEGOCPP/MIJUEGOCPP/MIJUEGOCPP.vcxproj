@@ -179,6 +179,7 @@
     <ClCompile Include="SelectionState.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Skill.cpp" />
+    <ClCompile Include="State.cpp" />
     <ClCompile Include="StateSystem.cpp" />
     <ClCompile Include="PlayerInput.cpp" />
     <ClCompile Include="ControllerSystem.cpp" />

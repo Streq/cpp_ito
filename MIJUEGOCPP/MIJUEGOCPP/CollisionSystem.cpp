@@ -374,9 +374,9 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 							
 							
 								States::ID stat = (t2.oTag==OTag::Damage)?States::Hurt : States::Stunned;
-								mWorld.vec_State[h1].update(stat);
-							
-								mWorld.vec_State[h1].duration = t2.stun_time;
+								st1.update(stat);
+								t1.dTag=DTag::Invincible;
+								st1.duration = t2.stun_time;
 								mWorld.vec_Health[h1].incoming_damage += t2.damage;
 								if(t2.delete_on_hit){
 									mWorld.remove_entity(h2);

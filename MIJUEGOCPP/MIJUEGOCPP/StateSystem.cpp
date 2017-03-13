@@ -43,15 +43,16 @@ void StateSystem::update(sf::Time dtime){
 			static_cast<sf::RectangleShape*>(rend.drawable.get())->
 				setFillColor(
 					Character::Stats::color[st.Class][st.current]);
-			auto& info=mWorld.vec_CollisionInfo[i];
-			info.oTag = (OTag::ID)Character::Stats::offensive_hitbox_type[st.Class][st.current];
-			info.dTag = (DTag::ID)Character::Stats::defensive_hitbox_type[st.Class][st.current];
-			info.pTag = (PTag::ID)Character::Stats::physical_box_type[st.Class][st.current];
+			
+			colinf.oTag = (OTag::ID)Character::Stats::offensive_hitbox_type[st.Class][st.current];
+			colinf.dTag = (DTag::ID)Character::Stats::defensive_hitbox_type[st.Class][st.current];
+			colinf.pTag = (PTag::ID)Character::Stats::physical_box_type[st.Class][st.current];
 		}
 		switch(st.current){
 			case States::Hurt:
 			case States::Stunned:
 			{
+
 				//mWorld.remove_component<Controller>(i);
 				mWorld.remove_children(i, Relacion::delete_on_hurt);
 				mov.capped = false;
@@ -98,7 +99,16 @@ void StateSystem::update(sf::Time dtime){
 			}
 			mov.velocity += st.moving_dir * Skill::acceleration[Skill::Teleport] * time;
 		}break;
-		case States::Hurt:
+		case States::Hurt:{
+			//bool inv=st.time_since_start>State::INV_HURT_FRAMES;
+			//colinf.dTag = (DTag::ID)(DTag::Invincible*inv + Character::Stats::defensive_hitbox_type[st.Class][st.current]*!inv);
+			if(st.time_since_start>State::INV_HURT_FRAMES){
+				colinf.dTag = static_cast<DTag::ID>(Character::Stats::defensive_hitbox_type[st.Class][st.current]);
+			}
+			else colinf.dTag = DTag::Invincible;
+				
+			
+		}//follows up
 		case States::Stunned:
 		{
 			if(st.time_since_start > st.duration){

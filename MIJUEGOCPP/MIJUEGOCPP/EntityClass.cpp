@@ -67,7 +67,7 @@ setst(physical_box_type, ch, Stunned, PTag::Dynamic_Solid)
 #undef X
 
 	setst(offensive_hitbox_type, Zombie, Normal, OTag::Damage);
-
+	setst(defensive_hitbox_type, Zombie, Hurt, DTag::Damageable);
 	
 	size[ID::Minotaur] = 12.f;
 	size[ID::Giant] = 30.f;

@@ -4,7 +4,12 @@
 #include "EntityClass.h"
 #include "States.h"
 #include "Skill.h"
+
+#include <SFML\System\Vector2.hpp>
+
 struct State : public Component {
+	static const sf::Time INV_HURT_FRAMES;
+	
 	Character::ID Class;
 	States::ID current;
 	States::ID previous;
@@ -25,8 +30,9 @@ struct State : public Component {
 	//to use for any purpose of the current skill
 	unsigned skill_counter;
 	
-	
 	bool just_started;
+	
+	
 	inline void update(States::ID new_State) {
 		previous = current;
 		current = new_State;
@@ -46,8 +52,12 @@ struct State : public Component {
 		update(States::Casting);
 		current_skill = sk;
 	}
-
-	
+	/*
+	INVULNERABILITY FRAMES WHEN HURT TO AVOID MULTIPLE COLLISIONS WITH SAME HITBOX
+	New state-> HURT_INVULNERABILITY
+	certain duration that updates to HURT state when finished.
+	has to know hurt time in advance
+	*/
 	/*
 	inline States::ID next_state(States::ID st, State_Event::ID ev) {
 		return Table[st*State_Event::size + ev];

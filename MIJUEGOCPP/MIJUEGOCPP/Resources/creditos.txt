@@ -1,0 +1,1 @@
+Esto es un jueguito hecho por Santiago Requena en C++ usando SFML 2.4 (biblioteca escrita por Laurent Gomila y otros manes pero no por mí).

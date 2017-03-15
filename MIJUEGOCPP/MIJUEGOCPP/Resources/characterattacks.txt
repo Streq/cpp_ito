@@ -1,0 +1,24 @@
+Minotaur:
+-Z: Golpe normal: Es un golpe normal vo no hay mas que decir amigo
+-X: Embestida: Se lleva puesto todo lo que tiene delante, si se la pone contra una pared queda medio boludo por 2 sec.
+-C: Golpe embestida: Una fusión de los anteriores.
+-V: Rugido: Todo lo que está cerca queda paralizado del julepe que se pega por el gritazo que se manda.
+///
+TimeTraveler:
+-Z: Disparo normal: Pega un tirito.
+-X: Disparo mágico espacial galáctico doble: Pega dos tiritos que se mueven tipo wuwooo.
+-C: Esquivar: Se tira al joraca para esquivar o huir, lo que quiera uno la verdad.
+-V: Teleport: Mantenés apretado y aparece una mira roja que la podés mover y teletransportarte a donde apunte.
+///
+Tennist:
+-Z: Disparo rebotín: Pega un tirito que rebota en las paredes.
+-X: Raquetazo: pega un golpe normal que rebota balas.
+-C: Golpe embestida: Afanado de Toro.
+-V: Pelotazo de Tenis mágico: Lo que hace que este personaje no sea una cagada. Tira una pelota verde que rebota eternamente y lastima a todos menos a Juani que la tiene re clara es un alto vivo Juani.
+///
+Giant:
+-Z: Golpe Lento: Pega como trompada de bobo
+-X: Falta presupuesto no pienso laburar en más ataques hasta que me paguen
+-C: Na no voy a hacer un carajo
+-V: disculpame pero es asi juga con el toro si queres man
+///

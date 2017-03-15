@@ -389,7 +389,16 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 					if(t2.reflectable && t2.last_reflection != h1){
 							own2.caster=own1.caster;
 							own2.team=own1.team;
-							mov2.velocity=-mov2.velocity;
+							//Flip mode
+							//mov2.velocity=-mov2.velocity;
+							
+							//Change mov velocity
+							sf::Vector2f pos1owner(pos1.getPosition());
+							if(pos1.relative_to!=MAX_ENTITIES){
+								pos1owner+=mWorld.vec_Position[pos1.relative_to].getPosition();
+							}
+							mov2.velocity = normalized(pos2.getPosition() - pos1owner) * vec_magn(mov2.velocity);
+							
 							t2.last_reflection = h1;
 					}
 				}break;

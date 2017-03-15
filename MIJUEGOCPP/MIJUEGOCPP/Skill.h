@@ -17,8 +17,8 @@ namespace Skill {
 		/*Wave_Shot2,
 		Wave_Shot3,*/
 		Stun_Roar,	//funca
-		Telekinetic_Blades,
-		Tennis_Ball,
+		Telekinetic_Blade,
+		Tennis_Ball,//funca pero falta que solo se pueda tirar una
 		Quake,
 		size
 	};
@@ -33,6 +33,7 @@ namespace Skill {
 	extern float acceleration[size];
 	extern sf::Time bullet_duration[size];
 	extern float friction[size];
+	extern int	owner_type[size];
 	extern float normal_speed[size];
 	extern float bullet_radius[size];
 	extern float period_factor[size];

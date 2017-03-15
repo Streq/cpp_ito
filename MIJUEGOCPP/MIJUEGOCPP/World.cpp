@@ -202,7 +202,7 @@ Handle World::make_player(const sf::Vector2f & pos, short unsigned player, Chara
 	return h;
 }
 
-void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner,float radius, sf::Color color)
+Handle World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner,float radius, sf::Color color, int owner_type)
 {
 	Handle h = new_entity();
 	Rendering* rend = add_component<Rendering>(h);
@@ -235,7 +235,7 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 	}
 	Owner* own = add_component<Owner>(h);
 	if (own) {
-		own->set_owner(owner, h ,Relacion::aggregation);
+		own->set_owner(owner, h ,static_cast<Relacion::ID>(owner_type));
 	}
 	
 	Team* tm = add_component<Team>(h);
@@ -251,47 +251,10 @@ void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & dire
 		}
 	}
 	
-
+	return h;
 }
 
-void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner){
-	Handle h = new_entity();
-	Rendering *r;
-	if (r = add_component<Rendering>(h)) {
-		sf::RectangleShape *c = new sf::RectangleShape(size);
-		c->setFillColor(Color::Transparent);
-		c->setOrigin(size / 2.f - offset);
-		r->drawable.reset(c);
-	}
-	CollisionBody* box = add_component<CollisionBody>(h);
-	if (box) {
-		box->size = size;
-		box->offset = -(size / 2.f - offset);
-	}
-	Position *p;
-	if (p = add_component<Position>(h)) {
-		p->relative_to = owner;
-	}
-	CollisionInfo *tf;
-	if (tf = add_component<CollisionInfo>(h)) {
-		tf->tag = Tag::Hit_Box;
-	}
-	Owner* ow;
-	if (ow = add_component<Owner>(h)) {
-		ow->set_owner(owner, h, Relacion::delete_on_hurt);
-	}
-	Team* tm = add_component<Team>(h);
-	if (tm) {
-		tm->team=vec_Team[owner].team;
-		tm->caster = owner;
-	}
-	State *st;
-	if (st = add_component<State>(h)) {
-		st->update(States::HitBox);
-	}
-}
-
-void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner, CollisionInfo && info, sf::Time duration, BoxType::Type btype){
+Handle World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner, CollisionInfo && info, sf::Time duration, BoxType::Type btype){
 	Handle h = new_entity();
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
@@ -337,10 +300,10 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 		st->duration = duration;
 		st->just_started = false;
 	}
-	
+	return h;
 }
 
-void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& axis_direction, float normal_speed, float tangent_speed, float normal_acceleration, CollisionInfo&& colinfo, sf::Time duration, Handle owner)
+Handle World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& axis_direction, float normal_speed, float tangent_speed, float normal_acceleration, CollisionInfo&& colinfo, sf::Time duration, Handle owner)
 {
 	Handle h = new_entity();
 
@@ -404,9 +367,10 @@ void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& a
 		time->time = duration;
 	}
 
+	return h;
 }
 
-void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
+Handle World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
 	Handle h = new_entity();
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
@@ -431,9 +395,10 @@ void World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
 		tf->oTag = OTag::None;
 	}
 
+	return h;
 }
 
-void World::make_teleport_scope(const sf::Vector2f & position, float maxspeed, const sf::Vector2f & size, Handle owner){
+Handle World::make_teleport_scope(const sf::Vector2f & position, float maxspeed, const sf::Vector2f & size, Handle owner){
 	Handle h = new_entity();
 	
 	Rendering *r;
@@ -479,9 +444,11 @@ void World::make_teleport_scope(const sf::Vector2f & position, float maxspeed, c
 		cb->size = size;
 		cb->type = BoxType::Box;
 	}
+
+	return h;
 }
 
-void World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amount){
+Handle World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amount){
 	Handle h = new_entity();
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
@@ -511,11 +478,29 @@ void World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amou
 			ts->time = spawn_time*sf::Int64(amount);
 		}
 	}
+
+	return h;
+}
+
+Handle World::make_special_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo && colinfo, sf::Time duration, Handle owner, float radius, sf::Color color, States::ID state){
+	Handle h = make_bullet(position,direction,inertial_speed,speed,std::move(colinfo),duration,owner,radius,color,Relacion::composition);
+	State* st=add_component<State>(h);
+	if(st){
+		st->update(state);
+	}
+
+	auto& mov = vec_Movement[h];
+	mov.maxspeed = Skill::max_speed[Skill::Telekinetic_Blade];
+	mov.capped = true;
+	mov.friction = Skill::friction[Skill::Telekinetic_Blade];
+
+
+	return h;
 }
 
 
 
-void World::make_zombie(const sf::Vector2f & pos) {
+Handle World::make_zombie(const sf::Vector2f & pos) {
 	Handle h = new_entity();
 	auto siz = Character::Stats::size[Character::Zombie];
 	sf::Vector2f size = sf::Vector2f(siz, siz);
@@ -574,4 +559,6 @@ void World::make_zombie(const sf::Vector2f & pos) {
 	inf.knockback = 100.f;
 	inf.stun_time = sf::seconds(0.5f);
 	make_hit_box(sf::Vector2f(0, 0), size, h, std::move(inf), sf::seconds(-1.f));*/
+
+	return h;
 }

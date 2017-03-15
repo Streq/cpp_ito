@@ -145,6 +145,15 @@ void StateSystem::update(sf::Time dtime){
 
 
 		}break;
+
+		case States::Telekinetic_Blade:
+		{
+			sf::Vector2f direction = normalized(mWorld.vec_Position[mWorld.vec_Team[i].caster].getPosition() - pos.getPosition());
+			mov.velocity += Skill::acceleration[Skill::Telekinetic_Blade] * direction * time;
+
+			
+
+		}break;
 		case States::Casting:
 		{
 			switch(st.current_skill){
@@ -182,7 +191,36 @@ void StateSystem::update(sf::Time dtime){
 								inf.damage = Skill::damage[st.current_skill] * Character::Stats::m_attack[st.Class];
 								float siz = 5.f;
 
-								mWorld.make_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i,Skill::bullet_radius[st.current_skill],Skill::bullet_color[st.current_skill]);
+								mWorld.make_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i,Skill::bullet_radius[st.current_skill],Skill::bullet_color[st.current_skill],Skill::owner_type[st.current_skill]);
+								st.skill_counter++;
+							}
+						}break;
+
+
+					}
+					if(st.time_since_start >= Skill::duration[st.current_skill]){
+						st.update(States::Normal);
+					}
+				}break;
+
+				case Skill::Wave_Shot:
+				{
+					switch(st.skill_counter){
+						case 0:
+						{
+							if(st.time_since_start >= Skill::buildup[st.current_skill]){
+								CollisionInfo inf;// inf2;
+								inf = Skill::col_info[st.current_skill];
+								inf.damage = Skill::damage[st.current_skill] * Character::Stats::m_attack[st.Class];
+								float siz = 5.f;
+
+								mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, 1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) + 10.f / 180.f*M_PI), 1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) - 10.f / 180.f*M_PI), 1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+								mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) + 10.f / 180.f*M_PI), -1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) - 10.f / 180.f*M_PI), -1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
+
 								st.skill_counter++;
 							}
 						}break;
@@ -257,24 +295,17 @@ void StateSystem::update(sf::Time dtime){
 
 					}
 				}break;
-				case Skill::Wave_Shot:
+				case Skill::Telekinetic_Blade:
 				{
 					switch(st.skill_counter){
 						case 0:
 						{
 							if(st.time_since_start >= Skill::buildup[st.current_skill]){
-								CollisionInfo inf;// inf2;
+								CollisionInfo inf;
 								inf = Skill::col_info[st.current_skill];
 								inf.damage = Skill::damage[st.current_skill] * Character::Stats::m_attack[st.Class];
-								float siz = 5.f;
-
-								mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, 1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) + 10.f / 180.f*M_PI), 1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) - 10.f / 180.f*M_PI), 1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-								mWorld.make_wave_bullet(pos.getPosition(), st.facing_dir, -1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) + 10.f / 180.f*M_PI), -1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) - 10.f / 180.f*M_PI), -1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
-
+								
+								mWorld.make_special_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i,Skill::bullet_radius[st.current_skill],Skill::bullet_color[st.current_skill],States::Telekinetic_Blade);
 								st.skill_counter++;
 							}
 						}break;

@@ -87,7 +87,7 @@ set_skill(ch,1,sk1);\
 set_skill(ch,2,sk2);\
 set_skill(ch,3,sk3);
 
-	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Dash, Teleport);
+	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Telekinetic_Blade, Teleport);
 	set_skills(Minotaur, Simple_Melee, Ram, Dash_Strike, Stun_Roar);
 	set_skills(Giant, Slow_Big_Melee, Quake, None, None);
 	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash_Strike, Tennis_Ball);

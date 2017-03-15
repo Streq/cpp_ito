@@ -13,6 +13,7 @@ float Skill::acceleration[size];
 float Skill::max_speed[size];
 float Skill::friction[size];
 float Skill::normal_speed[size];
+int Skill::owner_type[size];
 sf::Color Skill::bullet_color[size];
 float Skill::bullet_radius[size];
 float Skill::period_factor[size];
@@ -69,6 +70,7 @@ void Skill::init() {
 	bullet_color[sk] = Color::Red;
 	bullet_radius[sk] = 2.5;
 	damage[sk] = 10.f;
+	owner_type[sk] = Relacion::aggregation;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
@@ -85,7 +87,7 @@ void Skill::init() {
 
 
 
-	#define sk Bounce_Shot
+#define sk Bounce_Shot
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 5.f;
 	bullet_duration[sk] = sf::seconds(5.f);
@@ -93,6 +95,7 @@ void Skill::init() {
 	bullet_color[sk] = Color::Red;
 	bullet_radius[sk] = 2.5;
 	damage[sk] = 10.f;
+	owner_type[sk] = Relacion::aggregation;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
@@ -105,7 +108,7 @@ void Skill::init() {
 	inf.on_wall = CollisionInfo::bounce;
 	inf.reflectable = true;
 	inf.change_team_on_wall = false;
-	#undef sk
+#undef sk
 
 
 
@@ -153,6 +156,7 @@ void Skill::init() {
 	acceleration[sk] = 12000.f;
 	normal_speed[sk] = 0.f;
 	period_factor[sk] = 20.f;
+	owner_type[sk] = Relacion::aggregation;
 	damage[sk] = 10.f;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
@@ -211,7 +215,7 @@ void Skill::init() {
 	hb_duration[sk]=dt_max_fps * 2.f;
 #undef sk
 
-
+	
 #define sk Tennis_Ball
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 5.f;
@@ -219,6 +223,8 @@ void Skill::init() {
 	bullet_speed[sk] = 400.f;
 	bullet_color[sk] = Color::Green;
 	bullet_radius[sk] = 4.f;
+
+	owner_type[sk] = Relacion::aggregation;
 	damage[sk] = 10.f;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
@@ -234,6 +240,32 @@ void Skill::init() {
 	inf.change_team_on_wall = false;
 #undef sk
 
+
+#define sk Telekinetic_Blade
+	buildup[sk] = sf::seconds(0);
+	duration[sk] = dt_max_fps * 5.f;
+	bullet_duration[sk] = sf::seconds(-1.f);
+	bullet_speed[sk] = 300.f;
+	bullet_color[sk] = Color::Grey;
+	bullet_radius[sk] = 3.f;
+	acceleration[sk] = 1000.f;
+	max_speed[sk] = 700.f;
+	friction[sk] = 300.f;
+	owner_type[sk] = Relacion::composition;
+	damage[sk] = 10.f;
+	inf.tag = Tag::Projectile;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Dynamic_Non_Solid;
+	inf.bounce_factor = 1.f;
+	inf.delete_on_hit = false;
+	inf.stun_time = sf::seconds(0.5);
+	inf.knockback = 0.f;
+	inf.momentum_knockback = 600.f;
+	inf.on_wall = CollisionInfo::bounce;
+	inf.reflectable = false;
+	inf.change_team_on_wall = false;
+#undef sk
 
 
 	/*

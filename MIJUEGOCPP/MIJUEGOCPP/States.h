@@ -16,6 +16,7 @@ namespace States {
 		//Non player_states
 		Wave_Shot,
 		Teleport_Scope,
+		Telekinetic_Blade,
 		Spawner,
 		HitBox,
 		//Data

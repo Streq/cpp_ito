@@ -33,13 +33,14 @@ void GUI::Button::setText(const std::string & text, bool adjust_size){
 	if(adjust_size){
 		auto bounds = mText.getGlobalBounds();
 		auto cur_size = mSprite.getSize();
-		if(bounds.width >= cur_size.x){
-			float dif=bounds.width + 10 - cur_size.x;
-			cur_size.x += dif;
+		if(bounds.width >= cur_size.x - 10){
+			cur_size.x = bounds.width + 10;
 
 			
 			mSprite.setSize(cur_size);
-			mSprite.move(-dif / 2.f, 0.f);
+			centerOrigin(mText);
+
+			mSprite.setPosition(mText.getPosition() - mSprite.getSize()/2.f);
 		}
 	}
 }

@@ -3,6 +3,8 @@
 #include "MenuState.h"
 #include "PauseState.h"
 #include "SelectionState.h"
+#include "CreditsState.h"
+#include "HowToPlayState.h"
 #include "Game.h"
 #include "Color.h"
 Application::Application():
@@ -87,6 +89,8 @@ void Application::register_states(){
 	mStateStack.register_state<Game>(GameState::STATE_GAME);
 	mStateStack.register_state<PauseState>(GameState::STATE_PAUSE);
 	mStateStack.register_state<SelectionState>(GameState::STATE_CHARACTER_SELECT);
+	mStateStack.register_state<CreditsState>(GameState::STATE_CREDITS);
+	mStateStack.register_state<HowToPlayState>(GameState::STATE_HOW_TO_PLAY);
 
 }
 

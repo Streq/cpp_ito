@@ -6,6 +6,7 @@
 #include "defines.h"
 #include "GameState.h"
 #include "RenderingSystem.h"
+#include "PlayerGUISystem.h"
 class Game : public GameState{
 	public:
 		//int					run();
@@ -14,7 +15,7 @@ class Game : public GameState{
 		std::vector<ptr<System>>	vec_System;
 		World						mWorld;
 		RenderingSystem*			mRenderSystem;
-		
+		PlayerGUISystem*			mPlayerGUISystem;
 	private:
 		virtual bool		update(sf::Time tiempo);
 		virtual void		draw() const;

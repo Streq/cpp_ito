@@ -18,7 +18,7 @@ class System
 	
 	public:
 		virtual void							update(sf::Time)=0;
-		void									update_entity(const Flagset&, Handle);
+		virtual void							update_entity(const Flagset&, Handle);
 		System(World&, const Requeriments&);
 
 	protected:

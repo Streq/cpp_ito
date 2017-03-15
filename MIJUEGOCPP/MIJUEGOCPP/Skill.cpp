@@ -131,15 +131,15 @@ void Skill::init() {
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 40.f;
 	damage[sk] = 10.f;
-	acceleration[sk] = 6000.f;
-	max_speed[sk] = 800.f;
+	acceleration[sk] = 8000.f;
+	max_speed[sk] = 1000.f;
 	inf.tag = Tag::Hit_Box;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Intangible;
 	inf.delete_on_hit = false;
 	inf.stun_time = sf::seconds(0.5);
-	inf.knockback = 1000.f;
+	inf.knockback = 1200.f;
 	inf.momentum_knockback = 0.f;
 #undef sk
 	
@@ -149,6 +149,7 @@ void Skill::init() {
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 2.f;
 	bullet_speed[sk] = 400.f;
+	bullet_radius[sk] = 2.5f;
 	acceleration[sk] = 12000.f;
 	normal_speed[sk] = 0.f;
 	period_factor[sk] = 20.f;

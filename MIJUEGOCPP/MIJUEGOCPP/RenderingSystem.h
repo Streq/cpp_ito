@@ -2,12 +2,14 @@
 #include "System.h"
 #include "system_defines.h"
 #include "SFML\Graphics.hpp"
-class RenderingSystem :public System{
-public:
+class RenderingSystem :public System, public sf::Drawable{
+
+	public:
 	virtual void							update(sf::Time);
-	void									draw(sf::RenderWindow& window);
-	RenderingSystem(World&,sf::RenderTarget&);
+											RenderingSystem(World&,sf::RenderTarget&);
 	
 	sf::RenderTarget&						mWindow;
+	private:
+	virtual void							draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 };

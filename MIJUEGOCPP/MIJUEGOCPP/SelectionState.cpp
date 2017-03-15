@@ -6,7 +6,7 @@ SelectionState::SelectionState(GameStateStack & stack, Context cont):
 	GameState(stack, cont),
 	mContainer(),
 	mCurrentDescription(-1),
-	mDescription(cont.fonts->get(Font::consola),70,15U)
+	mDescription(cont.fonts->get(Font::consola),std::string(),70,15U)
 {
 	load_descriptions();
 	GUI::Button::Ptr tenista(new GUI::Button(*mContext.fonts));
@@ -45,14 +45,24 @@ SelectionState::SelectionState(GameStateStack & stack, Context cont):
 	});
 	giant->setPosition(200,350);
 
-	mDescription.setPosition(350,200);
-	
+	mBackground.setTexture(mContext.textures->get(Texture::MENU_BACKGROUND));
+	GUI::Button::Ptr volver(new GUI::Button(*mContext.fonts));
+	volver->setText("Volver");
+	volver->setCallback([this](){
+		this->requestStackPop();
+		this->requestStackPush(STATE_MAIN_MENU);
+	});
+	volver->setPosition(200,400);
+
+
+
 	mContainer.pack(tenista);
 	mContainer.pack(time_traveler);
 	mContainer.pack(minotaur);
 	mContainer.pack(giant);
-
-	mBackground.setTexture(mContext.textures->get(Texture::MENU_BACKGROUND));
+	mContainer.pack(volver);
+	
+	mDescription.setPosition(350,200);
 
 }
 
@@ -65,8 +75,11 @@ bool SelectionState::update(sf::Time tiempo){
 	auto ind=mContainer.getIndex();
 	if(mCurrentDescription != ind){
 		mCurrentDescription = ind;
-		if(mCurrentDescription>=0)
+		if(mCurrentDescription >= 0 && mCurrentDescription < Character::Playables){
 			mDescription.setText(mDescriptions[mCurrentDescription]);
+		}
+		else mDescription.setText(std::string());
+		
 	};
 
 	return false;
@@ -79,7 +92,7 @@ void SelectionState::draw()const{
 }
 
 void SelectionState::load_descriptions(){
-	std::string& descriptions=mContext.texts->get(TextFile::CharacterAttacks);
+	const std::string& descriptions=mContext.texts->get(TextFile::CharacterAttacks);
 	size_t begin;
 	size_t end;
 	std::string keyword;

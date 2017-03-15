@@ -25,3 +25,6 @@ X(TimeSpan)
 
 #define COMPONENTS_HEALTH \
 X(Health)
+
+#define COMPONENTS_PLAYER_GUI \
+X(Player)

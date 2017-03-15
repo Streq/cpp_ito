@@ -41,14 +41,16 @@ void RenderingSystem::update(sf::Time t) {
 void RenderingSystem::update(sf::Time t) {
 }
 
-void RenderingSystem::draw(sf::RenderWindow & window){
+void RenderingSystem::draw(sf::RenderTarget & window, sf::RenderStates states)const{
 	ITERATE_START
 	const auto& pos= mWorld.vec_Position[i];
-	if(pos.relative_to==MAX_ENTITIES)
-		mWindow.draw(*mWorld.vec_Rendering[i].drawable, pos.getTransform());
+	if(pos.relative_to==MAX_ENTITIES){
+		*mWorld.vec_Rendering[i].drawable;
+		mWindow.draw(*mWorld.vec_Rendering[i].drawable, states.transform * pos.getTransform());
+	}
 	else {
 		const auto& pos_relative_to = mWorld.vec_Position[pos.relative_to];
-		mWindow.draw(*mWorld.vec_Rendering[i].drawable, sf::Transform(pos.getTransform()).translate(pos_relative_to.getPosition()));
+		mWindow.draw(*mWorld.vec_Rendering[i].drawable, states.transform * sf::Transform(pos.getTransform()).translate(pos_relative_to.getPosition()));
 	}
 	ITERATE_END
 }

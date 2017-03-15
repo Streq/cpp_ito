@@ -4,6 +4,7 @@
 #include "EntityClass.h"
 #include "vec_magn.h"
 #include "clamp.h"
+#include <SFML/Graphics/RectangleShape.hpp>
 StateSystem::StateSystem(World& world)
 	:System(
 		world,

@@ -3,7 +3,7 @@
 
 class TextBox : public GUI::Component{
 	public:
-									TextBox(const sf::Font& font, unsigned line_width=100, unsigned character_size=15U);
+									TextBox(const sf::Font& font,const std::string& text = std::string(), unsigned line_width=100, unsigned character_size=15U);
 	void							setLineWidth(unsigned size);
 	unsigned						getLineWidth()const;
 	void							setText(const std::string&);

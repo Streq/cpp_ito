@@ -15,6 +15,7 @@ class World {
 		std::vector<ptr<System>>&				vec_system;
 		sf::Vector2f							size;
 
+
 		void									notify_systems(const Flagset& fl, Handle h);
 
 	public:
@@ -28,7 +29,8 @@ class World {
 		std::queue<Collision>					collision_queue;
 		std::queue<Collision>					collision_queue_physics;
 		std::queue<Collision>					collision_queue_hitbox;
-
+		std::array<Handle,MAX_PLAYERS>			vec_players;
+		
 
 
 		Handle									new_entity();
@@ -38,13 +40,12 @@ class World {
 		template<typename C> C*					activate_component(Handle);//(returns reference to component) 
 		template <typename C> bool				remove_component(Handle);
 		template<typename C> std::vector<C>&	get_component_vec();
-		World(std::vector<ptr<System>>&,const sf::Vector2f& size);
+												World(std::vector<ptr<System>>&,const sf::Vector2f& size);
 		const sf::Vector2f&						getSize() const;
 		void									clear();
-		Handle									vec_players[MAX_PLAYERS];
-
+		
 	public:
-		void									make_player(const sf::Vector2f& pos, short unsigned player, Character::ID _class);
+		Handle									make_player(const sf::Vector2f& pos, short unsigned player, Character::ID _class);
 		void									make_zombie(const sf::Vector2f& pos);
 		void									make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo && colinfo, sf::Time duration, Handle owner, float radius = 5.f, sf::Color color=Color::Red);
 		void									make_wall(const sf::Vector2f& position, const sf::Vector2f& size);

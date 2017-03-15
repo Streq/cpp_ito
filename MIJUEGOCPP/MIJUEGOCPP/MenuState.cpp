@@ -12,14 +12,35 @@ MenuState::MenuState(GameStateStack & stack, Context cont):
 		this->requestStackPush(STATE_CHARACTER_SELECT);
 	});
 	playButton->setPosition(200,200);
+	mContainer.pack(playButton);
+
+	GUI::Button::Ptr howToPlay(new GUI::Button(*mContext.fonts));
+	howToPlay->setText("Cómo jugar");
+	howToPlay->setCallback([this](){
+		this->requestStackPop();
+		this->requestStackPush(STATE_HOW_TO_PLAY);
+	});
+	howToPlay->setPosition(200,250);
+	mContainer.pack(howToPlay);
+
+	GUI::Button::Ptr credits(new GUI::Button(*mContext.fonts));
+	credits->setText("Créditos");
+	credits->setCallback([this](){
+		this->requestStackPop();
+		this->requestStackPush(STATE_CREDITS);
+
+	});
+	credits->setPosition(200,300);
+	mContainer.pack(credits);
+
+
 
 	GUI::Button::Ptr exitButton(new GUI::Button(*mContext.fonts));
 	exitButton->setText("Salir");
 	exitButton->setCallback([this](){
 		this->requestStackClear();
 	});
-	exitButton->setPosition(200,250);
-	mContainer.pack(playButton);
+	exitButton->setPosition(200,350);
 	mContainer.pack(exitButton);
 	
 	mBackground.setTexture(mContext.textures->get(Texture::MENU_BACKGROUND));

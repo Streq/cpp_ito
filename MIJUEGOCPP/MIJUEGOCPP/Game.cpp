@@ -19,9 +19,11 @@ Game::Game(GameStateStack& s, Context c):
 	vec_System.push_back(ptr<System>(new MovementSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new CollisionSystem(this->mWorld)));
 	vec_System.push_back(ptr<System>(new HealthSystem(this->mWorld)));
-	
 	mRenderSystem = new RenderingSystem(mWorld, *(mContext.window));
 	vec_System.push_back(ptr<System>(mRenderSystem));
+	mPlayerGUISystem = new PlayerGUISystem(mWorld);
+	vec_System.push_back(ptr<System>(mPlayerGUISystem));
+
 	
 	init();
 }
@@ -169,7 +171,8 @@ bool Game::update(sf::Time dt) {
 
 void Game::draw() const{
 	mContext.window->clear(Color::Super_Dark_Green);
-	mRenderSystem->draw(*mContext.window);
+	mContext.window->draw(*mRenderSystem);
+	mContext.window->draw(*mPlayerGUISystem);
 }
 
 void Game::init() {

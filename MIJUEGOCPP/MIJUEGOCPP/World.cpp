@@ -148,9 +148,10 @@ void World::clear(){
 	}
 }
 
-void World::make_player(const sf::Vector2f & pos, short unsigned player, Character::ID _class){
+Handle World::make_player(const sf::Vector2f & pos, short unsigned player, Character::ID _class){
 	Handle h = new_entity();
 	vec_players[player] = h;
+	add_component<Player>(h);
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
 		auto siz=Character::Stats::size[_class];
@@ -198,6 +199,7 @@ void World::make_player(const sf::Vector2f & pos, short unsigned player, Charact
 	if (tm) {
 		tm->team=Team::None;
 	}
+	return h;
 }
 
 void World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner,float radius, sf::Color color)
@@ -341,18 +343,20 @@ void World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size,
 void World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f& axis_direction, float normal_speed, float tangent_speed, float normal_acceleration, CollisionInfo&& colinfo, sf::Time duration, Handle owner)
 {
 	Handle h = new_entity();
+
+	float radius = Skill::bullet_radius[Skill::Wave_Shot];
 	Rendering* rend = add_component<Rendering>(h);
 	if (rend) {
-		sf::CircleShape* circ = new sf::CircleShape(Bullet::stats::radius);
-		circ->setOrigin(Bullet::stats::radius, Bullet::stats::radius);
+		sf::CircleShape* circ = new sf::CircleShape(radius);
+		circ->setOrigin(2.5f, radius);
 		circ->setFillColor(sf::Color::Magenta);
 		rend->drawable.reset(circ);
 	}
 	CollisionBody* body = add_component<CollisionBody>(h);
 	if (body) {
 		body->type = BoxType::Circle;
-		body->size = sf::Vector2f(1.f, 1.f) * (Bullet::stats::radius * 2.f);
-		body->offset = sf::Vector2f(1.f, 1.f) * (-Bullet::stats::radius);
+		body->size = sf::Vector2f(1.f, 1.f) * (radius * 2.f);
+		body->offset = sf::Vector2f(1.f, 1.f) * (-radius);
 	}
 	CollisionInfo* tag = add_component<CollisionInfo>(h);
 	if (tag) {

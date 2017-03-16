@@ -17,6 +17,7 @@ int Skill::owner_type[size];
 sf::Color Skill::bullet_color[size];
 float Skill::bullet_radius[size];
 float Skill::period_factor[size];
+float Skill::inertia_factor[size];
 int Skill::ammo[size];
 
 
@@ -31,7 +32,7 @@ void Skill::init() {
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 15.f;
 	hb_duration[sk] = dt_max_fps * 10.f;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	inf.tag = Tag::Hit_Box;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
@@ -47,7 +48,7 @@ void Skill::init() {
 	buildup[sk] = sf::seconds(0.3f);
 	duration[sk] = buildup[sk] + dt_max_fps * 15.f;
 	hb_duration[sk] = dt_max_fps * 10.f;
-	damage[sk] = 30.f;
+	damage[sk] = 300.f;
 	inf.tag = Tag::Hit_Box;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
@@ -67,7 +68,7 @@ void Skill::init() {
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 10.f;
 	hb_duration[sk] = dt_max_fps * 8.f;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	inf.tag = Tag::Hit_Box;
 	inf.dTag = DTag::Reflect;
 	inf.oTag = OTag::Damage;
@@ -81,8 +82,9 @@ void Skill::init() {
 
 
 
-
+	
 #define sk Simple_Shot
+	inertia_factor[sk] = 1.f;
 	ammo[sk] = -1;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 2.f;
@@ -90,7 +92,7 @@ void Skill::init() {
 	bullet_speed[sk] = 350.f;
 	bullet_color[sk] = Color::Red;
 	bullet_radius[sk] = 2.5;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	owner_type[sk] = Relacion::aggregation;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
@@ -105,7 +107,35 @@ void Skill::init() {
 	inf.change_team_on_wall = false;
 #undef sk
 	
+#define sk Quake
+
+	inertia_factor[sk] = 0.f;
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(1.f);
+	duration[sk] = buildup[sk] + dt_max_fps * 2.f;
+	bullet_duration[sk] = sf::seconds(20.f);
+	bullet_speed[sk] = 100.f;
+	bullet_color[sk] = sf::Color(Color::Brown.r,Color::Brown.g,Color::Brown.b,128);
+	bullet_radius[sk] = 75;
+	
+	damage[sk] = 1.f;
+	owner_type[sk] = Relacion::aggregation;
+	inf.tag = Tag::Projectile;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Stun;
+	inf.pTag = PTag::Intangible;
+	inf.delete_on_hit = false;
+	inf.stun_time = sf::seconds(2.0f);
+	inf.momentum_knockback = 0.f;
+	inf.knockback = 0.f;
+	inf.on_wall = CollisionInfo::pass_through;
+	inf.reflectable = false;
+	inf.change_team_on_wall = false;
+#undef sk
+	
 #define sk Simple_Shot_Zombie
+
+	inertia_factor[sk] = 1.f;
 	ammo[sk] = -1;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = sf::seconds(0.5f);
@@ -113,7 +143,7 @@ void Skill::init() {
 	bullet_speed[sk] = 350.f;
 	bullet_color[sk] = Color::Red;
 	bullet_radius[sk] = 2.5;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	owner_type[sk] = Relacion::aggregation;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
@@ -130,6 +160,8 @@ void Skill::init() {
 
 
 #define sk Bounce_Shot
+
+	inertia_factor[sk] = 1.f;
 	ammo[sk] = -1;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 5.f;
@@ -137,7 +169,7 @@ void Skill::init() {
 	bullet_speed[sk] = 300.f;
 	bullet_color[sk] = Color::Red;
 	bullet_radius[sk] = 2.5;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	owner_type[sk] = Relacion::aggregation;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
@@ -178,7 +210,7 @@ void Skill::init() {
 	ammo[sk] = -1;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 40.f;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	acceleration[sk] = 6000.f;
 	max_speed[sk] = 650.f;
 	inf.tag = Tag::Hit_Box;
@@ -237,7 +269,7 @@ void Skill::init() {
 	duration[sk]=sf::seconds(1.f/3.f);
 	normal_speed[sk]=500.f;
 	max_speed[sk]=550.f;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	inf.tag = Tag::Hit_Box;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
@@ -267,6 +299,8 @@ void Skill::init() {
 
 	
 #define sk Tennis_Ball
+
+	inertia_factor[sk] = 1.f;
 	ammo[sk] = 3;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 5.f;
@@ -275,7 +309,7 @@ void Skill::init() {
 	bullet_color[sk] = Color::Green;
 	bullet_radius[sk] = 4.f;
 	owner_type[sk] = Relacion::aggregation;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
@@ -292,6 +326,8 @@ void Skill::init() {
 
 
 #define sk Telekinetic_Blade
+
+	inertia_factor[sk] = 1.f;
 	ammo[sk] = 7;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 5.f;
@@ -303,7 +339,7 @@ void Skill::init() {
 	max_speed[sk] = 350.f;
 	friction[sk] = 0.f;
 	owner_type[sk] = Relacion::composition;
-	damage[sk] = 10.f;
+	damage[sk] = 100.f;
 	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;

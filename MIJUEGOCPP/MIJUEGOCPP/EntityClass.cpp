@@ -33,7 +33,7 @@ int Character::Stats::on_wall[ID::size];
 void Character::Stats::init() {
 //default set
 #define X(ch) \
-set(health,ch,100.f)\
+set(health,ch,1000.f)\
 set(size,ch,10.f)\
 set(p_attack,ch,1.f)\
 set(m_attack,ch,1.f)\
@@ -81,9 +81,9 @@ setst(physical_box_type, ch, Stunned, PTag::Dynamic_Solid)
 
 	p_attack[ID::Minotaur] = 2.f;
 	set(mov_speed, Zombie, 100.f);
-	health[ID::Zombie] = 30.f;
-	health[ID::Minotaur] = 150.f;
-	health[ID::Giant] = 300.f;
+	health[ID::Zombie] = 300.f;
+	health[ID::Minotaur] = 1500.f;
+	health[ID::Giant] = 5000.f;
 
 	//Skills
 #define set_skill(ch,num,sk) skill[ID::ch][num]=Skill::sk;

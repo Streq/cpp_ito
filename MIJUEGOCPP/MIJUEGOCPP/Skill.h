@@ -39,6 +39,7 @@ namespace Skill {
 	extern float bullet_radius[size];
 	extern float period_factor[size];
 	extern int	ammo[size];
+	extern float inertia_factor[size];
 	extern void init();
 }
 

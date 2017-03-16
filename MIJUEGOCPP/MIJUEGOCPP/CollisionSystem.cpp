@@ -383,8 +383,9 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 								if(st1.current==States::Normal){
 									st1.time_since_start=sf::Time::Zero;
 								}
-								t1.dTag=DTag::Invincible;
-								
+								if(t2.oTag == OTag::Damage){
+									t1.dTag= DTag::Invincible;
+								}
 								mWorld.vec_Health[h1].incoming_damage += t2.damage;
 								if(t2.delete_on_hit){
 									mWorld.remove_entity(h2);

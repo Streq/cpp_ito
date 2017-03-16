@@ -162,6 +162,7 @@ void StateSystem::update(sf::Time dtime){
 		case States::Casting:
 		{
 			switch(st.current_skill){
+				
 				case Skill::Simple_Melee:
 				case Skill::Mirror_Melee:
 				case Skill::Slow_Big_Melee:
@@ -189,6 +190,7 @@ void StateSystem::update(sf::Time dtime){
 				case Skill::Bounce_Shot:
 				case Skill::Tennis_Ball:
 				case Skill::Simple_Shot_Zombie:
+				case Skill::Quake:
 				{
 					switch(st.skill_counter){
 						case 0:
@@ -199,7 +201,7 @@ void StateSystem::update(sf::Time dtime){
 								inf.damage = Skill::damage[st.current_skill] * Character::Stats::m_attack[st.Class];
 								float siz = 5.f;
 
-								mWorld.make_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i,Skill::bullet_radius[st.current_skill],Skill::bullet_color[st.current_skill],Skill::owner_type[st.current_skill]);
+								mWorld.make_bullet(pos.getPosition(), st.facing_dir, mov.velocity*Skill::inertia_factor[st.current_skill], Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i,Skill::bullet_radius[st.current_skill],Skill::bullet_color[st.current_skill],Skill::owner_type[st.current_skill]);
 								st.skill_counter++;
 								st.skill_uses[st.current_skill]++;
 							}
@@ -394,6 +396,9 @@ void StateSystem::update(sf::Time dtime){
 					if(st.time_since_start >= Skill::duration[st.current_skill]){
 						st.update(States::Normal);
 					}
+				}break;
+				default:{
+					{st.update(States::Normal);}break;
 				}break;
 			}
 		}break;

@@ -5,7 +5,8 @@
 namespace controller {
 	enum ID {
 		Player,
-		Enemy,
+		Enemy_Zombie,
+		Enemy_Shooter,
 		size
 	};
 }

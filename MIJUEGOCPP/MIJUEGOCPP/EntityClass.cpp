@@ -37,10 +37,10 @@ set(health,ch,100.f)\
 set(size,ch,10.f)\
 set(p_attack,ch,1.f)\
 set(m_attack,ch,1.f)\
-set(mov_speed,ch,300.f)\
-set(mov_acceleration,ch,2400.f)\
+set(mov_speed,ch,200.f)\
+set(mov_acceleration,ch,1200.f)\
 set(mass, ch, 1.f)\
-set(friction, ch, 1200.f)\
+set(friction, ch, 600.f)\
 set(mana,ch,10.f)\
 set(on_wall,ch,CollisionInfo::stop)\
 setst(hitbox_type, ch, Hurt, HitBoxType::Intangible)\
@@ -69,11 +69,18 @@ setst(physical_box_type, ch, Stunned, PTag::Dynamic_Solid)
 	setst(offensive_hitbox_type, Zombie, Normal, OTag::Damage);
 	setst(defensive_hitbox_type, Zombie, Hurt, DTag::Damageable);
 	
+	setst(defensive_hitbox_type, Giant, Normal, DTag::NonStunneable);
+	setst(defensive_hitbox_type, Giant, Casting, DTag::NonStunneable);
+
 	size[ID::Minotaur] = 12.f;
 	size[ID::Giant] = 30.f;
 
+	mov_acceleration[ID::Giant] = 3100.f;
+	mov_speed[ID::Giant] = 75.f;
+	mass[ID::Giant] = 5.f;
+
 	p_attack[ID::Minotaur] = 2.f;
-	set(mov_speed, Zombie, 125.f);
+	set(mov_speed, Zombie, 100.f);
 	health[ID::Zombie] = 30.f;
 	health[ID::Minotaur] = 150.f;
 	health[ID::Giant] = 300.f;
@@ -87,7 +94,7 @@ set_skill(ch,1,sk1);\
 set_skill(ch,2,sk2);\
 set_skill(ch,3,sk3);
 
-	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Telekinetic_Blade, Teleport);
+	set_skills(TimeTraveler, Simple_Shot, Wave_Shot, Dash, Teleport);
 	set_skills(Minotaur, Simple_Melee, Ram, Dash_Strike, Stun_Roar);
 	set_skills(Giant, Slow_Big_Melee, Quake, None, None);
 	set_skills(Tennist, Bounce_Shot, Mirror_Melee, Dash_Strike, Tennis_Ball);

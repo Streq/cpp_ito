@@ -353,6 +353,7 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 		if(team_match && h1 != own2.caster){
 
 			switch(t1.dTag){
+				case DTag::NonStunneable:
 				case DTag::Damageable:{
 
 					switch(t2.oTag){
@@ -363,20 +364,27 @@ void CollisionSystem::handle_hitbox_collisions(float time){
 
 							bool team_match= (team1==Team::None) || team1!=team2;
 							if(team_match && h1 != own2.caster){
-								sf::Vector2f pos2owner(pos2.getPosition());
-								mov1.velocity = normalized(mov2.velocity) * t2.momentum_knockback;
-							
-								if(pos2.relative_to!=MAX_ENTITIES){
-									pos2owner+=mWorld.vec_Position[pos2.relative_to].getPosition();
-								}
-								mov1.velocity += normalized(pos1.getPosition() - pos2owner) * t2.knockback;
+								if(t1.dTag!=DTag::NonStunneable){
+
+									sf::Vector2f pos2owner(pos2.getPosition());
 								
+									mov1.velocity = normalized(mov2.velocity) * t2.momentum_knockback;
 							
+									if(pos2.relative_to!=MAX_ENTITIES){
+										pos2owner+=mWorld.vec_Position[pos2.relative_to].getPosition();
+									}
+									mov1.velocity += normalized(pos1.getPosition() - pos2owner) * t2.knockback;
 							
-								States::ID stat = (t2.oTag==OTag::Damage)?States::Hurt : States::Stunned;
-								st1.update(stat);
-								t1.dTag=DTag::Invincible;
+									States::ID stat = (t2.oTag==OTag::Damage)?States::Hurt : States::Stunned;
+									st1.update(stat);
+
+								}
 								st1.duration = t2.stun_time;
+								if(st1.current==States::Normal){
+									st1.time_since_start=sf::Time::Zero;
+								}
+								t1.dTag=DTag::Invincible;
+								
 								mWorld.vec_Health[h1].incoming_damage += t2.damage;
 								if(t2.delete_on_hit){
 									mWorld.remove_entity(h2);

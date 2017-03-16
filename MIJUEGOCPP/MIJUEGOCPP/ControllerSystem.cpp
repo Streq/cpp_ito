@@ -79,7 +79,8 @@ void ControllerSystem::update(sf::Time t) {
 			}
 		}break;
 
-		case controller::Enemy: {
+		case controller::Enemy_Zombie:
+		case controller::Enemy_Shooter:{
 
 			if (c.target==Handle(-1) || mWorld.vec_Controller[c.target].controller != controller::Player || !mWorld.vec_Entity[i][type::Active]) {
 				//look for closest player_states
@@ -105,9 +106,16 @@ void ControllerSystem::update(sf::Time t) {
 			}
 			if (c.target != Handle(-1)) {
 				state.moving_dir = normalize(mWorld.vec_Position[c.target].getPosition() - mWorld.vec_Position[i].getPosition());
+				state.facing_dir=state.moving_dir;
+				bool shoot = c.controller==controller::Enemy_Shooter && state.facing_dir != sf::Vector2f(0,0);
+				state.updated[Skill::Simple_Shot_Zombie] = shoot;
+				state.pressed[Skill::Simple_Shot_Zombie] = shoot;
 
 			}
+
+		
 		}break;
+		
 	}
 	ITERATE_END
 }

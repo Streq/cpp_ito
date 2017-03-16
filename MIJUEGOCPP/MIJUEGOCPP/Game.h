@@ -25,6 +25,7 @@ class Game : public GameState{
 	private:
 		void				stress_init();
 		void				zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls);
+		void				shooter_wave_init(unsigned zombies, unsigned spawners, unsigned walls);
 		void				zombie_wave_init_2_players(unsigned zombies, unsigned spawners, unsigned walls);
 		void				zombie_rush_init(unsigned zombies, unsigned walls);
 		void				player_init();

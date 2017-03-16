@@ -10,6 +10,7 @@ namespace Skill {
 		Dash,		//funca
 		Dash_Strike,//funca
 		Simple_Shot,//funca
+		Simple_Shot_Zombie,//funca
 		Bounce_Shot,//funca
 		Teleport,	//funca
 		Ram,		//funca
@@ -37,6 +38,7 @@ namespace Skill {
 	extern float normal_speed[size];
 	extern float bullet_radius[size];
 	extern float period_factor[size];
+	extern int	ammo[size];
 	extern void init();
 }
 

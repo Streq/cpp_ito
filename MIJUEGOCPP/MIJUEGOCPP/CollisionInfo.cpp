@@ -38,6 +38,8 @@ void CollisionInfo::init_matrix()
 
 	pair_tags(Defensive_Tag::Damageable, Offensive_Tag::Damage);
 	pair_tags(Defensive_Tag::Damageable, Offensive_Tag::Stun);
+	pair_tags(Defensive_Tag::NonStunneable, Offensive_Tag::Damage);
+	pair_tags(Defensive_Tag::NonStunneable, Offensive_Tag::Stun);
 	pair_tags(Defensive_Tag::Invincible, Offensive_Tag::Damage);
 	pair_tags(Defensive_Tag::Invincible, Offensive_Tag::Stun);
 	pair_tags(Defensive_Tag::Reflect,	 Offensive_Tag::Damage);

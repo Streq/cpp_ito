@@ -533,7 +533,7 @@ Handle World::make_zombie(const sf::Vector2f & pos) {
 	}
 	Controller* cont;
 	if (cont = add_component<Controller>(h)) {
-		cont->controller = controller::Enemy;
+		cont->controller = controller::Enemy_Zombie;
 	}
 	State* st;
 	if (st = add_component<State>(h)) {
@@ -548,17 +548,58 @@ Handle World::make_zombie(const sf::Vector2f & pos) {
 	if (tm) {
 		tm->team = Team::HORDE;
 	}
-	//Owner* own;
-	//if (own = add_component<Owner>(h)){
-	//	own->team = 0;
-	//}
-	/*CollisionInfo inf;
-	inf.damage = Character::Stats::melee_hitbox_damage[Character::Zombie];
-	inf.type = HitBoxType::Hit;
-	inf.tag = Tag::Hit_Box;
-	inf.knockback = 100.f;
-	inf.stun_time = sf::seconds(0.5f);
-	make_hit_box(sf::Vector2f(0, 0), size, h, std::move(inf), sf::seconds(-1.f));*/
+
+	return h;
+}
+
+Handle World::make_shooter(const sf::Vector2f & pos) {
+	Handle h = new_entity();
+	auto siz = Character::Stats::size[Character::Zombie];
+	sf::Vector2f size = sf::Vector2f(siz, siz);
+	Rendering *r;
+	if (r = add_component<Rendering>(h)) {
+		sf::RectangleShape *c = new sf::RectangleShape(size);
+		c->setOutlineThickness(-1);
+		CollisionBody* box = add_component<CollisionBody>(h);
+		box->offset = -(size / 2.f);
+		box->size = size;
+		c->setOrigin(size / 2.f);
+		r->drawable.reset(c);
+	}
+	Position *p;
+	if (p = add_component<Position>(h)) {
+		p->setPosition(pos);
+	}
+	Movement *m;
+	if (m = add_component<Movement>(h)) {
+	}
+	CollisionInfo *tf;
+	if (tf = add_component<CollisionInfo>(h)) {
+		tf->tag = Tag::Character_Entity;
+		tf->pTag = PTag::Dynamic_Solid;
+		tf->dTag = DTag::Damageable;
+		tf->oTag = OTag::Damage;
+		tf->damage = 10.f;
+		tf->knockback = 400.f;
+		tf->stun_time = sf::seconds(0.25f);
+	}
+	Controller* cont;
+	if (cont = add_component<Controller>(h)) {
+		cont->controller = controller::Enemy_Shooter;
+	}
+	State* st;
+	if (st = add_component<State>(h)) {
+		st->Class = Character::Zombie;
+		st->update(States::Normal);
+	}
+	Health* hl;
+	if (hl = add_component<Health>(h)) {
+		hl->init(Character::Stats::health[Character::Zombie]);
+	}
+	Team* tm = add_component<Team>(h);
+	if (tm) {
+		tm->team = Team::HORDE;
+	}
 
 	return h;
 }

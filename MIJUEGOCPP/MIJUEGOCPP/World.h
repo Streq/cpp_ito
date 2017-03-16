@@ -54,4 +54,5 @@ class World {
 		Handle									make_teleport_scope(const sf::Vector2f& position,float maxspeed, const sf::Vector2f & size, Handle owner);
 		Handle									make_spawner(const sf::Vector2f& pos, sf::Time spawn_time, int amount=-1);
 		Handle									make_special_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo && colinfo, sf::Time duration, Handle owner, float radius, sf::Color color, States::ID state);
+		Handle									make_shooter(const sf::Vector2f & pos);
 };

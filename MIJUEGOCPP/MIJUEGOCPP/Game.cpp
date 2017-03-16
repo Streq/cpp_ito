@@ -86,7 +86,7 @@ bool Game::handle_event(const sf::Event& e) {
 				}break;
 				case sf::Keyboard::Num2: {
 					mWorld.clear();
-					zombie_wave_init_2_players(10, 5, 50);
+					shooter_wave_init(5, 0, 50);
 				}break;
 				case sf::Keyboard::Num3: {
 					mWorld.clear();
@@ -238,7 +238,7 @@ void Game::stress_init() {
 
 
 void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls) {
-	
+
 	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0, mContext.settings->get_players()[0]);
 	for (unsigned j = 0; j < spawners; j++)
 		mWorld.make_spawner(
@@ -249,24 +249,57 @@ void Game::zombie_wave_init(unsigned zombies, unsigned spawners, unsigned walls)
 		; 
 	mWorld.make_wall
 		( sf::Vector2f(0, 0)
-		, sf::Vector2f(WINDOW_SIZE_X, 25));
+			, sf::Vector2f(WINDOW_SIZE_X, 25));
 	mWorld.make_wall
 		( sf::Vector2f(0, WINDOW_SIZE_Y-25)
-		, sf::Vector2f(WINDOW_SIZE_X, 25));
+			, sf::Vector2f(WINDOW_SIZE_X, 25));
 	mWorld.make_wall
 		( sf::Vector2f(0, 0)
-		, sf::Vector2f(25, WINDOW_SIZE_Y));
+			, sf::Vector2f(25, WINDOW_SIZE_Y));
 	mWorld.make_wall
 		( sf::Vector2f(WINDOW_SIZE_X-25, 0)
-		, sf::Vector2f(25, WINDOW_SIZE_Y));
+			, sf::Vector2f(25, WINDOW_SIZE_Y));
 	for (unsigned i = 0; i < walls; i++) {
 		mWorld.make_wall
 			( sf::Vector2f(rand() % WINDOW_SIZE_X, rand() % WINDOW_SIZE_Y)
-			, sf::Vector2f(25.f, 25.f));
+				, sf::Vector2f(25.f, 25.f));
 
 	}
 	for (int i = 0; i < zombies; i++) {
 		mWorld.make_zombie(sf::Vector2f(50.f + (rand() % (WINDOW_SIZE_X - 100)) , 50.f + (rand() % (WINDOW_SIZE_Y - 100))));
+	}
+}
+
+void Game::shooter_wave_init(unsigned zombies, unsigned spawners, unsigned walls) {
+
+	mWorld.make_player(sf::Vector2f(WINDOW_SIZE_X / 2, WINDOW_SIZE_Y / 2),0, mContext.settings->get_players()[0]);
+	for (unsigned j = 0; j < spawners; j++)
+		mWorld.make_spawner(
+			sf::Vector2f(
+				50.f + (rand() % (WINDOW_SIZE_X - 100)),
+				50.f + (rand() % (WINDOW_SIZE_Y - 100))),
+			sf::seconds(5.f))
+		; 
+	mWorld.make_wall
+		( sf::Vector2f(0, 0)
+			, sf::Vector2f(WINDOW_SIZE_X, 25));
+	mWorld.make_wall
+		( sf::Vector2f(0, WINDOW_SIZE_Y-25)
+			, sf::Vector2f(WINDOW_SIZE_X, 25));
+	mWorld.make_wall
+		( sf::Vector2f(0, 0)
+			, sf::Vector2f(25, WINDOW_SIZE_Y));
+	mWorld.make_wall
+		( sf::Vector2f(WINDOW_SIZE_X-25, 0)
+			, sf::Vector2f(25, WINDOW_SIZE_Y));
+	for (unsigned i = 0; i < walls; i++) {
+		mWorld.make_wall
+			( sf::Vector2f(rand() % WINDOW_SIZE_X, rand() % WINDOW_SIZE_Y)
+				, sf::Vector2f(25.f, 25.f));
+
+	}
+	for (int i = 0; i < zombies; i++) {
+		mWorld.make_shooter(sf::Vector2f(50.f + (rand() % (WINDOW_SIZE_X - 100)) , 50.f + (rand() % (WINDOW_SIZE_Y - 100))));
 	}
 }
 

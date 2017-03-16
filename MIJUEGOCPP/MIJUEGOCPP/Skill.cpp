@@ -17,14 +17,17 @@ int Skill::owner_type[size];
 sf::Color Skill::bullet_color[size];
 float Skill::bullet_radius[size];
 float Skill::period_factor[size];
+int Skill::ammo[size];
+
 
 void Skill::init() {
 
 	#define inf col_info[sk]
 
 
-
+	
 #define sk Simple_Melee
+	ammo[sk] = -1;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 15.f;
 	hb_duration[sk] = dt_max_fps * 10.f;
@@ -35,160 +38,16 @@ void Skill::init() {
 	inf.pTag = PTag::Intangible;
 	inf.delete_on_hit = false;
 	inf.stun_time = sf::seconds(0.5);
-	inf.knockback = 700.f;
+	inf.knockback = 400.f;
 	inf.momentum_knockback = 0.f;
 #undef sk
 	
-
-
-
-
-#define sk Mirror_Melee
-	buildup[sk] = sf::seconds(0);
-	duration[sk] = dt_max_fps * 10.f;
-	hb_duration[sk] = dt_max_fps * 8.f;
-	damage[sk] = 10.f;
-	inf.tag = Tag::Hit_Box;
-	inf.dTag = DTag::Reflect;
-	inf.oTag = OTag::Damage;
-	inf.pTag = PTag::Intangible;
-	inf.delete_on_hit = false;
-	inf.stun_time = sf::seconds(0.3);
-	inf.knockback = 700.f;
-	inf.momentum_knockback = 0.f;
-#undef sk
-	
-
-
-
-
-#define sk Simple_Shot
-	buildup[sk] = sf::seconds(0);
-	duration[sk] = dt_max_fps * 2.f;
-	bullet_duration[sk] = sf::seconds(2.f);
-	bullet_speed[sk] = 600.f;
-	bullet_color[sk] = Color::Red;
-	bullet_radius[sk] = 2.5;
-	damage[sk] = 10.f;
-	owner_type[sk] = Relacion::aggregation;
-	inf.tag = Tag::Projectile;
-	inf.dTag = DTag::Intangible;
-	inf.oTag = OTag::Damage;
-	inf.pTag = PTag::Dynamic_Non_Solid;
-	inf.delete_on_hit = true;
-	inf.stun_time = sf::seconds(0.5);
-	inf.momentum_knockback = 600.f;
-	inf.knockback = 0.f;
-	inf.on_wall = CollisionInfo::remove;
-	inf.reflectable = true;
-	inf.change_team_on_wall = false;
-#undef sk
-	
-
-
-
-#define sk Bounce_Shot
-	buildup[sk] = sf::seconds(0);
-	duration[sk] = dt_max_fps * 5.f;
-	bullet_duration[sk] = sf::seconds(5.f);
-	bullet_speed[sk] = 400.f;
-	bullet_color[sk] = Color::Red;
-	bullet_radius[sk] = 2.5;
-	damage[sk] = 10.f;
-	owner_type[sk] = Relacion::aggregation;
-	inf.tag = Tag::Projectile;
-	inf.dTag = DTag::Intangible;
-	inf.oTag = OTag::Damage;
-	inf.pTag = PTag::Dynamic_Non_Solid;
-	inf.bounce_factor = 1.f;
-	inf.delete_on_hit = true;
-	inf.stun_time = sf::seconds(0.5);
-	inf.knockback = 0.f;
-	inf.momentum_knockback = 600.f;
-	inf.on_wall = CollisionInfo::bounce;
-	inf.reflectable = true;
-	inf.change_team_on_wall = false;
-#undef sk
-
-
-
-
-
-#define sk Teleport
-	buildup[sk] = sf::seconds(0);
-	max_speed[sk] = 2000.f;
-	acceleration[sk] = 120000.f;
-	friction[sk] = 60000.f;
-	inf.tag = Tag::Scope;
-	inf.dTag = DTag::Intangible;
-	inf.oTag = OTag::None;
-	inf.pTag = PTag::Dynamic_Non_Solid;
-	inf.on_wall = CollisionInfo::pass_through;
-	#undef sk
-	
-
-
-
-
-#define sk Ram
-	buildup[sk] = sf::seconds(0);
-	duration[sk] = dt_max_fps * 40.f;
-	damage[sk] = 10.f;
-	acceleration[sk] = 8000.f;
-	max_speed[sk] = 1000.f;
-	inf.tag = Tag::Hit_Box;
-	inf.dTag = DTag::Intangible;
-	inf.oTag = OTag::Damage;
-	inf.pTag = PTag::Intangible;
-	inf.delete_on_hit = false;
-	inf.stun_time = sf::seconds(0.5);
-	inf.knockback = 1200.f;
-	inf.momentum_knockback = 0.f;
-#undef sk
-	
-
-
-#define sk Wave_Shot
-	buildup[sk] = sf::seconds(0);
-	duration[sk] = dt_max_fps * 2.f;
-	bullet_speed[sk] = 400.f;
-	bullet_radius[sk] = 2.5f;
-	acceleration[sk] = 12000.f;
-	normal_speed[sk] = 0.f;
-	period_factor[sk] = 20.f;
-	owner_type[sk] = Relacion::aggregation;
-	damage[sk] = 10.f;
-	inf.tag = Tag::Projectile;
-	inf.dTag = DTag::Intangible;
-	inf.oTag = OTag::Damage;
-	inf.pTag = PTag::Intangible;
-	inf.delete_on_hit = true;
-	inf.stun_time = sf::seconds(0.5);
-	inf.momentum_knockback = 600.f;
-	inf.knockback = 0.f;
-	inf.on_wall = CollisionInfo::pass_through;
-	inf.reflectable = true;
-	bullet_duration[sk] = sf::seconds(10.f);
-#undef sk
-	
-
-
-#define sk Dash
-	buildup[sk]=sf::Time::Zero;
-	duration[sk]=sf::seconds(0.5f);
-	normal_speed[sk]=800.f;
-	max_speed[sk]=850.f;
-#undef sk
-	
-
-
-
-#define sk Dash_Strike
-	buildup[sk]=sf::Time::Zero;
-	duration[sk]=sf::seconds(1.f/3.f);
-	normal_speed[sk]=800.f;
-	max_speed[sk]=850.f;
-	damage[sk] = 20.f;
+#define sk Slow_Big_Melee
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0.3f);
+	duration[sk] = buildup[sk] + dt_max_fps * 15.f;
+	hb_duration[sk] = dt_max_fps * 10.f;
+	damage[sk] = 30.f;
 	inf.tag = Tag::Hit_Box;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
@@ -201,7 +60,198 @@ void Skill::init() {
 	
 
 
+
+
+#define sk Mirror_Melee
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0);
+	duration[sk] = dt_max_fps * 10.f;
+	hb_duration[sk] = dt_max_fps * 8.f;
+	damage[sk] = 10.f;
+	inf.tag = Tag::Hit_Box;
+	inf.dTag = DTag::Reflect;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Intangible;
+	inf.delete_on_hit = false;
+	inf.stun_time = sf::seconds(0.3);
+	inf.knockback = 450.f;
+	inf.momentum_knockback = 0.f;
+#undef sk
+	
+
+
+
+
+#define sk Simple_Shot
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0);
+	duration[sk] = dt_max_fps * 2.f;
+	bullet_duration[sk] = sf::seconds(2.f);
+	bullet_speed[sk] = 350.f;
+	bullet_color[sk] = Color::Red;
+	bullet_radius[sk] = 2.5;
+	damage[sk] = 10.f;
+	owner_type[sk] = Relacion::aggregation;
+	inf.tag = Tag::Projectile;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Dynamic_Non_Solid;
+	inf.delete_on_hit = true;
+	inf.stun_time = sf::seconds(0.5);
+	inf.momentum_knockback = 400.f;
+	inf.knockback = 0.f;
+	inf.on_wall = CollisionInfo::remove;
+	inf.reflectable = true;
+	inf.change_team_on_wall = false;
+#undef sk
+	
+#define sk Simple_Shot_Zombie
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0);
+	duration[sk] = sf::seconds(0.5f);
+	bullet_duration[sk] = sf::seconds(2.f);
+	bullet_speed[sk] = 350.f;
+	bullet_color[sk] = Color::Red;
+	bullet_radius[sk] = 2.5;
+	damage[sk] = 10.f;
+	owner_type[sk] = Relacion::aggregation;
+	inf.tag = Tag::Projectile;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Dynamic_Non_Solid;
+	inf.delete_on_hit = true;
+	inf.stun_time = sf::seconds(0.5);
+	inf.momentum_knockback = 400.f;
+	inf.knockback = 0.f;
+	inf.on_wall = CollisionInfo::remove;
+	inf.reflectable = true;
+	inf.change_team_on_wall = false;
+#undef sk
+
+
+#define sk Bounce_Shot
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0);
+	duration[sk] = dt_max_fps * 5.f;
+	bullet_duration[sk] = sf::seconds(5.f);
+	bullet_speed[sk] = 300.f;
+	bullet_color[sk] = Color::Red;
+	bullet_radius[sk] = 2.5;
+	damage[sk] = 10.f;
+	owner_type[sk] = Relacion::aggregation;
+	inf.tag = Tag::Projectile;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Dynamic_Non_Solid;
+	inf.bounce_factor = 1.f;
+	inf.delete_on_hit = true;
+	inf.stun_time = sf::seconds(0.5);
+	inf.knockback = 0.f;
+	inf.momentum_knockback = 400.f;
+	inf.on_wall = CollisionInfo::bounce;
+	inf.reflectable = true;
+	inf.change_team_on_wall = false;
+#undef sk
+
+
+
+
+
+#define sk Teleport
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0);
+	max_speed[sk] = 1000.f;
+	acceleration[sk] = 12000.f;
+	friction[sk] = 6000.f;
+	inf.tag = Tag::Scope;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::None;
+	inf.pTag = PTag::Dynamic_Non_Solid;
+	inf.on_wall = CollisionInfo::pass_through;
+	#undef sk
+	
+
+
+
+
+#define sk Ram
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0);
+	duration[sk] = dt_max_fps * 40.f;
+	damage[sk] = 10.f;
+	acceleration[sk] = 6000.f;
+	max_speed[sk] = 650.f;
+	inf.tag = Tag::Hit_Box;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Intangible;
+	inf.delete_on_hit = false;
+	inf.stun_time = sf::seconds(0.5);
+	inf.knockback = 800.f;
+	inf.momentum_knockback = 0.f;
+#undef sk
+	
+
+
+#define sk Wave_Shot
+	ammo[sk] = -1;
+	buildup[sk] = sf::seconds(0);
+	duration[sk] = dt_max_fps * 2.f;
+	bullet_speed[sk] = 300.f;
+	bullet_radius[sk] = 2.5f;
+	acceleration[sk] = 1000.f;
+	normal_speed[sk] = 0.f;
+	period_factor[sk] = 10.f;
+	owner_type[sk] = Relacion::aggregation;
+	damage[sk] = 5.f;
+	inf.tag = Tag::Projectile;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Dynamic_Non_Solid;
+	inf.delete_on_hit = true;
+	inf.stun_time = sf::seconds(0.3);
+	inf.momentum_knockback = 400.f;
+	inf.knockback = 0.f;
+	inf.on_wall = CollisionInfo::remove;
+	inf.reflectable = true;
+	bullet_duration[sk] = sf::seconds(10.f);
+#undef sk
+	
+
+
+#define sk Dash
+	ammo[sk] = -1;
+	buildup[sk] = sf::Time::Zero;
+	duration[sk] = sf::seconds(1.f/3.f);
+	normal_speed[sk] = 600.f;
+	max_speed[sk] = 650.f;
+	friction[sk] = 800;
+#undef sk
+	
+
+
+
+#define sk Dash_Strike
+	ammo[sk] = -1;
+	buildup[sk]=sf::Time::Zero;
+	duration[sk]=sf::seconds(1.f/3.f);
+	normal_speed[sk]=500.f;
+	max_speed[sk]=550.f;
+	damage[sk] = 10.f;
+	inf.tag = Tag::Hit_Box;
+	inf.dTag = DTag::Intangible;
+	inf.oTag = OTag::Damage;
+	inf.pTag = PTag::Intangible;
+	inf.delete_on_hit = false;
+	inf.stun_time = sf::seconds(0.5);
+	inf.knockback = 650.f;
+	inf.momentum_knockback = 0.f;
+#undef sk
+	
+
+
 #define sk Stun_Roar
+	ammo[sk] = -1;
 	inf.dTag = DTag::Intangible;
 	inf.pTag = PTag::Intangible;
 	inf.oTag = OTag::Stun;
@@ -217,13 +267,13 @@ void Skill::init() {
 
 	
 #define sk Tennis_Ball
+	ammo[sk] = 3;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 5.f;
 	bullet_duration[sk] = sf::seconds(-1.f);
-	bullet_speed[sk] = 400.f;
+	bullet_speed[sk] = 350.f;
 	bullet_color[sk] = Color::Green;
 	bullet_radius[sk] = 4.f;
-
 	owner_type[sk] = Relacion::aggregation;
 	damage[sk] = 10.f;
 	inf.tag = Tag::Projectile;
@@ -242,15 +292,16 @@ void Skill::init() {
 
 
 #define sk Telekinetic_Blade
+	ammo[sk] = 7;
 	buildup[sk] = sf::seconds(0);
 	duration[sk] = dt_max_fps * 5.f;
 	bullet_duration[sk] = sf::seconds(-1.f);
 	bullet_speed[sk] = 300.f;
 	bullet_color[sk] = Color::Grey;
 	bullet_radius[sk] = 3.f;
-	acceleration[sk] = 1000.f;
-	max_speed[sk] = 700.f;
-	friction[sk] = 300.f;
+	acceleration[sk] = 700.f;
+	max_speed[sk] = 350.f;
+	friction[sk] = 0.f;
 	owner_type[sk] = Relacion::composition;
 	damage[sk] = 10.f;
 	inf.tag = Tag::Projectile;
@@ -261,7 +312,7 @@ void Skill::init() {
 	inf.delete_on_hit = false;
 	inf.stun_time = sf::seconds(0.5);
 	inf.knockback = 0.f;
-	inf.momentum_knockback = 600.f;
+	inf.momentum_knockback = 400.f;
 	inf.on_wall = CollisionInfo::bounce;
 	inf.reflectable = false;
 	inf.change_team_on_wall = false;

@@ -14,7 +14,7 @@ struct CollisionBody :public Component {
 	//Position (relative to the Position component)
 	//set it to (-width/2,-height/2) to center
 	sf::Vector2f offset;
-	sf::Vector2f size;//for circles the x determines the diameter
+	sf::Vector2f size;//ending of the line
 	BoxType::Type type;
 
 	CollisionBody();

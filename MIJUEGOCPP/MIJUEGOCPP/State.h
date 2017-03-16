@@ -26,7 +26,7 @@ struct State : public Component {
 
 	bool pressed[Skill::size];
 	bool updated[Skill::size];
-
+	int  skill_uses[Skill::size];
 	//to use for any purpose of the current skill
 	unsigned skill_counter;
 	
@@ -49,8 +49,14 @@ struct State : public Component {
 		this->duration = duration;
 	}
 	inline void cast(Skill::ID sk) {
-		update(States::Casting);
-		current_skill = sk;
+		auto skammo=Skill::ammo[sk];
+		if(skammo <= 0 || skill_uses[sk] < skammo){
+
+			update(States::Casting);
+			current_skill = sk;
+		}
+			
+
 	}
 	/*
 	INVULNERABILITY FRAMES WHEN HURT TO AVOID MULTIPLE COLLISIONS WITH SAME HITBOX

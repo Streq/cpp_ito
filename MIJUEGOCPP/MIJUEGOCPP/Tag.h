@@ -21,6 +21,7 @@ namespace Defensive_Tag {	//Only collides with Offensive_Tag
 	enum ID {
 		Damageable,			//Can be hit
 		Invincible,			//Can be hit but remains unaffected
+		NonStunneable,		//Can be hit but not stunned (that includes hurt stun)
 		Reflect,			//Hitting it triggers a reflection on projectiles
 		Intangible,			//Ignores completely
 		size

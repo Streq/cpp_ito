@@ -76,8 +76,13 @@ void StateSystem::update(sf::Time dtime){
 	switch(st.current){
 		case States::Normal:
 		{
+
+			if(st.time_since_start>=st.duration){
+				st.update(States::Normal);
+			}
 			for(int j = 0; j < Skill::size; j++){
 				if(st.pressed[j] && st.updated[j]){
+					
 					st.cast(static_cast<Skill::ID>(j));
 					break;
 				}
@@ -159,6 +164,7 @@ void StateSystem::update(sf::Time dtime){
 			switch(st.current_skill){
 				case Skill::Simple_Melee:
 				case Skill::Mirror_Melee:
+				case Skill::Slow_Big_Melee:
 				{
 					switch(st.skill_counter){
 						case 0:
@@ -171,6 +177,7 @@ void StateSystem::update(sf::Time dtime){
 
 								mWorld.make_hit_box(sf::Vector2f(SIGN(st.facing_dir.x), SIGN(st.facing_dir.y)) * siz, siz*sf::Vector2f(3, 3), i, std::move(inf), Skill::hb_duration[st.current_skill]);
 								st.skill_counter++;
+								st.skill_uses[st.current_skill]++;
 							}
 						}break;
 					}
@@ -181,6 +188,7 @@ void StateSystem::update(sf::Time dtime){
 				case Skill::Simple_Shot:
 				case Skill::Bounce_Shot:
 				case Skill::Tennis_Ball:
+				case Skill::Simple_Shot_Zombie:
 				{
 					switch(st.skill_counter){
 						case 0:
@@ -193,6 +201,7 @@ void StateSystem::update(sf::Time dtime){
 
 								mWorld.make_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i,Skill::bullet_radius[st.current_skill],Skill::bullet_color[st.current_skill],Skill::owner_type[st.current_skill]);
 								st.skill_counter++;
+								st.skill_uses[st.current_skill]++;
 							}
 						}break;
 
@@ -222,6 +231,8 @@ void StateSystem::update(sf::Time dtime){
 								//mWorld.make_wave_bullet(pos.getPosition(), from_angle(get_angle(st.facing_dir) - 10.f / 180.f*M_PI), -1, Skill::bullet_speed[st.current_skill], Skill::acceleration[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i);
 
 								st.skill_counter++;
+
+								st.skill_uses[st.current_skill]++;
 							}
 						}break;
 
@@ -245,6 +256,8 @@ void StateSystem::update(sf::Time dtime){
 						{
 							if(!st.pressed[st.current_skill]){
 								st.update(States::Normal);
+
+								st.skill_uses[st.current_skill]++;
 							}
 						}break;
 					}
@@ -266,6 +279,8 @@ void StateSystem::update(sf::Time dtime){
 								colinf.on_wall = CollisionInfo::bounce;
 								colinf.bounce_factor=0.75f;
 								st.skill_counter++;
+
+								st.skill_uses[st.current_skill]++;
 							}
 						}break;
 						case 1:
@@ -307,6 +322,8 @@ void StateSystem::update(sf::Time dtime){
 								
 								mWorld.make_special_bullet(pos.getPosition(), st.facing_dir, mov.velocity, Skill::bullet_speed[st.current_skill], std::move(inf), Skill::bullet_duration[st.current_skill], i,Skill::bullet_radius[st.current_skill],Skill::bullet_color[st.current_skill],States::Telekinetic_Blade);
 								st.skill_counter++;
+
+								st.skill_uses[st.current_skill]++;
 							}
 						}break;
 
@@ -323,6 +340,8 @@ void StateSystem::update(sf::Time dtime){
 								mov.maxspeed = Skill::max_speed[st.current_skill];
 							mov.velocity += st.facing_dir * Skill::normal_speed[st.current_skill];
 							st.skill_counter++;
+							mov.friction=Skill::friction[st.current_skill];
+							st.skill_uses[st.current_skill]++;
 						}break;
 						case 1:{
 							if(st.time_since_start>=Skill::duration[st.current_skill]){
@@ -345,6 +364,8 @@ void StateSystem::update(sf::Time dtime){
 							mWorld.make_hit_box(sf::Vector2f(SIGN(st.facing_dir.x), SIGN(st.facing_dir.y)) * siz, siz*sf::Vector2f(3, 3), i, std::move(inf), dt_max_fps*10.f);
 
 							st.skill_counter++;
+
+							st.skill_uses[st.current_skill]++;
 						}break;
 						case 1:{
 							if(st.time_since_start>=Skill::duration[st.current_skill]){
@@ -365,6 +386,8 @@ void StateSystem::update(sf::Time dtime){
 
 								mWorld.make_hit_box(sf::Vector2f(0,0) * siz, sf::Vector2f(300, 300), i, std::move(inf), Skill::hb_duration[st.current_skill], BoxType::Circle);
 								st.skill_counter++;
+
+								st.skill_uses[st.current_skill]++;
 							}
 						}break;
 					}

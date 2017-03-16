@@ -229,6 +229,7 @@
     <ClInclude Include="Health.h" />
     <ClInclude Include="HealthSystem.h" />
     <ClInclude Include="HowToPlayState.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="Movement.h" />

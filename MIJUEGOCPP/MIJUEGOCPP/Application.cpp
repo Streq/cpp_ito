@@ -8,7 +8,7 @@
 #include "Game.h"
 #include "Color.h"
 Application::Application():
-	mWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y), "mi juegazo", sf::Style::Default),
+	mWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y), "la guerra de los cuadrados", sf::Style::Default),
 	mStateStack(GameState::Context(mWindow,mFonts,mTextures,mTexts,mControllers,mSettings)),
 	mSettings()
 {
@@ -18,6 +18,12 @@ Application::Application():
 
 
 	mTextures.load(Texture::MENU_BACKGROUND, "Resources/start_screen.png");
+	mTextures.load(Texture::SPRITE_GORDI, "Resources/gordi_sprite.png");
+	mTextures.load(Texture::SPRITE_JUANI, "Resources/juani_sprite.png");
+	mTextures.load(Texture::SPRITE_PEREZ, "Resources/perez_sprite.png");
+	mTextures.load(Texture::SPRITE_TORO, "Resources/toro_sprite.png");
+
+
 
 	mTexts.load(TextFile::CharacterAttacks, "Resources/characterattacks.txt");
 	mTexts.load(TextFile::Credits, "Resources/creditos.txt");

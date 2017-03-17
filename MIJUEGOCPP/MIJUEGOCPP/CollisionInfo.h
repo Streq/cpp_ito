@@ -34,8 +34,7 @@ public:
 
 	
 
-	Tag::ID tag;//BUELA
-
+	
 	Physics_Tag::ID pTag;
 	Offensive_Tag::ID oTag;
 	Defensive_Tag::ID dTag;
@@ -78,9 +77,6 @@ public:
 
 
 public:
-	typedef bool Matrix[Tag::size*Tag::size];//BUELA
-	static const Matrix& get_matrix();//BUELA
-	static inline bool check_pair(Tag::ID a, Tag::ID b) { return matrix[a*Tag::size + b]; }//BUELA
 	
 	typedef bool pMatrix[Physics_Tag::size][Physics_Tag::size];
 	typedef bool odMatrix[Defensive_Tag::size][Offensive_Tag::size];
@@ -95,11 +91,9 @@ public:
 
 private:
 
-	static Matrix matrix;//BUELA
 	static pMatrix pmatrix;
 	static odMatrix odmatrix;
 
-	static void pair_tags(Tag::ID a, Tag::ID b, bool val = true);//BUELA
 	static void pair_tags(Physics_Tag::ID a, Physics_Tag::ID b, bool val = true);
 	static void pair_tags(Defensive_Tag::ID a, Offensive_Tag::ID b, bool val = true);
 

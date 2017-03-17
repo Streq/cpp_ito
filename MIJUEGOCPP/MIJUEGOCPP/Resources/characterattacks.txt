@@ -1,24 +1,28 @@
 Minotaur:
+Toro hizo boxeo cerca del club Los Andes unos años y después se dedicó exclusivo a hacer fierros. Es bastante groso pero ni le hables de armas o tecnología o cultura general porque es un toro.
 -Z: Golpe normal: Es un golpe normal vo no hay mas que decir amigo
 -X: Embestida: Se lleva puesto todo lo que tiene delante, si se la pone contra una pared queda medio boludo por 2 sec.
 -C: Golpe embestida: Una fusión de los anteriores.
 -V: Rugido: Todo lo que está cerca queda paralizado del julepe que se pega por el gritazo que se manda.
 ///
 TimeTraveler:
+Perez labura de lunes a sábados 8 horas pero ni bien puede pegarse una escapada en vacaciones o finde largo se va a playear a otra galaxia donde puede sorfear asteroides y tomar sol de una estrella 1000000 veces más grande que la nuestra. A la hora de los bifes a Perez no le gusta irse de manos en ese sentido es medio cagón pero tiene unas armas que mamita y el teleport ufff ni te digo.
 -Z: Disparo normal: Pega un tirito.
 -X: Disparo mágico espacial galáctico doble: Pega dos tiritos que se mueven tipo wuwooo.
 -C: Esquivar: Se tira al joraca para esquivar o huir, lo que quiera uno la verdad.
 -V: Teleport: Mantenés apretado y aparece una mira roja que la podés mover y teletransportarte a donde apunte.
 ///
 Tennist:
+Juani, mi buen amigo, esta campaña volveremo a estar contigo (8). Juani es amante del tenis pero MÁS amante todavía de la magia. Y eso se nota en su habilidad de materializar pelotas como si fuese no se algo que pudieras materializar no se me ocurre nada, pero cuestion que es muy capo Y ADEMÁS rebota tiros con la raqueta. No te le vayas a acercar porque te vas a comer el raquetazo de tu vida jajaa.
 -Z: Disparo rebotín: Pega un tirito que rebota en las paredes.
 -X: Raquetazo: pega un golpe normal que rebota balas.
 -C: Golpe embestida: Afanado de Toro.
 -V: Pelotazo de Tenis mágico: Lo que hace que este personaje no sea una cagada. Tira una pelota verde que rebota eternamente y lastima a todos menos a Juani que la tiene re clara es un alto vivo Juani.
 ///
 Giant:
+Gordi, gordo, panza, redondo. Todos conocemos a alguien así. Es más bueno que el pan pero te llega a tener que meter un sopapo y te manda con tus seres queridos al cielo ida y vuelta. Eso sí Gordi es lento, no lo vas a ver correr un bondi ni en pedo.
 -Z: Golpe Lento: Pega como trompada de bobo
--X: Falta presupuesto no pienso laburar en más ataques hasta que me paguen
--C: Na no voy a hacer un carajo
--V: disculpame pero es asi juga con el toro si queres man
+-X: Temblor: Parece una nube de pedos pero es un temblor que paraliza lo que toca y lo lastima un cachito
+-C: ?????? buscas algo?
+-V: disculpame pero no hay mas ataques asi que si te jode juga con el toro man
 ///

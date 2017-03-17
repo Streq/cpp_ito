@@ -9,13 +9,14 @@ class SelectionState : public GameState{
 	virtual bool										update(sf::Time tiempo);
 	virtual void										draw()const;
 	void												load_descriptions();
+	void												set_textures();
 	private:
 
 	GUI::Container										mContainer;
 	std::array<std::string, Character::Playables>		mDescriptions;
 	int													mCurrentDescription;
-	//sf::Text											mDescription;
 	TextBox												mDescription;
 	sf::Sprite											mBackground;
-	
+	sf::Sprite											mCurrentCharacter;
+	std::array<sf::Texture*, Character::Playables>		mCharacterTextures;
 };

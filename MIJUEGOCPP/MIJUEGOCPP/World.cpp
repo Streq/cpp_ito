@@ -18,6 +18,7 @@ World::World(std::vector<ptr<System>>& vec,const sf::Vector2f& size)
 #undef X
 	, vec_system(vec)
 	, size(size)
+	, vec_Tag(MAX_ENTITIES)
 {
 }
 
@@ -98,7 +99,9 @@ bool World::remove_entity(Handle entity)
 	bool ret = TESTMASK(vec_Entity[entity], flag::Active);//retorna falso si la entidad no existe
 	bool tiene_padre = TESTMASK(vec_Entity[entity], flag::Owner);//retorna falso si no tiene padre
 	const auto& mat = Owner::get_matriz_padre_hijo();
-
+	if(ret){
+		--amount_entities[vec_Tag[entity]];
+	}
 	if (tiene_padre) {
 		Owner::set(vec_Owner[entity].owner, entity, Relacion::none);
 	}
@@ -151,6 +154,10 @@ void World::clear(){
 Handle World::make_player(const sf::Vector2f & pos, short unsigned player, Character::ID _class){
 	Handle h = new_entity();
 	vec_players[player] = h;
+
+	register_class(h,Tag::Player);
+	
+
 	add_component<Player>(h);
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
@@ -173,7 +180,6 @@ Handle World::make_player(const sf::Vector2f & pos, short unsigned player, Chara
 	}
 	CollisionInfo* tf;
 	if (tf = add_component<CollisionInfo>(h)) {
-		tf->tag = Tag::Character_Entity;
 		tf->pTag = PTag::Dynamic_Solid;
 		tf->dTag = DTag::Damageable;
 		tf->oTag = OTag::None;
@@ -205,6 +211,8 @@ Handle World::make_player(const sf::Vector2f & pos, short unsigned player, Chara
 Handle World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & direction, const sf::Vector2f & inertial_speed, float speed, CollisionInfo&& colinfo, sf::Time duration, Handle owner,float radius, sf::Color color, int owner_type)
 {
 	Handle h = new_entity();
+
+	register_class(h,Tag::Projectile);
 	Rendering* rend = add_component<Rendering>(h);
 	if (rend) {
 		sf::CircleShape* circ = new sf::CircleShape(radius);
@@ -256,6 +264,8 @@ Handle World::make_bullet(const sf::Vector2f & position, const sf::Vector2f & di
 
 Handle World::make_hit_box(const sf::Vector2f & offset, const sf::Vector2f & size, Handle owner, CollisionInfo && info, sf::Time duration, BoxType::Type btype){
 	Handle h = new_entity();
+
+	register_class(h,Tag::Hit_Box);
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
 		switch(btype){
@@ -307,6 +317,7 @@ Handle World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f&
 {
 	Handle h = new_entity();
 
+	register_class(h,Tag::Projectile);
 	float radius = Skill::bullet_radius[Skill::Wave_Shot];
 	Rendering* rend = add_component<Rendering>(h);
 	if (rend) {
@@ -372,7 +383,10 @@ Handle World::make_wave_bullet(const sf::Vector2f& position, const sf::Vector2f&
 
 Handle World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size){
 	Handle h = new_entity();
+
+	register_class(h,Tag::Wall);
 	Rendering *r;
+
 	if (r = add_component<Rendering>(h)) {
 		sf::RectangleShape *c = new sf::RectangleShape(size);
 		c->setFillColor(Color::Brown);
@@ -389,7 +403,6 @@ Handle World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size
 	}
 	CollisionInfo *tf;
 	if (tf = add_component<CollisionInfo>(h)) {
-		tf->tag = Tag::Wall;
 		tf->pTag = PTag::Static;
 		tf->dTag = DTag::Intangible;
 		tf->oTag = OTag::None;
@@ -400,7 +413,8 @@ Handle World::make_wall(const sf::Vector2f & position, const sf::Vector2f & size
 
 Handle World::make_teleport_scope(const sf::Vector2f & position, float maxspeed, const sf::Vector2f & size, Handle owner){
 	Handle h = new_entity();
-	
+
+	register_class(h,Tag::Scope);
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
 		sf::RectangleShape *c = new sf::RectangleShape(size);
@@ -450,6 +464,8 @@ Handle World::make_teleport_scope(const sf::Vector2f & position, float maxspeed,
 
 Handle World::make_spawner(const sf::Vector2f & pos, sf::Time spawn_time, int amount){
 	Handle h = new_entity();
+
+	register_class(h,Tag::Spawner);
 	Rendering *r;
 	if (r = add_component<Rendering>(h)) {
 		auto siz = Character::Stats::size[Character::Zombie];
@@ -489,6 +505,7 @@ Handle World::make_special_bullet(const sf::Vector2f & position, const sf::Vecto
 		st->update(state);
 	}
 
+	register_class(h,Tag::Projectile);
 	auto& mov = vec_Movement[h];
 	mov.maxspeed = Skill::max_speed[Skill::Telekinetic_Blade];
 	mov.capped = true;
@@ -502,6 +519,8 @@ Handle World::make_special_bullet(const sf::Vector2f & position, const sf::Vecto
 
 Handle World::make_zombie(const sf::Vector2f & pos) {
 	Handle h = new_entity();
+
+	register_class(h,Tag::Enemy);
 	auto siz = Character::Stats::size[Character::Zombie];
 	sf::Vector2f size = sf::Vector2f(siz, siz);
 	Rendering *r;
@@ -523,11 +542,10 @@ Handle World::make_zombie(const sf::Vector2f & pos) {
 	}
 	CollisionInfo *tf;
 	if (tf = add_component<CollisionInfo>(h)) {
-		tf->tag = Tag::Character_Entity;
 		tf->pTag = PTag::Dynamic_Solid;
 		tf->dTag = DTag::Damageable;
 		tf->oTag = OTag::Damage;
-		tf->damage = 10.f;
+		tf->damage = 100.f;
 		tf->knockback = 400.f;
 		tf->stun_time = sf::seconds(0.25f);
 	}
@@ -554,6 +572,8 @@ Handle World::make_zombie(const sf::Vector2f & pos) {
 
 Handle World::make_shooter(const sf::Vector2f & pos) {
 	Handle h = new_entity();
+
+	register_class(h,Tag::Enemy);
 	auto siz = Character::Stats::size[Character::Zombie];
 	sf::Vector2f size = sf::Vector2f(siz, siz);
 	Rendering *r;
@@ -575,7 +595,6 @@ Handle World::make_shooter(const sf::Vector2f & pos) {
 	}
 	CollisionInfo *tf;
 	if (tf = add_component<CollisionInfo>(h)) {
-		tf->tag = Tag::Character_Entity;
 		tf->pTag = PTag::Dynamic_Solid;
 		tf->dTag = DTag::Damageable;
 		tf->oTag = OTag::Damage;

@@ -6,9 +6,12 @@ SelectionState::SelectionState(GameStateStack & stack, Context cont):
 	GameState(stack, cont),
 	mContainer(),
 	mCurrentDescription(-1),
-	mDescription(cont.fonts->get(Font::consola),std::string(),70,15U)
+	mDescription(cont.fonts->get(Font::consola),std::string(),50,15U)
 {
 	load_descriptions();
+	set_textures();
+
+	
 	GUI::Button::Ptr tenista(new GUI::Button(*mContext.fonts));
 	tenista->setText("Juani el tenista mágico");
 	tenista->setCallback([this](){
@@ -62,7 +65,9 @@ SelectionState::SelectionState(GameStateStack & stack, Context cont):
 	mContainer.pack(giant);
 	mContainer.pack(volver);
 	
-	mDescription.setPosition(350,200);
+	mDescription.setPosition(350,150);
+
+	mCurrentCharacter.setPosition(700,100);
 
 }
 
@@ -77,8 +82,14 @@ bool SelectionState::update(sf::Time tiempo){
 		mCurrentDescription = ind;
 		if(mCurrentDescription >= 0 && mCurrentDescription < Character::Playables){
 			mDescription.setText(mDescriptions[mCurrentDescription]);
+			mCurrentCharacter.setTexture(*mCharacterTextures[mCurrentDescription],true);
+
 		}
-		else mDescription.setText(std::string());
+		else {
+			mDescription.setText(std::string());
+			mCurrentCharacter.setTextureRect(sf::IntRect(0,0,0,0));
+
+		}
 		
 	};
 
@@ -88,6 +99,7 @@ bool SelectionState::update(sf::Time tiempo){
 void SelectionState::draw()const{
 	mContext.window->draw(mBackground);
 	mContext.window->draw(mContainer);
+	mContext.window->draw(mCurrentCharacter);
 	mContext.window->draw(mDescription);
 }
 
@@ -117,4 +129,11 @@ void SelectionState::load_descriptions(){
 	//	std::cout<<str<<std::endl;
 	//}
 
+}
+
+void SelectionState::set_textures(){
+	mCharacterTextures[Character::Tennist] = &mContext.textures->get(Texture::SPRITE_JUANI);
+	mCharacterTextures[Character::TimeTraveler] = &mContext.textures->get(Texture::SPRITE_PEREZ);
+	mCharacterTextures[Character::Minotaur] = &mContext.textures->get(Texture::SPRITE_TORO);
+	mCharacterTextures[Character::Giant] = &mContext.textures->get(Texture::SPRITE_GORDI);
 }

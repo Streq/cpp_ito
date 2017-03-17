@@ -21,7 +21,7 @@ Game::Game(GameStateStack& s, Context c):
 	vec_System.push_back(ptr<System>(new HealthSystem(this->mWorld)));
 	mRenderSystem = new RenderingSystem(mWorld, *(mContext.window));
 	vec_System.push_back(ptr<System>(mRenderSystem));
-	mPlayerGUISystem = new PlayerGUISystem(mWorld);
+	mPlayerGUISystem = new PlayerGUISystem(mWorld,*mContext.fonts);
 	vec_System.push_back(ptr<System>(mPlayerGUISystem));
 
 	

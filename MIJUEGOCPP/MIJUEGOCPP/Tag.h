@@ -41,10 +41,12 @@ namespace Offensive_Tag {	//Only collides with Defensive_Tag
 namespace Tag {//Esto BUELA
 	enum ID {
 		Wall,				//Interacts with Solid Entities
-		Character_Entity,	//Interacts with Buildings
+		Player,				//Interacts with Buildings
 		Projectile,
 		Hit_Box,			//Interacts with other Hit_Boxes
 		Scope,
+		Enemy,
+		Spawner,
 		size
 	};
 

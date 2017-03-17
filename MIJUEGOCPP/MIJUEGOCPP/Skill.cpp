@@ -33,7 +33,7 @@ void Skill::init() {
 	duration[sk] = dt_max_fps * 15.f;
 	hb_duration[sk] = dt_max_fps * 10.f;
 	damage[sk] = 100.f;
-	inf.tag = Tag::Hit_Box;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Intangible;
@@ -48,8 +48,7 @@ void Skill::init() {
 	buildup[sk] = sf::seconds(0.3f);
 	duration[sk] = buildup[sk] + dt_max_fps * 15.f;
 	hb_duration[sk] = dt_max_fps * 10.f;
-	damage[sk] = 300.f;
-	inf.tag = Tag::Hit_Box;
+	damage[sk] = 200.f;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Intangible;
@@ -69,7 +68,6 @@ void Skill::init() {
 	duration[sk] = dt_max_fps * 10.f;
 	hb_duration[sk] = dt_max_fps * 8.f;
 	damage[sk] = 100.f;
-	inf.tag = Tag::Hit_Box;
 	inf.dTag = DTag::Reflect;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Intangible;
@@ -94,7 +92,6 @@ void Skill::init() {
 	bullet_radius[sk] = 2.5;
 	damage[sk] = 100.f;
 	owner_type[sk] = Relacion::aggregation;
-	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Dynamic_Non_Solid;
@@ -120,7 +117,6 @@ void Skill::init() {
 	
 	damage[sk] = 1.f;
 	owner_type[sk] = Relacion::aggregation;
-	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Stun;
 	inf.pTag = PTag::Intangible;
@@ -145,7 +141,6 @@ void Skill::init() {
 	bullet_radius[sk] = 2.5;
 	damage[sk] = 100.f;
 	owner_type[sk] = Relacion::aggregation;
-	inf.tag = Tag::Projectile;
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Dynamic_Non_Solid;
@@ -171,7 +166,7 @@ void Skill::init() {
 	bullet_radius[sk] = 2.5;
 	damage[sk] = 100.f;
 	owner_type[sk] = Relacion::aggregation;
-	inf.tag = Tag::Projectile;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Dynamic_Non_Solid;
@@ -195,7 +190,7 @@ void Skill::init() {
 	max_speed[sk] = 1000.f;
 	acceleration[sk] = 12000.f;
 	friction[sk] = 6000.f;
-	inf.tag = Tag::Scope;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::None;
 	inf.pTag = PTag::Dynamic_Non_Solid;
@@ -213,7 +208,7 @@ void Skill::init() {
 	damage[sk] = 100.f;
 	acceleration[sk] = 6000.f;
 	max_speed[sk] = 650.f;
-	inf.tag = Tag::Hit_Box;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Intangible;
@@ -236,7 +231,7 @@ void Skill::init() {
 	period_factor[sk] = 10.f;
 	owner_type[sk] = Relacion::aggregation;
 	damage[sk] = 5.f;
-	inf.tag = Tag::Projectile;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Dynamic_Non_Solid;
@@ -270,7 +265,7 @@ void Skill::init() {
 	normal_speed[sk]=500.f;
 	max_speed[sk]=550.f;
 	damage[sk] = 100.f;
-	inf.tag = Tag::Hit_Box;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Intangible;
@@ -310,7 +305,7 @@ void Skill::init() {
 	bullet_radius[sk] = 4.f;
 	owner_type[sk] = Relacion::aggregation;
 	damage[sk] = 100.f;
-	inf.tag = Tag::Projectile;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Dynamic_Non_Solid;
@@ -340,7 +335,7 @@ void Skill::init() {
 	friction[sk] = 0.f;
 	owner_type[sk] = Relacion::composition;
 	damage[sk] = 100.f;
-	inf.tag = Tag::Projectile;
+	 
 	inf.dTag = DTag::Intangible;
 	inf.oTag = OTag::Damage;
 	inf.pTag = PTag::Dynamic_Non_Solid;

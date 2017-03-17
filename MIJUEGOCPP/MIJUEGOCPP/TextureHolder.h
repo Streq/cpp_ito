@@ -2,7 +2,11 @@
 #include "ResourceHolder.h"
 namespace Texture {
 	enum ID {
-		MENU_BACKGROUND
+		MENU_BACKGROUND,
+		SPRITE_JUANI,
+		SPRITE_GORDI,
+		SPRITE_TORO,
+		SPRITE_PEREZ,
 	};
 }
 
